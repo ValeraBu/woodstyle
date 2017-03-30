@@ -1,0 +1,145 @@
+/* ==========================================================================
+   main-page__title
+   ===========================================================================*/
+
+.main-page__title-block span::after {
+	position: absolute;
+	content: '';
+	border-top: 1px solid rgba(0, 0, 0, 0.42);
+	width: 1000px;
+	top: 15px;
+	right: 100%;
+}
+
+.main-page__title-block span::before {
+	position: absolute;
+	content: '';
+	border-top: 1px solid rgba(0, 0, 0, 0.42);
+	width: 1000px;
+	top: 15px;
+	left: 100%;
+}
+
+.main-page__title-block {
+	position: relative;
+	padding: 20px 0;
+	text-align: center;
+	overflow: hidden;
+	span{
+		display: inline;
+		position: relative;
+		padding-left: 20px;
+		padding-right: 20px;
+		font-size: 24px;
+		color: #a39178;
+		text-align: center;
+		font-family: "Georgia Italic";
+		margin-bottom: 30px;
+		@media screen and (max-width: 560px) {
+			font-size: 18px;
+		}
+	}
+}
+/* end main-page__title*/
+
+
+/* ==========================================================================
+   .main-title
+   ===========================================================================*/
+// .main-title {
+// 	position: relative;
+// 	padding-bottom: 10px;
+.main-title-block {
+	position: relative;
+	padding: 20px;
+	text-align: center;
+	overflow: hidden;
+	span {
+		font-size: 30px;
+		padding-left: 20px;
+		padding-right: 20px;
+		color: #a39178;
+		text-align: center;
+		display: inline;
+		font-family: "Museo Cyrl";
+		font-weight: 700;
+		position: relative;
+		@media screen and (max-width: 768px) {
+			font-size: 26px;
+		}
+		@media screen and (max-width: 560px) {
+			font-size: 18px;
+			display: inline-block;
+		}
+		@media screen and (max-width: 375px) {
+			font-size: 16px;
+			max-width: 100px;
+		}
+	}
+}
+
+.main-title-block span:after {
+	position: absolute;
+	content: '';
+	border-top: 1px dotted #8b7153;
+	width: 1000px;
+	top: 20px;
+	right: 100%;
+	@media screen and (max-width: 540px) {
+		top: 15px;
+	}
+}
+
+.main-title-block span:before {
+	position: absolute;
+	content: '';
+	border-top: 1px dotted #8b7153;
+	width: 1000px;
+	top: 20px;
+	left: 100%;
+	@media screen and (max-width: 540px) {
+		top: 15px;
+	}
+}
+
+/* end main-title*/
+
+
+/* ==========================================================================
+   .mini-title
+   ===========================================================================*/
+.mini-title-block {
+	position: relative;
+	padding: 20px;
+	text-align: center;
+	overflow: hidden;
+	span {
+		font-size: 24px;
+		padding-left: 20px;
+		padding-right: 20px;
+		color:  #4e4132;
+		text-align: center;
+		display: inline;
+		position: relative;
+		font-family: "Georgia Italic";
+	}
+}
+
+.mini-title-block span:after {
+	position: absolute;
+	content: '';
+	border-top: 1px dotted #74614c;
+	width: 1000px;
+	top: 18px;
+	right: 100%;
+}
+
+.mini-title-block span:before {
+	position: absolute;
+	content: '';
+	border-top: 1px dotted #74614c;
+	width: 1000px;
+	top: 18px;
+	left: 100%;
+}
+   /* end mini-title*/
