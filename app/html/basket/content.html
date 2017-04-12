@@ -1,0 +1,140 @@
+<div class="container-fluid">
+	<div class="row">
+		<section class="breadcrumbs">
+			<ul>
+				<li><a href="#"><span>Главная</span></a></li>
+				<li><a href="#" class="active"><span>Корзина</span></a></li>
+			</ul>
+		</section>
+	</div>
+	<div class="row">
+		<div class="title-block">
+			<h2>Корзина</h2>
+		</div>
+	</div>
+	<div class="basket-row_title row">
+		<div class="basket-col-1">
+			<p></p>
+		</div>
+		<div class="basket-col-2">
+			<p>Артикул</p>
+		</div>
+		<div class="basket-col-3">
+			<p>Наименование</p>
+		</div>
+		<div class="basket-col-2">
+			<p>Количество</p>
+		</div>
+		<div class="basket-col-4">
+			<p>Цена</p>
+		</div>
+		<div class="basket-col-4">
+			<p>Цена</p>
+		</div>
+		<div class="basket-col-5">
+			<p>Удалить</p>
+		</div>
+	</div>
+	<div class="basket-row row">
+		<div class="card-pic basket-col-1">
+			<img src="img/catalog-item2.png" alt=""/>
+		</div>
+		<div class="card-code basket-col-2">
+			<p>2532663728</p>
+		</div>
+		<div class="good-name basket-col-3">
+			<a href="#">Штучный паркет Stenwood Дуб Рустик 350х70х15 мм</a>
+			<p class="card-code_mobile">Артикул: 2532663728</p>
+		</div>
+		<div class="basket-col-2">
+			<p class="title_mobile">Количество:</p>
+			<input type="number" class="number-input" id="card1" value="1014" />
+		</div>
+		<div class="basket-col-4">
+			<p class="title_mobile">Цена:</p>
+			<p>3934 <span>р./м2</span></p>
+		</div>
+		<div class="good-price basket-col-4">
+			<p class="title_mobile">Цена:</p>
+			<p>163488 руб.</p>
+		</div>
+		<div class="good-close basket-col-5">
+			<a href="#"><img src="img/good-close.png" alt=""/></a>
+		</div>
+	</div>
+	<div class="basket-row row">
+		<div class="card-pic basket-col-1">
+			<img src="img/slide3.png" alt=""/>
+		</div> 
+		<div class="card-code basket-col-2">
+			<p>3457893371</p>
+		</div>
+		<div class="good-name basket-col-3">
+			<a href="#">Лестница на заказ из натурального дерева</a>
+			<p class="card-code_mobile">Артикул: 3457893371</p>
+		</div>
+		<div class="basket-col-2">
+			<p class="title_mobile">Количество:</p>
+			<input type="number" class="number-input" id="card2" value="2" />
+		</div>
+		<div class="basket-col-4">
+			<p class="title_mobile">Цена:</p>
+			<p>По запросу</p>
+		</div>
+		<div class="good-price  basket-col-4">
+			<p class="title_mobile">Цена:</p>
+			<p>По запросу</p>
+		</div>
+		<div class="good-close basket-col-5">
+			<a href="#"><img src="img/good-close.png" alt=""/></a>
+		</div>
+	</div>
+	<div class="bascet-row_bottom  row">
+		<p>
+			Итоговая цена будет определена на этапе согласования с менеджером
+		</p>
+	</div>
+	<div class="basket-btn row">
+		<a class="beige-btn order-no-reg"  data-toggle="modal" data-target="#order-no-reg" href="#">Купить без регистрации</a>
+		<div class="modal fade entrance-modal modal-no-reg" id="order-no-reg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"></span></button>
+		      </div>
+		      <div class="modal-body">
+		        <form id="no-reg" class="no-reg">
+			        <span class="title">Оформление заказа</span>
+			        <p>Покупка без регистрации подразумевает связь с менеджером, оставьте свой номер телефона, в ближайшее время наш специалист перезвонит Вам</p>
+			        <div class="form-group">
+						<label for="phone">Телефон*</label>
+						<input id="phone" type="text" class="input" placeholder="8(___)___-__-__">
+					</div>
+					<div class="form-group">
+						<input id="submit" class="btn-submit" value="Оформить заказ"   data-dismiss="modal"  data-toggle="modal" data-target="#modal-done1"/>
+					</div>
+				</form>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		<div class="modal fade entrance-modal" id="modal-done1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"></span></button>
+		      </div>
+		      <div class="modal-body">
+			        <span class="title">Ваш заказ оформлен</span>
+			        <p>В ближайшее время для уточнения деталей заказа с Вами свяжется менеджер </p>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		<a href="#" class="order">Оформить заказ</a>
+		<a href="#" class="prev-link"><i class="fa fa-angle-left" aria-hidden="true"></i> Продолжить покупки</a>
+	</div>
+
+
+
+</div>

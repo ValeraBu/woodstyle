@@ -1,28 +1,37 @@
 <!-- footer -->
-<footer>
-	<div class="main-footer">
+<footer class="main-footer">
 		<div class="container-fluid">
 			<div class="footer-top">
 					<div class="row">
-						<div class="logo-footer col-lg-6 col-md-6">
+						<div class="logo-footer">
+							<div class="mobile-header">
+								<a href="#" class="menu-icon">
+									<img src="img/menu-icon.png"/>
+								</a>	
+							</div>
 							<a href="#">
-								<img src="img/logo-footer.png"/>
+								<img class="big-logo" src="img/logo-footer.png" alt="Woodstyle" />
+								<img class="small-logo" src="img/mini-logo.png" alt="Woodstyle" />
 							</a>
 						</div>
-						<div class="social-block col-lg-6 col-md-6">
+						<div class="social-block">
+							<a class="mobile-phone" href="tel:8(812)900-79-86"><span>8 (812) 900-79-86</span><img src="img/phone-icon.png"/></a>
 							<a class="social-icon pint-icon" href="#"><i class="fa fa-pinterest-square fa-2x"></i></a>
 							<a class="social-icon vk-icon" href="#"><i class="fa fa-vk fa-2x"></i></a>
 							<a class="social-icon tw-icon" href="#"><i class="fa fa-twitter-square fa-2x"></i></a>
 							<a class="social-icon in-icon" href="#"><i class="fa fa-linkedin-square fa-2x"></i></a>
 							<a class="social-icon fb-icon" href="#"><i class="fa fa-facebook-official fa-2x"></i></a>
 							<a class="social-icon inst-icon" href="#"><i class="fa fa-instagram fa-2x"></i></a>
+							<div class="mobile-search">
+								<a class="mobile-loupe" href="#" data-toggle="modal" data-target="#search-modal"></a>
+							</div>
 						</div>
 					</div>
 			</div>
 			<div class="footer-middle">
 				<div class="row">
-					<div class="footer-middle_item col-lg-4 col-md-4">
-						<ul class="main_col-list col-lg-6 col-md-6">
+					<div class="footer-middle_item">
+						<ul class="main_col-list">
 							<li class="title">
 								<a class="title-list" href="#"> О компании </a><span class="title-link"></span>
 								<ul class="col-list">
@@ -36,7 +45,7 @@
 								</ul>
 							</li>
 						</ul>
-						<ul class="main_col-list col-lg-6 col-md-6">
+						<ul class="main_col-list">
 							<li class="title">
 								<a class="title-list" href="#"> Информация </a><span class="title-link"></span>
 								<ul class="col-list">
@@ -52,8 +61,8 @@
 							</li>
 						</ul>
 					</div>
-					<div class="footer-middle_item col-lg-4 col-md-4">
-						<ul class="main_col-list col-lg-6 col-md-6">
+					<div class="footer-middle_item">
+						<ul class="main_col-list">
 							<li class="title">
 								<a class="title-list" href="#"> Каталог</a><span class="title-link"></span>
 								<ul class="col-list">
@@ -72,7 +81,7 @@
 								</ul>
 							</li>
 						</ul>
-						<ul class="main_col-list col-lg-6 col-md-6">
+						<ul class="main_col-list">
 							<li class="title">
 								<a class="title-list" href="#"> Услуги</a><span class="title-link"></span>
 								<ul class="col-list">
@@ -86,8 +95,8 @@
 							</li>
 						</ul>
 					</div>
-					<div class="footer-middle_item col-lg-4 col-md-4">
-						<ul class="main_col-list col-lg-6 col-md-6">
+					<div class="footer-middle_item">
+						<ul class="main_col-list">
 							<li class="title">
 								<a class="title-list" href="#"> Галерея</a><span class="title-link"></span>
 								<ul class="col-list">
@@ -104,7 +113,7 @@
 								</ul>
 							</li>
 						</ul>
-						<ul class="main_col-list col-lg-6 col-md-6">
+						<ul class="main_col-list footer-contacts clearfix">
 							<li class="title">
 								<a class="title-list" href="#"> Контакты</a><span class="title-link"></span>
 							</li>
@@ -112,8 +121,17 @@
 							<p class="address">Уральская ул. 10, <br>
 							Санкт-Петербург, 199155</p>
 							<a class="mail" href="mailto:info@woodstyle.spb.ru">info@woodstyle.spb.ru</a>
-							<a class="btn-white btn-write" href="#" data-toggle="modal" data-target="#write-modal">Написать письмо</a>
+							<div class="social-icon_block">
+								<a class="social-icon pint-icon" href="#"><i class="fa fa-pinterest-square fa-2x"></i></a>
+								<a class="social-icon vk-icon" href="#"><i class="fa fa-vk fa-2x"></i></a>
+								<a class="social-icon tw-icon" href="#"><i class="fa fa-twitter-square fa-2x"></i></a>
+								<a class="social-icon in-icon" href="#"><i class="fa fa-linkedin-square fa-2x"></i></a>
+								<a class="social-icon fb-icon" href="#"><i class="fa fa-facebook-official fa-2x"></i></a>
+								<a class="social-icon inst-icon" href="#"><i class="fa fa-instagram fa-2x"></i></a>
+							</div>
+							<a class="btn-white btn-write" href="#" data-toggle="modal" data-target="#write-modal"><img src="img/write-img.png" alt="" /><span>Написать письмо</span></a>
 						</ul>
+						<p class="bottom-address">Уральская ул. 10, Санкт-Петербург, 199155</p>
 						<div class="modal fade" id="write-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
 						  <div class="modal-dialog" role="document">
 						    <div class="modal-content">
@@ -148,9 +166,10 @@
 		</div>
 		<div class="footer-bottom">
 			<div class="container-fluid">
-				<p class="copyright col-lg-6 col-md-6">© 2016, Woodstyle Parquet</p>
-				<p class="developer col-lg-6 col-md-6">Developed by<a href='ttcsoft.ru'> T.T. Consulting</p>
+				<div class="row">
+					<p class="copyright">© 2016, Woodstyle Parquet</p>
+					<p class="developer">Developed by<a href='ttcsoft.ru'> T.T. Consulting</p>
+				</a>
 			</div>
 		</div>
-	</div>
 </footer>

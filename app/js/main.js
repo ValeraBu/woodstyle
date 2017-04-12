@@ -1,5 +1,6 @@
 @@include('plagins/jquery-migrate-3.0.0.js')
 @@include('plagins/slick.js')
+@@include('plagins/select2.js')
 @@include('plagins/jquery-ui.js')
 @@include('plagins/bootstrap.js')
 
