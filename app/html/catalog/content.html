@@ -1,0 +1,606 @@
+<div class="container-fluid">
+	<section class="breadcrumbs">
+		<ul>
+			<li><a href="#"><span>Главная</span></a></li>
+			<li><a href="#"><span>Каталог</span></a></li>
+			<li><span class="active">Паркет</span></li>
+		</ul>
+	</section>
+	<div class="title-block">
+		<h1>Паркет</h1>
+	</div>
+</div>
+<div class="container-fluid">
+	<div class="left-sidebar">
+		<form method="post" id="filterForm" class="catalog-form">
+			<div class="filter-menu">
+				<a href="#" class="filter-close">закрыть</a>
+			</div>
+			<div class="catalog-form_item">
+				<div class="form-group">
+					<input id="search-catalog" type="search" class="input">
+					<button type="search" class="btn-search search-catalog"> <img src="img/search.png" alt="">
+					</button>
+				</div>
+			</div>
+			<div class="catalog-form_item">
+				<div class="catalog-title">
+					Цена 
+					<span class="span-click"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
+				</div>
+				<div class="filter-inner">
+					<div class="price-filter">
+						<p>От</p>
+						<input type="text" class="filter-input" id="price-from">
+						<p>Руб.</p>
+					</div>
+					<div class="price-filter">
+						<p>До</p>
+						<input type="text" class="filter-input" id="price-before">
+						<p>Руб.</p>
+					</div>
+					<div>
+						<input type="checkbox" id="price-request" name="price-request" class="checkbox-input" checked>
+						<label for="price-request" class="checkbox-label">Показывать товары с ценой по запросу</label>
+					</div>
+				</div>
+			</div>
+			<div class="catalog-form_item">
+				<div class="catalog-title">
+					Бренд:
+					<span class="span-click"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
+				</div>
+				<div class="filter-inner">
+					<div class="form-group">
+						<input type="checkbox" id="Antigua" name="brand" class="checkbox-input" checked>
+						<label for="Antigua" class="checkbox-label">Antigua</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="Belgio" name="brand" class="checkbox-input" checked>
+						<label for="Belgio" class="checkbox-label">Belgio</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="Dellrein" name="brand" class="checkbox-input">
+						<label for="Dellrein" class="checkbox-label">Dellrein</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="Euroflooring" name="brand" class="checkbox-input" checked>
+						<label for="Euroflooring" class="checkbox-label">Euroflooring</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="Floorway" name="brand" class="checkbox-input">
+						<label for="Floorway" class="checkbox-label">Floorway</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="Grunwald" name="brand" class="checkbox-input">
+						<label for="Grunwald" class="checkbox-label">Grunwald</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="Kronoflooring" name="brand" class="checkbox-input">
+						<label for="Kronoflooring" class="checkbox-label">Kronoflooring</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="Kronospan" name="brand" class="checkbox-input">
+						<label for="Kronospan" class="checkbox-label">Kronospan</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="Kronostar" name="brand" class="checkbox-input">
+						<label for="Kronostar" class="checkbox-label">Kronostar</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="Millennium" name="brand" class="checkbox-input" checked>
+						<label for="Millennium" class="checkbox-label">Millennium</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="Pergo" name="brand" class="checkbox-input">
+						<label for="Pergo" class="checkbox-label">Pergo</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="Quick-Step" name="brand" class="checkbox-input">
+						<label for="Quick-Step" class="checkbox-label">Quick-Step</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="Ritter" name="brand" class="checkbox-input">
+						<label for="Ritter" class="checkbox-label">Ritter</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="Terhurne" name="brand" class="checkbox-input">
+						<label for="Terhurne" class="checkbox-label">Terhurne</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="Titan Plus" name="brand" class="checkbox-input">
+						<label for="Titan Plus" class="checkbox-label">Titan Plus</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="Unistep" name="brand" class="checkbox-input">
+						<label for="Unistep" class="checkbox-label">Unistep</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="Versale" name="brand" class="checkbox-input">
+						<label for="Versale" class="checkbox-label">Versale</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="Voyage" name="brand" class="checkbox-input">
+						<label for="Voyage" class="checkbox-label">Voyage</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="Woodstyle" name="brand" class="checkbox-input" checked>
+						<label for="Woodstyle" class="checkbox-label">Woodstyle</label>
+					</div>
+				</div>
+			</div>
+			<div class="catalog-form_item">
+				<div class="catalog-title">
+					Порода дерева:
+					<span class="span-click"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
+				</div>
+				<div class="filter-inner">
+					<div class="form-group">
+						<input type="checkbox" id="wood1" name="brand" class="checkbox-input" checked>
+						<label for="wood1" class="checkbox-label">Дуб</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="wood2" name="brand" class="checkbox-input">
+						<label for="wood2" class="checkbox-label">Ясень</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="wood3" name="brand" class="checkbox-input">
+						<label for="wood3" class="checkbox-label">Акация</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="wood4" name="brand" class="checkbox-input">
+						<label for="wood4" class="checkbox-label">Бамбук</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="wood5" name="brand" class="checkbox-input">
+						<label for="wood5" class="checkbox-label">Береза Черная</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="wood6" name="brand" class="checkbox-input">
+						<label for="wood6" class="checkbox-label">Гикори</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="wood7" name="brand" class="checkbox-input">
+						<label for="wood7" class="checkbox-label">Зебрано</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="wood8" name="brand" class="checkbox-input">
+						<label for="wood8" class="checkbox-label">Ипе</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="wood9" name="brand" class="checkbox-input">
+						<label for="wood9" class="checkbox-label">Каслин</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="wood10" name="brand" class="checkbox-input" checked>
+						<label for="wood10" class="checkbox-label">Кемпас</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="wood11" name="brand" class="checkbox-input">
+						<label for="wood11" class="checkbox-label">Клен</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="wood12" name="brand" class="checkbox-input">
+						<label for="wood12" class="checkbox-label">Кумару</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="wood13" name="brand" class="checkbox-input">
+						<label for="wood13" class="checkbox-label">Лапачо</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="wood14" name="brand" class="checkbox-input">
+						<label for="wood14" class="checkbox-label">Мербау</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="wood15" name="brand" class="checkbox-input">
+						<label for="wood15" class="checkbox-label">Окан</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="wood16" name="brand" class="checkbox-input">
+						<label for="wood16" class="checkbox-label">Орех американский</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="wood17" name="brand" class="checkbox-input">
+						<label for="wood17" class="checkbox-label">Палисандр</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="wood18" name="brand" class="checkbox-input">
+						<label for="wood18" class="checkbox-label">Сукупира</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="wood19" name="brand" class="checkbox-input" checked>
+						<label for="wood19" class="checkbox-label">Тауари</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="wood20" name="brand" class="checkbox-input">
+						<label for="wood20" class="checkbox-label">Тигровое дерево</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="wood21" name="brand" class="checkbox-input">
+						<label for="wood21" class="checkbox-label">Тик</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="wood22" name="brand" class="checkbox-input">
+						<label for="wood22" class="checkbox-label">Ятоба</label>
+					</div>
+				</div>
+			</div>
+			<div class="catalog-form_item">
+				<div class="catalog-title">
+					Цвет:
+					<span class="span-click"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
+				</div>
+				<div class="filter-inner">
+					<div class="form-group">
+						<input type="checkbox" id="natural" name="brand" class="checkbox-input" checked>
+						<label for="natural" class="checkbox-label">Натуральный</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="white" name="brand" class="checkbox-input">
+						<label for="white" class="checkbox-label">Белый</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="light" name="brand" class="checkbox-input">
+						<label for="light" class="checkbox-label">Светлый</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="cream" name="brand" class="checkbox-input">
+						<label for="cream" class="checkbox-label">Кремовый</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="сognac" name="brand" class="checkbox-input">
+						<label for="сognac" class="checkbox-label">Коньячный</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="gray" name="brand" class="checkbox-input">
+						<label for="gray" class="checkbox-label">Серый</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="brown" name="brand" class="checkbox-input">
+						<label for="brown" class="checkbox-label">Коричневый</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="black" name="brand" class="checkbox-input">
+						<label for="black" class="checkbox-label">Черный</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="individual" name="brand" class="checkbox-input">
+						<label for="individual" class="checkbox-label">Индивидуальный</label>
+					</div>
+				</div>
+			</div>
+			<div class="catalog-form_item">
+				<div class="catalog-title">
+					Покрытие:
+					<span class="span-click"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
+				</div>
+				<div class="filter-inner">
+					<div class="form-group">
+						<input type="checkbox" id="opaque" name="brand" class="checkbox-input" checked>
+						<label for="opaque" class="checkbox-label">Матовое</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="semi-maturing" name="brand" class="checkbox-input" checked>
+						<label for="semi-maturing" class="checkbox-label">Полуматовое</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="glossy" name="brand" class="checkbox-input" checked>
+						<label for="glossy" class="checkbox-label">Глянцевое</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="lacquer" name="brand" class="checkbox-input" checked>
+						<label for="lacquer" class="checkbox-label">Лак</label>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" id="butter" name="brand" class="checkbox-input">
+						<label for="butter" class="checkbox-label">Масло</label>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<div class="catalog-content">
+		<div class="top-filter clearfix">
+			<div class="top-filter_item clearfix">
+				<ul>
+					<li><a class="select-filter" href="#">Antigua<i class="fa fa-times-circle-o" aria-hidden="true"></i></a>
+					</li>
+					<li><a class="select-filter" href="#">Beligio<i class="fa fa-times-circle-o" aria-hidden="true"></i></a>
+					</li>
+					<li><a class="select-filter" href="#">Euroflooring<i class="fa fa-times-circle-o" aria-hidden="true"></i></a>
+					</li>
+					<li><a class="select-filter" href="#">Woodstyle<i class="fa fa-times-circle-o" aria-hidden="true"></i></a>
+					</li>
+					<li><a class="select-filter" href="#">Дуб<i class="fa fa-times-circle-o" aria-hidden="true"></i></a>
+					</li>
+					<li><a class="select-filter" href="#">Натуральный<i class="fa fa-times-circle-o" aria-hidden="true"></i></a>
+					</li>
+					<li><a class="select-filter" href="#">Серый<i class="fa fa-times-circle-o" aria-hidden="true"></i></a>
+					</li>
+					<li><a class="select-filter" href="#">Лак<i class="fa fa-times-circle-o" aria-hidden="true"></i></a>
+					</li>
+					<li><a class="select-filter" href="#">Коричневый<i class="fa fa-times-circle-o" aria-hidden="true"></i></a>
+					</li>
+					<li><a class="select-filter" href="#">Кремовый<i class="fa fa-times-circle-o" aria-hidden="true"></i></a>
+					</li>
+					<li><a class="select-filter" href="#">Матовое<i class="fa fa-times-circle-o" aria-hidden="true"></i></a>
+					</li>
+					<li><a class="select-filter" href="#">Белый<i class="fa fa-times-circle-o" aria-hidden="true"></i></a>
+					</li>
+				</ul>
+					<a class="close-all"><span>Сбросить фильтр</span><i class="fa fa-times-circle-o" aria-hidden="true"></i></a>
+			</div>
+			<div class="top-filter_item2">
+				<a class="filter-btn"><img src="img/filter.png" alt="">Фильтр
+				</a>
+				<select id="name-select" class="form-control name-select" data-placeholder="Наименование">
+					<option></option>
+					<option value="0">1</option>
+					<option value="1">2</option>
+					<option value="2">3</option>
+				</select>
+				<select id="num-select" class="form-control num-select" aria-hidden="true">
+					<option value="0">по 6</option>
+					<option value="1">по 8</option>
+					<option value="2" selected>по 12</option>
+				</select>
+			</div>
+		</div>
+		<div class="products-catalog">
+			<div class="product-card">
+				<a href="card1.html">
+					<div class="product-card_img">
+						<img src="img/good1.png" alt="" />
+					</div>
+				</a>
+				<a href="card1.html" class="card-title">Ламинат WOODSTYLE Дуб беленый Масло - 1366х345мм Коллекция Brounee</a>
+				<p class="product-price">Цена:<span><b>3148</b>р/м</span></p>
+				<a class="beige-btn" href="#">Заказать</a>
+			</div>
+			<div class="product-card">
+				<a href="card-another.html">
+					<div class="product-card_img">
+						<img src="img/good2.png" alt="" />
+					</div>
+				</a>
+				<a href="card-another.html" class="card-title">Ламинат WOODSTYLE Дуб беленый Масло - 1366х345мм Коллекция Brounee</a>
+				<p class="product-price">Цена:<span><b>3148</b>р/м</span></p>
+				<a class="beige-btn" href="#">Заказать</a>
+			</div>
+			<div class="product-card">
+				<a href="card-unic.html">
+					<div class="product-card_img">
+						<img src="img/good3.png" alt="" />
+					</div>
+				</a>
+				<a href="card-unic.html" class="card-title">Ламинат WOODSTYLE Дуб беленый Масло - 1366х345мм Коллекция Brounee</a>
+				<p class="product-price">Цена:<span><b>3148</b>р/м</span></p>
+				<a class="beige-btn" href="#">Заказать</a>
+			</div>
+			<div class="product-card">
+				<a href="card1.html">
+					<div class="product-card_img">
+						<img src="img/good4.png" alt="" />
+					</div>
+				</a>
+				<a href="card1.html" class="card-title">Ламинат WOODSTYLE Дуб беленый Масло - 1366х345мм Коллекция Brounee</a>
+				<p class="product-price">Цена:<span><b>3148</b>р/м</span></p>
+				<a class="beige-btn" href="#">Заказать</a>
+			</div>
+			<div class="product-card">
+				<a href="card1.html">
+					<div class="product-card_img">
+						<img src="img/good5.png" alt="" />
+					</div>
+				</a>
+				<a href="card1.html" class="card-title">Ламинат WOODSTYLE Дуб беленый Масло - 1366х345мм Коллекция Brounee</a>
+				<p class="product-price">Цена:<span><b>3148</b>р/м</span></p>
+				<a class="beige-btn" href="#">Заказать</a>
+			</div>
+			<div class="product-card">
+				<a href="card1.html">
+					<div class="product-card_img">
+						<img src="img/good6.png" alt="" />
+					</div>
+				</a>
+				<a href="card1.html" class="card-title">Ламинат WOODSTYLE Дуб беленый Масло - 1366х345мм Коллекция Brounee</a>
+				<p class="product-price">Цена:<span><b>3148</b>р/м</span></p>
+				<a class="beige-btn" href="#">Заказать</a>
+			</div>
+			<div class="product-card">
+				<a href="card1.html">
+					<div class="product-card_img">
+						<img src="img/good7.png" alt="" />
+					</div>
+				</a>
+				<a href="card1.html" class="card-title">Ламинат WOODSTYLE Дуб беленый Масло - 1366х345мм Коллекция Brounee</a>
+				<p class="product-price">Цена:<span><b>3148</b>р/м</span></p>
+				<a class="beige-btn" href="#">Заказать</a>
+			</div>
+			<div class="product-card">
+				<a href="card1.html">
+					<div class="product-card_img">
+						<img src="img/good8.png" alt="" />
+					</div>
+				</a>
+				<a href="card1.html" class="card-title">Ламинат WOODSTYLE Дуб беленый Масло - 1366х345мм Коллекция Brounee</a>
+				<p class="product-price">Цена:<span><b>3148</b>р/м</span></p>
+				<a class="beige-btn" href="#">Заказать</a>
+			</div>
+			<div class="product-card">
+				<a href="card1.html">
+					<div class="product-card_img">
+						<img src="img/good9.png" alt="" />
+					</div>
+				</a>
+				<a href="card1.html" class="card-title">Ламинат WOODSTYLE Дуб беленый Масло - 1366х345мм Коллекция Brounee</a>
+				<p class="product-price">Цена:<span><b>3148</b>р/м</span></p>
+				<a class="beige-btn" href="#">Заказать</a>
+			</div>
+			<div class="product-card">
+				<a href="card1.html">
+					<div class="product-card_img">
+						<img src="img/good10.png" alt="" />
+					</div>
+				</a>
+				<a href="card1.html" class="card-title">Ламинат WOODSTYLE Дуб беленый Масло - 1366х345мм Коллекция Brounee</a>
+				<p class="product-price">Цена:<span><b>3148</b>р/м</span></p>
+				<a class="beige-btn" href="#">Заказать</a>
+			</div>
+			<div class="product-card">
+				<a href="card1.html">
+					<div class="product-card_img">
+						<img src="img/good11.png" alt="" />
+					</div>
+				</a>
+				<a href="card1.html" class="card-title">Ламинат WOODSTYLE Дуб беленый Масло - 1366х345мм Коллекция Brounee</a>
+				<p class="product-price">Цена:<span><b>3148</b>р/м</span></p>
+				<a class="beige-btn" href="#">Заказать</a>
+			</div>
+			<div class="product-card">
+				<a href="card1.html">
+					<div class="product-card_img">
+						<img src="img/good12.png" alt="" />
+					</div>
+				</a>
+				<a href="card1.html" class="card-title">Ламинат WOODSTYLE Дуб беленый Масло - 1366х345мм Коллекция Brounee</a>
+				<p class="product-price">Цена:<span><b>3148</b>р/м</span></p>
+				<a class="beige-btn" href="#">Заказать</a>
+			</div>
+		</div>
+
+		<!-- pagination -->
+		<div class="pagination-block">
+			<ul class="pagination">
+				<li class="arrow-prev"><a href="#"></a>
+				</li>
+				<li class="pagination-step"><span class="active" href="#">1</span>
+				</li>
+				<li class="pagination-step"><a href="#">2</a>
+				</li>
+				<li class="pagination-step"><a href="#">3</a>
+				</li>
+				<li class="pagination-arrow"><a href="#"></a>
+				</li>
+			</ul>
+		</div>
+
+		<div class="slider-block">
+			<p class="slider-title">Woodstyle рекомендует:</p>
+			<div class="recommendations-slider">
+				<a href="#">
+					<div class="slide-pic">
+						<img src="img/mini-news.jpg" />
+					</div>
+					<span>Неформальная встреча наших экспертов и  экспертов по благоустройству дома Houzzz</span>
+				</a>
+				<a href="#">
+					<div class="slide-pic">
+						<img src="img/mini-news.jpg" />
+					</div>
+					<span>Неформальная встреча наших экспертов и  экспертов по благоустройству дома Houzzz</span>
+				</a>
+				<a href="#">
+					<div class="slide-pic">
+						<img src="img/mini-news.jpg" />
+					</div>
+					<span>Неформальная встреча наших экспертов и  экспертов по благоустройству дома Houzzz</span>
+				</a>
+				<a href="#">
+					<div class="slide-pic">
+						<img src="img/mini-news.jpg" />
+					</div>
+					<span>Неформальная встреча наших экспертов и  экспертов по благоустройству дома Houzzz</span>
+				</a>
+				<a href="#">
+					<div class="slide-pic">
+						<img src="img/mini-news.jpg" />
+					</div>
+					<span>Неформальная встреча наших экспертов и  экспертов по благоустройству дома Houzzz</span>
+				</a>
+				<a href="#">
+					<div class="slide-pic">
+						<img src="img/mini-news.jpg" />
+					</div>
+					<span>Неформальная встреча наших экспертов и  экспертов по благоустройству дома Houzzz</span>
+				</a>
+			</div>
+			<div class="arrows">
+				<div class="slick-next">
+					<img src="img/black-arrow-next.png" alt="">
+				</div>
+				<div class="slick-prev">
+					<img src="img/black-arrow-prev.png" alt="">
+				</div>
+			</div>
+		</div>
+		<div class="slider-block2">
+			<p class="slider-title">Недавно просмотренные:</p>
+			<div class="view-slider">
+				<div class="wrapper-item">
+					<div class="slide-item">
+						<img src="img/slide.png" alt="">
+						<p class="slide-title">Паркетная доска WOODSTYLE Дуб Юпитер Масло - 78х35мм</p>
+						<a href="#" class="add-goods">Добавить к заказу</a>
+						<a class="beige-btn" href="#">Подробнее</a>
+					</div>
+				</div>
+				<div class="wrapper-item">
+					<div class="slide-item">
+						<img src="img/slide.png" alt="">
+						<p class="slide-title">Паркетная доска WOODSTYLE Дуб Юпитер Масло - 78х35мм</p>
+						<a href="#" class="add-goods">Добавить к заказу</a>
+						<a class="beige-btn" href="#">Подробнее</a>
+					</div>
+				</div>
+				<div class="wrapper-item">
+					<div class="slide-item">
+						<img src="img/slide.png" alt="">
+						<p class="slide-title">Паркетная доска WOODSTYLE Дуб Юпитер Масло - 78х35мм</p>
+						<a href="#" class="add-goods">Добавить к заказу</a>
+						<a class="beige-btn" href="#">Подробнее</a>
+					</div>
+				</div>
+				<div class="wrapper-item">
+					<div class="slide-item">
+						<img src="img/slide.png" alt="">
+						<p class="slide-title">Паркетная доска WOODSTYLE Дуб Юпитер Масло - 78х35мм</p>
+						<a href="#" class="add-goods">Добавить к заказу</a>
+						<a class="beige-btn" href="#">Подробнее</a>
+					</div>
+				</div>
+				<div class="wrapper-item">
+					<div class="slide-item">
+						<img src="img/slide.png" alt="">
+						<p class="slide-title">Паркетная доска WOODSTYLE Дуб Юпитер Масло - 78х35мм</p>
+						<a href="#" class="add-goods">Добавить к заказу</a>
+						<a class="beige-btn" href="#">Подробнее</a>
+					</div>
+				</div>
+				<div class="wrapper-item">
+					<div class="slide-item">
+						<img src="img/slide.png" alt="">
+						<p class="slide-title">Паркетная доска WOODSTYLE Дуб Юпитер Масло - 78х35мм</p>
+						<a href="#" class="add-goods">Добавить к заказу</a>
+						<a class="beige-btn" href="#">Подробнее</a>
+					</div>
+				</div>
+			</div>
+			<div class="arrows">
+				<div class="slick-next2">
+					<img src="img/black-arrow-next.png" alt="">
+				</div>
+				<div class="slick-prev2">
+					<img src="img/black-arrow-prev.png" alt="">
+				</div>
+			</div>
+		</div>
+
+		<div class="catalog-text">
+			<span>Паркет из натурального дерева -  тонкое решение для изысканного интерьера</span>
+			<p>Повышенные требования к качеству декорирования интерьера и стремление к индивидуальности способствуют появлению необычных видов материала. Наша компания предлагает не только паркет (массив) из распространенных пород (дуба, ясеня, бука), но и паркет из экзотических пород древесины (мербау, венге, зебрано и др.). Если вы хотите, чтобы ваш пол не был похож ни на один из существующих, то вам стоит обратить внимание на эксклюзивный паркет, для которого характерно сочетание в узоре нескольких разнообразных пород дерева, применение различных геометрических рисунков. Паркет (массив), исполненный в эксклюзивном дизайне, преобразит ваш дом, сделает его изысканным и уютным.</p>
+			<p>У нас в ассортименте имеется деревянный паркет и массивный паркет всех видов: штучный паркет только из массива древесины ценных пород, экзотический паркет, широкая массивная доска, паркет на теплый пол, массивная доска для пола с подогревом, половая доска под старину. Также наша компания реализует по самым оптимальным ценам такие отделочные материалы, как сайдинг, доска террасная, влагостойкий паркет.</p>
+		</div>
+	</div>
+</div>

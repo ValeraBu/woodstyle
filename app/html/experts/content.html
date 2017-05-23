@@ -1,20 +1,18 @@
 <div class="container-fluid">
-	<div class="row">
-		<section class="breadcrumbs">
-			<ul>
-				<li><a href="#"><span>Главная</span></a></li>
-				<li><a href="#"><span>О компании</span></a></li>
-				<li><a href="#" class="active"><span>Эксперты</span></a></li>
-			</ul>
-		</section>
+	<section class="breadcrumbs">
+		<ul>
+			<li><a href="#"><span>Главная</span></a></li>
+			<li><span class="active">О компании</span></li>
+			<li><span class="active">Эксперты</span></li>
+		</ul>
+	</section>
+	<div class="title-block">
+		<h1>Эксперты</h1>
 	</div>
-	<div class="row">
-		<div class="title-block">
-			<h2>Эксперты</h2>
-		</div>
-	</div>
+</div>
+<div class="container-fluid">
 	<div class="experts-wrap">
-		<div class="experts-block row">
+		<div class="experts-block">
 			<div class="experts-pic">
 				<img src="img/experts1.png" alt="" />
 			</div>
@@ -24,11 +22,11 @@
 					<p class="experts-position">Руководитель промышленного подразделения</p>
 					<p class="experts-text">Оптимизация функций управления (качественно-количественная рихтовка структуры подразделений, конкретное планирование показателей подразделений, мотивация, контроль) с использованием модели бизнес-процессов.
 					Разработка и выполнение плана оптимизации себестоимости продукции на базе алгоритма сортировки его мероприятий по показателям эффективности (размер инвестиций.</p>
-					<a class="beige-btn" href="#">Обратиться к эксперту</a>
+					<a class="beige-btn" href="#" data-toggle="modal" data-target="#experts-modal">Обратиться к эксперту</a>
 				</div>
 			</div>
 		</div>
-		<div class="experts-block row">
+		<div class="experts-block">
 				<div class="experts-pic">
 					<img src="img/experts2.png" alt="" />
 				</div>
@@ -37,11 +35,11 @@
 					<p class="experts-name">Шафиров Максим Евгеньевич</p>
 					<p class="experts-position">Технолог производственной линии</p>
 					<p class="experts-text">Ведение технологического процесса обслуживаемых линий, формирование заготовки, изготовление паркета, резка и подготовка изделий к сушке, предварительная подсушка и сушка материала, охлаждение и стабилизация готового продукта. соблюдение технологических параметров, покрытие лаком и паркетной химией</p>
-					<a class="beige-btn" href="#">Обратиться к эксперту</a>
+					<a class="beige-btn" href="#" data-toggle="modal" data-target="#experts-modal">Обратиться к эксперту</a>
 				</div>
 			</div>
 		</div>
-		<div class="experts-block row">
+		<div class="experts-block">
 			<div class="experts-pic">
 				<img src="img/experts3.png" alt="" />
 			</div>
@@ -51,14 +49,16 @@
 					<p class="experts-position">Технолог производственной линии</p>
 					<p class="experts-text">Оптимизация функций управления (качественно-количественная рихтовка структуры подразделений, конкретное планирование показателей подразделений, мотивация, контроль) с использованием модели бизнес-процессов.
 					Разработка и выполнение плана оптимизации себестоимости продукции на базе алгоритма .</p>
-					<a class="beige-btn" href="#">Обратиться к эксперту</a>
+				   <a class="beige-btn" href="#" data-toggle="modal" data-target="#experts-modal">Обратиться к эксперту</a>
 				</div>
 			</div>
 		</div>
 	</div>
-	<div class="pagination-block row">
+	<div class="pagination-block">
 		<ul class="pagination">
-			<li class="pagination-step"><span class="active" href="#">1</a>
+			<li class="arrow-prev"><a href="#"></a>
+			</li>
+			<li class="pagination-step"><span class="active" href="#">1</span>
 			</li>
 			<li class="pagination-step"><a href="#">2</a>
 			</li>
@@ -68,6 +68,32 @@
 			</li>
 		</ul>
 	</div>
-
-
 </div>
+
+<div class="modal fade entrance-modal" id="experts-modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"></span></button>
+	      </div>
+	      <div class="modal-body">
+	        <form id="form-experts" class="form-entrance">
+		        <span class="title">Обратиться к эксперту Константиновой Марии Алексеевне</span>
+		        <div class="form-group">
+					<label for="experts-name">ФИО*</label>
+					<input id="experts-name" type="text" class="input" placeholder="Иванов Иван Иванович" required="required">
+				</div>
+		        <div class="form-group">
+					<label for="experts-mail">E-mail*</label>
+					<input id="experts-mail" type="email" class="input" placeholder="Ivanoff@gmail.ru" required="required">
+				</div>
+				<div class="form-group">
+					<label for="experts-comment">Комментарий</label>
+					<textarea id="experts-comment" type="text" class="form-input" placeholder="Введите комментарий"></textarea>
+				</div>
+				<input id="submit" class="btn-submit" value="Отправить"/>
+			</form>
+	      </div>
+	    </div>
+	  </div>
+	</div>

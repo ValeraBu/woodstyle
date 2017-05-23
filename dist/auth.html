@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <!-- base -->
+    <base href="http://woodstyle.node1.ttcsoft.ru" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+
+    <title>Авторизация</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="robots" content="index, follow" />
+<meta name="keywords" content="1С-Битрикс, CMS, PHP, bitrix, система управления контентом" />
+<meta name="description" content="1С-Битрикс: Управление сайтом" />
+<script type="text/javascript" data-skip-moving="true">(function(w, d, n) {var cl = "bx-core";var ht = d.documentElement;var htc = ht ? ht.className : undefined;if (htc === undefined || htc.indexOf(cl) !== -1){return;}var ua = n.userAgent;if (/(iPad;)|(iPhone;)/i.test(ua)){cl += " bx-ios";}else if (/Android/i.test(ua)){cl += " bx-android";}cl += (/(ipad|iphone|android|mobile|touch)/i.test(ua) ? " bx-touch" : " bx-no-touch");cl += w.devicePixelRatio && w.devicePixelRatio >= 2? " bx-retina": " bx-no-retina";var ieVersion = -1;if (/AppleWebKit/.test(ua)){cl += " bx-chrome";}else if ((ieVersion = getIeVersion()) > 0){cl += " bx-ie bx-ie" + ieVersion;if (ieVersion > 7 && ieVersion < 10 && !isDoctype()){cl += " bx-quirks";}}else if (/Opera/.test(ua)){cl += " bx-opera";}else if (/Gecko/.test(ua)){cl += " bx-firefox";}if (/Macintosh/i.test(ua)){cl += " bx-mac";}ht.className = htc ? htc + " " + cl : cl;function isDoctype(){if (d.compatMode){return d.compatMode == "CSS1Compat";}return d.documentElement && d.documentElement.clientHeight;}function getIeVersion(){if (/Opera/i.test(ua) || /Webkit/i.test(ua) || /Firefox/i.test(ua) || /Chrome/i.test(ua)){return -1;}var rv = -1;if (!!(w.MSStream) && !(w.ActiveXObject) && ("ActiveXObject" in w)){rv = 11;}else if (!!d.documentMode && d.documentMode >= 10){rv = 10;}else if (!!d.documentMode && d.documentMode >= 9){rv = 9;}else if (d.attachEvent && !/Opera/.test(ua)){rv = 8;}if (rv == -1 || rv == 8){var re;if (n.appName == "Microsoft Internet Explorer"){re = new RegExp("MSIE ([0-9]+[\.0-9]*)");if (re.exec(ua) != null){rv = parseFloat(RegExp.$1);}}else if (n.appName == "Netscape"){rv = 11;re = new RegExp("Trident/.*rv:([0-9]+[\.0-9]*)");if (re.exec(ua) != null){rv = parseFloat(RegExp.$1);}}}return rv;}})(window, document, navigator);</script>
+
+
+<link href="/bitrix/js/main/core/css/core.css?14933104813963" type="text/css"  rel="stylesheet" />
+<link href="/local/templates/main/css/main.css?1495199545417471" type="text/css"  data-template-style="true"  rel="stylesheet" />
+<link href="/local/templates/main/fonts/font-awesome/css/font-awesome.min.css?149331052131000" type="text/css"  data-template-style="true"  rel="stylesheet" />
+<link href="/local/templates/main/styles.css?1495192674179" type="text/css"  data-template-style="true"  rel="stylesheet" />
+<link href="http://dev.node1.ttcsoft.ru/html/woodstyle/dist/main.min.css" type="text/css" rel="stylesheet" />
+
+
+
+            </head>
+
+
+
+<!--<h1></h1>-->
+
+<body>
+
+<!-- header -->
+<header id="header" class="main-header">
+    <div class="header-top">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="mobile-header">
+                    <a href="#" class="menu-icon">
+                        <img src="/local/templates/main/img/menu-icon.png" alt="" />
+                    </a>
+                    <div class="mobile-menu">
+                        <div class="menu">
+                            <a href="#" class="close-menu">
+                                <img src="/local/templates/main/img/white-close.png" alt="" />закрыть</a>
+                        </div>
+
+                        
+    <ul class="mobile-menu_list">
+                            <li><span class="title">О компании<i class="fa fa-angle-right" aria-hidden="true"></i></span>
+                
+                                    <ul class="inner-menu">
+                        <div class="inner-menu_header clearfix">
+                            <a href="#" class="close-inner-menu"><i class="fa fa-angle-left" aria-hidden="true"></i></a>
+                            <a href="#" class="close-menu">
+                                <img src="/local/templates/main/img/white-close.png" alt=""/>закрыть</a>
+                        </div>
+                        <li class="inner-title"><span>О компании</span>
+                                                    <li><a href="/about/mission.php">Миссия</a>
+                        </li>
+                                                <li><a href="/about/advantages.php">Преимущества</a>
+                        </li>
+                                                <li><a href="/about/production.php">Производство</a>
+                        </li>
+                                                <li><a href="/about/experts/">Эксперты</a>
+                        </li>
+                                                <li><a href="/about/reviews/">Отзывы</a>
+                        </li>
+                                                <li><a href="/about/partners.php">Партнеры</a>
+                        </li>
+                                                <li><a href="/about/sertificates.php">Сертификаты</a>
+                        </li>
+                                            </ul>
+                            </li>
+                    <li><span class="title">Информация<i class="fa fa-angle-right" aria-hidden="true"></i></span>
+                
+                                    <ul class="inner-menu">
+                        <div class="inner-menu_header clearfix">
+                            <a href="#" class="close-inner-menu"><i class="fa fa-angle-left" aria-hidden="true"></i></a>
+                            <a href="#" class="close-menu">
+                                <img src="/local/templates/main/img/white-close.png" alt=""/>закрыть</a>
+                        </div>
+                        <li class="inner-title"><span>Информация</span>
+                                                    <li><a href="/information/news/">Новости компании</a>
+                        </li>
+                                                <li><a href="/information/articles/">Статьи</a>
+                        </li>
+                                                <li><a href="/information/faq.php">Вопрос-ответ</a>
+                        </li>
+                                                <li><a href="/information/delivery.php">Доставка</a>
+                        </li>
+                                                <li><a href="/information/payment.php">Оплата</a>
+                        </li>
+                                                <li><a href="/information/instructions.php">Инструкции</a>
+                        </li>
+                                                <li><a href="/information/designers.php">Дизайнерам</a>
+                        </li>
+                                                <li><a href="/information/dealers.php">Дилерам</a>
+                        </li>
+                                            </ul>
+                            </li>
+                    <li><span class="title">Каталог<i class="fa fa-angle-right" aria-hidden="true"></i></span>
+                
+                                    <ul class="inner-menu">
+                        <div class="inner-menu_header clearfix">
+                            <a href="#" class="close-inner-menu"><i class="fa fa-angle-left" aria-hidden="true"></i></a>
+                            <a href="#" class="close-menu">
+                                <img src="/local/templates/main/img/white-close.png" alt=""/>закрыть</a>
+                        </div>
+                        <li class="inner-title"><span>Каталог</span>
+                                                    <li><a href="/information/news.php">Новости компании</a>
+                        </li>
+                                                <li><a href="/information/articles.php">Статьи</a>
+                        </li>
+                                                <li><a href="/information/faq.php">Вопрос-ответ</a>
+                        </li>
+                                                <li><a href="/information/delivery.php">Доставка</a>
+                        </li>
+                                                <li><a href="/information/payment.php">Оплата</a>
+                        </li>
+                                                <li><a href="/information/instructions.php">Инструкции</a>
+                        </li>
+                                                <li><a href="/information/designers.php">Дизайнерам</a>
+                        </li>
+                                                <li><a href="/information/dealers.php">Дилерам</a>
+                        </li>
+                                                <li><a href="/information/dealers.php">Дилерам</a>
+                        </li>
+                                                <li><a href="/information/dealers.php">Дилерам</a>
+                        </li>
+                                                <li><a href="/information/dealers.php">Дилерам</a>
+                        </li>
+                                                <li><a href="/information/dealers.php">Дилерам</a>
+                        </li>
+                                            </ul>
+                            </li>
+                    <li><span class="title">Услуги<i class="fa fa-angle-right" aria-hidden="true"></i></span>
+                
+                                    <ul class="inner-menu">
+                        <div class="inner-menu_header clearfix">
+                            <a href="#" class="close-inner-menu"><i class="fa fa-angle-left" aria-hidden="true"></i></a>
+                            <a href="#" class="close-menu">
+                                <img src="/local/templates/main/img/white-close.png" alt=""/>закрыть</a>
+                        </div>
+                        <li class="inner-title"><span>Услуги</span>
+                                                    <li><a href="/information/news.php">Новости компании</a>
+                        </li>
+                                                <li><a href="/information/articles.php">Статьи</a>
+                        </li>
+                                                <li><a href="/information/faq.php">Вопрос-ответ</a>
+                        </li>
+                                                <li><a href="/information/delivery.php">Доставка</a>
+                        </li>
+                                                <li><a href="/information/payment.php">Оплата</a>
+                        </li>
+                                                <li><a href="/information/instructions.php">Инструкции</a>
+                        </li>
+                                                <li><a href="/information/designers.php">Дизайнерам</a>
+                        </li>
+                                                <li><a href="/information/dealers.php">Дилерам</a>
+                        </li>
+                                            </ul>
+                            </li>
+                    <li><span class="title">Галерея<i class="fa fa-angle-right" aria-hidden="true"></i></span>
+                
+                                    <ul class="inner-menu">
+                        <div class="inner-menu_header clearfix">
+                            <a href="#" class="close-inner-menu"><i class="fa fa-angle-left" aria-hidden="true"></i></a>
+                            <a href="#" class="close-menu">
+                                <img src="/local/templates/main/img/white-close.png" alt=""/>закрыть</a>
+                        </div>
+                        <li class="inner-title"><span>Галерея</span>
+                                                    <li><a href="/information/news.php">Новости компании</a>
+                        </li>
+                                                <li><a href="/information/articles.php">Статьи</a>
+                        </li>
+                                                <li><a href="/information/faq.php">Вопрос-ответ</a>
+                        </li>
+                                                <li><a href="/information/delivery.php">Доставка</a>
+                        </li>
+                                                <li><a href="/information/payment.php">Оплата</a>
+                        </li>
+                                                <li><a href="/information/instructions.php">Инструкции</a>
+                        </li>
+                                                <li><a href="/information/designers.php">Дизайнерам</a>
+                        </li>
+                                                <li><a href="/information/dealers.php">Дилерам</a>
+                        </li>
+                                            </ul>
+                            </li>
+                    <li>                    <a href="/contacts.php">Контакты</a>
+                
+                            </li>
+            </ul>
+
+                        <div class="contacts-mobile">
+                            <a class="mobile-phone" href="tel:88129007986"><span>8 (812) 900-79-86</span></a>
+                            <p class="address">Уральская ул. 10, Санкт-Петербург, 199155</p>
+                            <a class="mail" href="mailto:info@woodstyle.spb.ru">info@woodstyle.spb.ru</a>
+                            <a class="btn-white btn-write" href="#" data-toggle="modal" data-target="#write-modal">Написать письмо</a>
+                        </div>
+                    </div>
+                    <a href="index.html">
+                        <img src="/local/templates/main/img/mini-logo.png" alt="" />
+                    </a>
+                </div>
+                <div class="phone-block">
+                    <a class="phone" href="tel:88129007986">8 (812) 900-79-86</a>                </div>
+                
+    <nav class="header-top_nav">
+        <ul>
+                                        <li class="dropdown-list">
+                    <a href="/about/"
+                       class="dropdown-btn disabled">О компании<i
+                                class="fa fa-angle-down" aria-hidden="true"></i></a>
+                                            <ul class="dropdown-list-inside">
+                                                            <li><a href="/about/mission.php">Миссия</a></li>
+                                                            <li><a href="/about/advantages.php">Преимущества</a></li>
+                                                            <li><a href="/about/production.php">Производство</a></li>
+                                                            <li><a href="/about/experts/">Эксперты</a></li>
+                                                            <li><a href="/about/reviews/">Отзывы</a></li>
+                                                            <li><a href="/about/partners.php">Партнеры</a></li>
+                                                            <li><a href="/about/sertificates.php">Сертификаты</a></li>
+                                                    </ul>
+                                    </li>
+                            <li class="dropdown-list">
+                    <a href="/information/"
+                       class="dropdown-btn disabled">Информация<i
+                                class="fa fa-angle-down" aria-hidden="true"></i></a>
+                                            <ul class="dropdown-list-inside">
+                                                            <li><a href="/information/news/">Новости компании</a></li>
+                                                            <li><a href="/information/articles/">Статьи</a></li>
+                                                            <li><a href="/information/faq.php">Вопрос-ответ</a></li>
+                                                            <li><a href="/information/delivery.php">Доставка</a></li>
+                                                            <li><a href="/information/payment.php">Оплата</a></li>
+                                                            <li><a href="/information/instructions.php">Инструкции</a></li>
+                                                    </ul>
+                                    </li>
+                            <li class="dropdown-list">
+                    <a href="/information/dealers.php"
+                       class="dropdown-btn ">Дилерам</a>
+                                    </li>
+                            <li class="dropdown-list">
+                    <a href="/information/designers.php"
+                       class="dropdown-btn ">Дизайнерам</a>
+                                    </li>
+                            <li class="dropdown-list">
+                    <a href="/articles.php"
+                       class="dropdown-btn ">Статьи</a>
+                                    </li>
+                            <li class="dropdown-list">
+                    <a href="/contacts.php"
+                       class="dropdown-btn ">Контакты</a>
+                                    </li>
+                    </ul>
+    </nav>
+                <div class="login-block">
+						<a class="mobile-phone" href="tel:88129007986"><span>8 (812) 900-79-86</span><img src="/local/templates/main/img/phone-icon.png" alt=""/></a>
+						<div class="login">
+	<a href="#" class="login-link" data-toggle="modal" data-target="#entrance-modal">
+		<img class="login-icon" src="/local/templates/main/img/check-icon.svg" alt="" />
+	</a>
+	<a href="#" class="exit" data-toggle="modal" data-target="#entrance-modal">Войти</a>
+	
+	<div class="modal fade entrance-modal" id="entrance-modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"></span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form id="form-entrance" class="form-entrance" name="system_auth_form6zOYVN" method="post" target="_top" action="/auth/?login=yes">
+													<input type="hidden" name="backurl" value="/auth/" />
+																			<input type="hidden" name="AUTH_FORM" value="Y" />
+							<input type="hidden" name="TYPE" value="AUTH" />
+
+						<span class="title">Войти</span>
+						<div class="form-group">
+							<label for="mail">E-mail</label>
+							<input id="mail" type="text" class="input" placeholder="Ivanoff@gmail.ru" name="USER_LOGIN" required="required" value="" />
+													</div>
+						<div class="form-group">
+							<label for="password">Пароль</label>
+							<input id="password" type="password" class="input" placeholder="********" required="required" name="USER_PASSWORD" autocomplete="off" />		
+							<a href="" class="hidden-password"></a>
+						</div>
+						<div class="form-group">
+							<noindex><a href="/auth/?forgot_password=yes&amp;backurl=%2Fauth%2F" class="forgot-password">Забыли свой пароль?</a></noindex>
+							<input id="submit" class="btn-submit" type="submit" name="Login" value="Войти">
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+						<div class="basket">
+							<a href="#" class="basket-link">
+								<div class="basket-icon">
+									<img src="/local/templates/main/img/basket.png" alt="" />
+									<span class="basket-circle">3</span>
+								</div>
+								<p>Корзина</p>
+							</a>
+						</div>
+						<div class="mobile-search">
+							<a class="mobile-loupe" href="#" data-toggle="modal" data-target="#search-modal"></a>
+							<div class="modal fade search-modal" id="search-modal" tabindex="-1" role="dialog">
+								<div class="modal-dialog" role="document">
+									<div class="modal-content">
+										<div class="modal-header">
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"></span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<form id="form-search_mobile" class="form-search">
+												<span class="title">Поиск по сайту</span>
+												<fieldset>
+													<input id="search_mobile" type="search" class="form-input">
+													<div class="btn-search">
+														<img src="/local/templates/main/img/search.png" alt="" />
+													</div>
+												</fieldset>
+												<button class="search-button">Поиск</button>
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+            </div>
+        </div>
+    </div>
+    <div class="header-bottom">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="header-logo">
+					<a href="/">
+                        <img src="/local/templates/main/img/logo-header.png" alt="" />
+                    </a>
+                </div>
+                <nav class="header-bottom_nav">
+                    
+
+    <ul>
+                                                                    <li class="catalog-list">
+                <a href="/" class="disabled">
+                    <img class="catalog-icon" src="/local/templates/main/img/catalog-icon.png" alt=""/>Каталог</a>
+                <ul class="catalog-menu">
+                    <li class="container-fluid">
+                        <div class="catalog-block row">
+
+                                                            <div class="catalog-item">
+                                    <a href="/">
+                                        <div class="catalog-pic">
+                                            <img src="/local/templates/main/img/catalog-item1.png" alt=""/>
+                                        </div>
+                                        <p class="catalog-name">Трехслойный массив</p>
+                                    </a>
+                                </div>
+                                                            <div class="catalog-item">
+                                    <a href="/catalog/parquet.php">
+                                        <div class="catalog-pic">
+                                            <img src="/local/templates/main/img/catalog-item1.png" alt=""/>
+                                        </div>
+                                        <p class="catalog-name">Паркет</p>
+                                    </a>
+                                </div>
+                                                            <div class="catalog-item">
+                                    <a href="/">
+                                        <div class="catalog-pic">
+                                            <img src="/local/templates/main/img/catalog-item2.png" alt=""/>
+                                        </div>
+                                        <p class="catalog-name">Ламинат</p>
+                                    </a>
+                                </div>
+                                                            <div class="catalog-item">
+                                    <a href="/">
+                                        <div class="catalog-pic">
+                                            <img src="/local/templates/main/img/catalog-item3.png" alt=""/>
+                                        </div>
+                                        <p class="catalog-name">Виниловое покрытие</p>
+                                    </a>
+                                </div>
+                                                            <div class="catalog-item">
+                                    <a href="/">
+                                        <div class="catalog-pic">
+                                            <img src="/local/templates/main/img/catalog-item4.png" alt=""/>
+                                        </div>
+                                        <p class="catalog-name">Стеновые панели</p>
+                                    </a>
+                                </div>
+                                                            <div class="catalog-item">
+                                    <a href="/">
+                                        <div class="catalog-pic">
+                                            <img src="/local/templates/main/img/catalog-item5.png" alt=""/>
+                                        </div>
+                                        <p class="catalog-name">Фасадная доска</p>
+                                    </a>
+                                </div>
+                                                            <div class="catalog-item">
+                                    <a href="/">
+                                        <div class="catalog-pic">
+                                            <img src="/local/templates/main/img/catalog-item6.png" alt=""/>
+                                        </div>
+                                        <p class="catalog-name">Штучный паркет</p>
+                                    </a>
+                                </div>
+                                                            <div class="catalog-item">
+                                    <a href="/">
+                                        <div class="catalog-pic">
+                                            <img src="/local/templates/main/img/catalog-item7.png" alt=""/>
+                                        </div>
+                                        <p class="catalog-name">Пагонажные изделия</p>
+                                    </a>
+                                </div>
+                                                            <div class="catalog-item">
+                                    <a href="/">
+                                        <div class="catalog-pic">
+                                            <img src="/local/templates/main/img/catalog-item8.png" alt=""/>
+                                        </div>
+                                        <p class="catalog-name">Паркетная химия</p>
+                                    </a>
+                                </div>
+                                                            <div class="catalog-item">
+                                    <a href="/">
+                                        <div class="catalog-pic">
+                                            <img src="/local/templates/main/img/catalog-item9.png" alt=""/>
+                                        </div>
+                                        <p class="catalog-name">Двери</p>
+                                    </a>
+                                </div>
+                                                            <div class="catalog-item">
+                                    <a href="/">
+                                        <div class="catalog-pic">
+                                            <img src="/local/templates/main/img/catalog-item10.png" alt=""/>
+                                        </div>
+                                        <p class="catalog-name">Мебель</p>
+                                    </a>
+                                </div>
+                                                            <div class="catalog-item">
+                                    <a href="/">
+                                        <div class="catalog-pic">
+                                            <img src="/local/templates/main/img/catalog-item11.png" alt=""/>
+                                        </div>
+                                        <p class="catalog-name">Элементы интерьера из массива</p>
+                                    </a>
+                                </div>
+                                                    </div>
+                    </li>
+                </ul>
+
+                                                                        <li><a href="/about/production.php">Производство</a>
+                </li>
+                                                                        <li><a href="/services/">Услуги</a>
+                </li>
+                                                                        <li><a href="/gallery/">Галерея</a>
+                </li>
+                        </ul>
+
+                </nav>
+                <div class="search-block">
+                    <form id="form-search" class="form-search">
+                        <input id="search" type="search" class="form-input">
+                        <button class="btn-search">
+                            <img src="/local/templates/main/img/search.png" alt="" />
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <section class="breadcrumbs">
+                <ul>
+
+                    <li><a href="/" title="Главная"><span>Главная</span></a></li><li><a href="/auth/" title="Личный кабинет"><span>Личный кабинет</span></a></li><li><span class="active">Авторизация<span class="active"></li>                </ul>
+
+            </section>
+        </div>
+        <div class="row">
+            <div class="title-block">
+                <h1>Авторизация</h1>
+            </div>
+        </div>
+    </div>
+
+<div class="container-fluid">
+	<div class="subscription-save">
+			
+	</div>
+	<p class="password-title">Пожалуйста, авторизуйтесь:</p>
+	<form id="auth-form" class="form auth-form" name="form_auth" method="post" target="_top" action="/auth/?login=yes">
+	
+		<input type="hidden" name="AUTH_FORM" value="Y" />
+		<input type="hidden" name="TYPE" value="AUTH" />
+				<input type="hidden" name="backurl" value="/auth/" />
+						
+		<div class="form-group">
+			<label for="your-mail">E-mail*</label>
+			<input id="your-mail" class="input" type="text" name="USER_LOGIN" value="" placeholder="Ivanoff@gmail.ru" required="required" />
+		</div>
+		<div class="form-group">
+			<label for="your-mail">Пароль*</label>
+			<input id="password" class="input" type="password" name="USER_PASSWORD" autocomplete="off" placeholder="********" required="required" />
+            <a href="/auth/?forgot_password=yes" class="forgot-password" rel="nofollow">Забыли пароль?</a>
+		</div>
+		<div class="form-group">
+			<input id="submit-btn" class="btn-check" type="submit" name="Login" value="Войти" />
+		</div>
+		
+						<noindex>
+					<p>
+						<a href="/auth/?forgot_password=yes" class="forgot-password" rel="nofollow">Забыли свой пароль?</a>
+					</p>
+				</noindex>
+		
+						<noindex>
+					<p class="password-title">
+						Если вы впервые на сайте, заполните, пожалуйста, регистрационную форму.			
+                        <br />		
+                        <a href="/auth/?register=yes" rel="nofollow">Зарегистрироваться</a></p>
+				</noindex>
+			</form>
+</div>
+
+</main>
+<!-- footer -->
+<footer class="main-footer">
+    <div class="container-fluid">
+        <div class="footer-top">
+            <div class="row">
+                <a id="up" href="#header" class="scroll up-top" title="">Up</a>
+                <div class="logo-footer">
+                    <div class="mobile-header">
+                        <a href="#" class="menu-icon">
+                            <img src="/local/templates/main/img/menu-icon.png" alt="" />
+                        </a>
+                    </div>
+                    <a href="#">
+                        <img class="big-logo" src="/local/templates/main/img/logo-footer.png" alt="Woodstyle" />
+                        <img class="small-logo" src="/local/templates/main/img/mini-logo.png" alt="Woodstyle" />
+                    </a>
+                </div>
+                <div class="social-block">
+                    <a class="mobile-phone" href="tel:8(812)900-79-86"><span>8 (812) 900-79-86</span><img src="/local/templates/main/img/phone-icon.png" alt=""/></a>
+                    <a class="social-icon pint-icon" href="#"><i class="fa fa-pinterest-p fa-2x" aria-hidden="true"></i></a>
+                    <a class="social-icon vk-icon" href="#"><i class="fa fa-vk fa-2x"></i></a>
+                    <a class="social-icon tw-icon" href="#"><i class="fa fa-twitter fa-2x" aria-hidden="true"></i></a>
+                    <a class="social-icon in-icon" href="#"><i class="fa fa-linkedin fa-2x" aria-hidden="true"></i></a>
+                    <a class="social-icon fb-icon" href="#"><i class="fa fa-facebook fa-2x" aria-hidden="true"></i></a>
+                    <a class="social-icon inst-icon" href="#"><i class="fa fa-instagram fa-2x"></i></a>
+                    <div class="mobile-search">
+                        <a class="mobile-loupe" href="#" data-toggle="modal" data-target="#search-modal"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-middle">
+            <div class="row">
+                <div class="footer-middle_item">
+                    <ul class="main_col-list">
+                        
+
+
+            
+                                            <li class="title">
+                    <a class="title-list disabled" href="/about/">О компании</a><span class="title-link"></span>
+                    <ul class="col-list">
+                                <li><a href="/about/mission.php">Миссия</a>
+                        </li>
+                                <li><a href="/about/advantages.php">Преимущества</a>
+                        </li>
+                                <li><a href="/about/production.php">Производство</a>
+                        </li>
+                                <li><a href="/about/experts/">Эксперты</a>
+                        </li>
+                                <li><a href="/about/reviews/">Отзывы</a>
+                        </li>
+                                <li><a href="/about/partners.php">Партнеры</a>
+                        </li>
+                                <li><a href="/about/sertificates.php">Сертификаты</a>
+                        </li>
+                            </ul>
+                </li>
+                            
+
+                    </ul>
+                    <ul class="main_col-list">
+                        
+
+
+            
+                                                                                                                                                                            <li class="title">
+                    <a class="title-list disabled" href="/information/">Информация</a><span class="title-link"></span>
+                    <ul class="col-list">
+                                <li><a href="/information/news/">Новости компании</a>
+                        </li>
+                                <li><a href="/information/articles/">Статьи</a>
+                        </li>
+                                <li><a href="/information/faq.php">Вопрос-ответ</a>
+                        </li>
+                                <li><a href="/information/delivery.php">Доставка</a>
+                        </li>
+                                <li><a href="/information/payment.php">Оплата</a>
+                        </li>
+                                <li><a href="/information/instructions.php">Инструкции</a>
+                        </li>
+                                <li><a href="/information/designers.php">Дизайнерам</a>
+                        </li>
+                                <li><a href="/information/dealers.php">Дилерам</a>
+                        </li>
+                            </ul>
+                </li>
+                            
+
+                    </ul>
+                </div>
+                <div class="footer-middle_item">
+                    <ul class="main_col-list">
+                        
+
+
+            
+                                                                                                                                                                                                                                                                                                                            <li class="title">
+                    <a class="title-list disabled" href="/catalog/">Каталог</a><span class="title-link"></span>
+                    <ul class="col-list">
+                                <li><a href="/information/news.php">Новости компании</a>
+                        </li>
+                                <li><a href="/information/articles.php">Статьи</a>
+                        </li>
+                                <li><a href="/information/faq.php">Вопрос-ответ</a>
+                        </li>
+                                <li><a href="/information/delivery.php">Доставка</a>
+                        </li>
+                                <li><a href="/information/payment.php">Оплата</a>
+                        </li>
+                                <li><a href="/information/instructions.php">Инструкции</a>
+                        </li>
+                                <li><a href="/information/designers.php">Дизайнерам</a>
+                        </li>
+                                <li><a href="/information/dealers.php">Дилерам</a>
+                        </li>
+                                <li><a href="/information/dealers.php">Дилерам</a>
+                        </li>
+                                <li><a href="/information/dealers.php">Дилерам</a>
+                        </li>
+                                <li><a href="/information/dealers.php">Дилерам</a>
+                        </li>
+                                <li><a href="/information/dealers.php">Дилерам</a>
+                        </li>
+                            </ul>
+                </li>
+                            
+
+                    </ul>
+                    <ul class="main_col-list">
+                        
+
+
+            
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <li class="title">
+                    <a class="title-list disabled" href="/services/">Услуги</a><span class="title-link"></span>
+                    <ul class="col-list">
+                                <li><a href="/information/news.php">Новости компании</a>
+                        </li>
+                                <li><a href="/information/articles.php">Статьи</a>
+                        </li>
+                                <li><a href="/information/faq.php">Вопрос-ответ</a>
+                        </li>
+                                <li><a href="/information/delivery.php">Доставка</a>
+                        </li>
+                                <li><a href="/information/payment.php">Оплата</a>
+                        </li>
+                                <li><a href="/information/instructions.php">Инструкции</a>
+                        </li>
+                                <li><a href="/information/designers.php">Дизайнерам</a>
+                        </li>
+                                <li><a href="/information/dealers.php">Дилерам</a>
+                        </li>
+                            </ul>
+                </li>
+                            
+
+                    </ul>
+                </div>
+                <div class="footer-middle_item">
+                    <ul class="main_col-list">
+                        
+
+
+            
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <li class="title">
+                    <a class="title-list disabled" href="/gallery/">Галерея</a><span class="title-link"></span>
+                    <ul class="col-list">
+                                <li><a href="/information/news.php">Новости компании</a>
+                        </li>
+                                <li><a href="/information/articles.php">Статьи</a>
+                        </li>
+                                <li><a href="/information/faq.php">Вопрос-ответ</a>
+                        </li>
+                                <li><a href="/information/delivery.php">Доставка</a>
+                        </li>
+                                <li><a href="/information/payment.php">Оплата</a>
+                        </li>
+                                <li><a href="/information/instructions.php">Инструкции</a>
+                        </li>
+                                <li><a href="/information/designers.php">Дизайнерам</a>
+                        </li>
+                                <li><a href="/information/dealers.php">Дилерам</a>
+                        </li>
+                            </ul>
+                </li>
+                            
+
+                    </ul>
+                    <ul class="main_col-list footer-contacts clearfix">
+                        
+
+
+            
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <li class="title">
+                    <a class="title-list disabled" href="/contacts.php">Контакты</a><span class="title-link"></span>
+                    <ul class="col-list">
+                            </ul>
+                </li>
+                            
+
+                        <a class="phone" href="tel:88129007986">8 (812) 900-79-86</a>                        <p class="address">Уральская ул. 10,
+    <br>Санкт-Петербург, 199155</p>
+<a class="mail" href="mailto:info@woodstyle.spb.ru">info@woodstyle.spb.ru</a>
+                        <div class="social-icon_block">
+                            <a class="social-icon pint-icon" href="#"><i class="fa fa-pinterest-square fa-2x"></i></a>
+                            <a class="social-icon vk-icon" href="#"><i class="fa fa-vk fa-2x"></i></a>
+                            <a class="social-icon tw-icon" href="#"><i class="fa fa-twitter-square fa-2x"></i></a>
+                            <a class="social-icon in-icon" href="#"><i class="fa fa-linkedin-square fa-2x"></i></a>
+                            <a class="social-icon fb-icon" href="#"><i class="fa fa-facebook-official fa-2x"></i></a>
+                            <a class="social-icon inst-icon" href="#"><i class="fa fa-instagram fa-2x"></i></a>
+                        </div>
+                        <a class="btn-white btn-write" href="#" data-toggle="modal" data-target="#write-modal">
+                            <img src="/local/templates/main/img/write-img.png" alt="" /><span>Написать письмо</span>
+                        </a>
+                    </ul>
+                    <p class="bottom-address">Уральская ул. 10, Санкт-Петербург, 199155</p>
+
+                    
+
+<div class="modal fade" id="write-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form action="/auth/" method="POST" id="write-form" class="form write-form">
+                    <input type="hidden" name="sessid" id="sessid_10" value="269ed64795b99a023831a0ccb57e454e" />                    <span class="title">Написать письмо</span>
+                    <div class="form-group">
+                        <label for="name">ФИО*</label>
+                        <input id="name" type="text" class="input" placeholder="Иванов Иван Иванович"
+                               required="required" name="user_name"
+                               value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="write-mail">E-mail*</label>
+                        <input id="write-mail" type="text" class="input" placeholder="Example@gmail.ru"
+                               required="required"
+                               name="user_email"
+                               value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Сообщение</label>
+                        <textarea id="message" class="input" placeholder="Введите сообщение" name="MESSAGE"></textarea>
+
+                        
+                        
+                        <input type="hidden" name="PARAMS_HASH" value="05bca2eec802c6abbabe373bbfd2b911">
+                    </div>
+                    <button id="submit-form" class="btn-modal" type="submit" name="submit"
+                            value="Отправить">
+                        Отправить
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+                </div>
+            </div>
+            <div class="footer-search">
+                <form id="footer-search" class="form-search">
+                    <input id="search2" type="search" class="form-input">
+                    <button type="button" class="btn-search">
+                        <img src="/local/templates/main/img/search-white.png" alt="" />
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div class="container-fluid">
+            <div class="row">
+                <p class="copyright">© 2016, Woodstyle Parquet</p>
+                <p class="developer">Developed by<a href='ttcsoft.ru'> T.T. Consulting</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<div class="catalog-bg"></div>
+<div class="menu-bg"></div>
+
+    
+
+<!-- jq -->
+
+<script type="text/javascript">if(!window.BX)window.BX={message:function(mess){if(typeof mess=='object') for(var i in mess) BX.message[i]=mess[i]; return true;}};</script>
+<script type="text/javascript">(window.BX||top.BX).message({'JS_CORE_LOADING':'Загрузка...','JS_CORE_NO_DATA':'- Нет данных -','JS_CORE_WINDOW_CLOSE':'Закрыть','JS_CORE_WINDOW_EXPAND':'Развернуть','JS_CORE_WINDOW_NARROW':'Свернуть в окно','JS_CORE_WINDOW_SAVE':'Сохранить','JS_CORE_WINDOW_CANCEL':'Отменить','JS_CORE_WINDOW_CONTINUE':'Продолжить','JS_CORE_H':'ч','JS_CORE_M':'м','JS_CORE_S':'с','JSADM_AI_HIDE_EXTRA':'Скрыть лишние','JSADM_AI_ALL_NOTIF':'Показать все','JSADM_AUTH_REQ':'Требуется авторизация!','JS_CORE_WINDOW_AUTH':'Войти','JS_CORE_IMAGE_FULL':'Полный размер'});</script>
+<script type="text/javascript">(window.BX||top.BX).message({'LANGUAGE_ID':'ru','FORMAT_DATE':'DD.MM.YYYY','FORMAT_DATETIME':'DD.MM.YYYY HH:MI:SS','COOKIE_PREFIX':'BITRIX_SM','SERVER_TZ_OFFSET':'10800','SITE_ID':'s1','SITE_DIR':'/','USER_ID':'','SERVER_TIME':'1495450986','USER_TZ_OFFSET':'0','USER_TZ_AUTO':'Y','bitrix_sessid':'269ed64795b99a023831a0ccb57e454e'});</script><script type="text/javascript" src="/bitrix/js/main/core/core.js?1493310480117307"></script>
+<script type="text/javascript">
+					(function () {
+						"use strict";
+
+						var counter = function ()
+						{
+							var cookie = (function (name) {
+								var parts = ("; " + document.cookie).split("; " + name + "=");
+								if (parts.length == 2) {
+									try {return JSON.parse(decodeURIComponent(parts.pop().split(";").shift()));}
+									catch (e) {}
+								}
+							})("BITRIX_CONVERSION_CONTEXT_s1");
+
+							if (cookie && cookie.EXPIRE >= BX.message("SERVER_TIME") && cookie.UNIQUE && cookie.UNIQUE.length > 0)
+							{
+								for (var i = 0; i < cookie.UNIQUE.length; i++)
+								{
+									if (cookie.UNIQUE[i] == "conversion_visit_day")
+										return;
+								}
+							}
+
+							var request = new XMLHttpRequest();
+							request.open("POST", "/bitrix/tools/conversion/ajax_counter.php", true);
+							request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+							request.send(
+								"SITE_ID="+encodeURIComponent("s1")+
+								"&sessid="+encodeURIComponent(BX.bitrix_sessid())+
+								"&HTTP_REFERER="+encodeURIComponent(document.referrer)
+							);
+						};
+
+						if (window.frameRequestStart === true)
+							BX.addCustomEvent("onFrameDataReceived", counter);
+						else
+							BX.ready(counter);
+					})();
+				</script>
+
+
+
+<script type="text/javascript" src="/local/templates/main/js/modernizr-custom.min.js?149520197724285"></script>
+<script type="text/javascript" src="/local/templates/main/js/jq.min.js?149520197786355"></script>
+<script type="text/javascript" src="/local/templates/main/js/main.js?1495201988591501"></script>
+<script type="text/javascript" src="/local/templates/main/js/jquery.validate.js?149520197747796"></script>
+<script type="text/javascript">var _ba = _ba || []; _ba.push(["aid", "f207efe3854b60f75b9d9e2b5baf4e29"]); _ba.push(["host", "woodstyle.node1.ttcsoft.ru"]); (function() {var ba = document.createElement("script"); ba.type = "text/javascript"; ba.async = true;ba.src = (document.location.protocol == "https:" ? "https://" : "http://") + "bitrix.info/ba.js";var s = document.getElementsByTagName("script")[0];s.parentNode.insertBefore(ba, s);})();</script>
+
+
+
+<script>
+								BX.ready(function() {
+									var loginCookie = BX.getCookie("BITRIX_SM_LOGIN");
+									if (loginCookie)
+									{
+										var form = document.forms["system_auth_form6zOYVN"];
+										var loginInput = form.elements["USER_LOGIN"];
+										loginInput.value = loginCookie;
+									}
+								});
+							</script>
+<script>console.log({"TEXT":"\u041a\u0430\u0442\u0430\u043b\u043e\u0433","LINK":"\/catalog\/","SELECTED":false,"PERMISSION":"X","ADDITIONAL_LINKS":[],"ITEM_TYPE":"D","ITEM_INDEX":0,"PARAMS":[],"DEPTH_LEVEL":1,"IS_PARENT":true})</script>
+<script>console.log({"TEXT":"\u041f\u0440\u043e\u0438\u0437\u0432\u043e\u0434\u0441\u0442\u0432\u043e","LINK":"\/about\/production.php","SELECTED":false,"PERMISSION":"X","ADDITIONAL_LINKS":[],"ITEM_TYPE":"P","ITEM_INDEX":1,"PARAMS":[],"DEPTH_LEVEL":1,"IS_PARENT":false})</script>
+<script>console.log({"TEXT":"\u0423\u0441\u043b\u0443\u0433\u0438","LINK":"\/services\/","SELECTED":false,"PERMISSION":"X","ADDITIONAL_LINKS":[],"ITEM_TYPE":"D","ITEM_INDEX":2,"PARAMS":[],"DEPTH_LEVEL":1,"IS_PARENT":false})</script>
+<script>console.log({"TEXT":"\u0413\u0430\u043b\u0435\u0440\u0435\u044f","LINK":"\/gallery\/","SELECTED":false,"PERMISSION":"X","ADDITIONAL_LINKS":[],"ITEM_TYPE":"D","ITEM_INDEX":3,"PARAMS":[],"DEPTH_LEVEL":1,"IS_PARENT":false})</script>
+<script type="text/javascript">
+try{document.form_auth.USER_LOGIN.focus();}catch(e){}
+</script>
+
+
+
+
+
+
+
+
+
+</body>
+</html>

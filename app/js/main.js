@@ -2,6 +2,9 @@
 @@include('plagins/slick.js')
 @@include('plagins/select2.js')
 @@include('plagins/jquery-ui.js')
+@@include('plagins/jquery.fancybox.js')
+@@include('plagins/jquery.maskedinput.js')
 @@include('plagins/bootstrap.js')
+@@include('plagins/jquery.touchSwipe.js')
 
 @@include('custom/custom.js')

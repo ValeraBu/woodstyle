@@ -1,25 +1,20 @@
 <div class="container-fluid">
-	<div class="row">
 		<section class="breadcrumbs">
 			<ul>
 				<li><a href="#"><span>Главная</span></a></li>
-				<li><a href="#"><span>О компании</span></a></li>
-				<li><a href="#" class="active"><span>Партнеры</span></a></li>
+				<li><span class="active">О компании</span></li>
+				<li><span class="active">Партнеры</span></li>
 			</ul>
 		</section>
-	</div>
-	<div class="row">
 		<div class="title-block">
-			<h2>Партнеры</h2>
+			<h1>Партнеры</h1>
 		</div>
-	</div>
-
-	<div class="row">
-		<h3>Мы сотрудничаем только с сертифицированными компаниями</h3>
-		<p class="about-block">Сертификация продукции в России является одной из официальных форм подтверждения качества.
-		Процедура сертификации продукции включает оформление таких документов, как сертификат соответствия и декларация о соответствии. Это самые распространенные виды разрешительной документации. На некоторые позиции дополнительно требуется оформление свидетельства о государственной регистрации, лицензий или разрешений о применении.</p>
-	</div>
-	<div class="partners-row row">
+</div>
+<div class="container-fluid">
+	<h3>Мы сотрудничаем только с сертифицированными компаниями</h3>
+	<p class="about-block">Сертификация продукции в России является одной из официальных форм подтверждения качества.
+	Процедура сертификации продукции включает оформление таких документов, как сертификат соответствия и декларация о соответствии. Это самые распространенные виды разрешительной документации. На некоторые позиции дополнительно требуется оформление свидетельства о государственной регистрации, лицензий или разрешений о применении.</p>
+	<div class="partners-row">
 		<div class="flip-container" ontouchstart="this.classList.toggle('hover');">
 			<div class="flipper">
 				<div class="front">
@@ -71,7 +66,7 @@
 					</div>
 				</div>
 			</div>
-		</div>	
+		</div>
 		<div class="flip-container" ontouchstart="this.classList.toggle('hover');">
 			<div class="flipper">
 				<div class="front">
@@ -84,7 +79,7 @@
 					</div>
 				</div>
 			</div>
-		</div>	
+		</div>
 		<div class="flip-container" ontouchstart="this.classList.toggle('hover');">
 			<div class="flipper">
 				<div class="front">
@@ -97,7 +92,7 @@
 					</div>
 				</div>
 			</div>
-		</div>	
+		</div>
 		<div class="flip-container" ontouchstart="this.classList.toggle('hover');">
 			<div class="flipper">
 				<div class="front">
@@ -110,7 +105,7 @@
 					</div>
 				</div>
 			</div>
-		</div>	
+		</div>
 		<div class="flip-container" ontouchstart="this.classList.toggle('hover');">
 			<div class="flipper">
 				<div class="front">
@@ -123,7 +118,7 @@
 					</div>
 				</div>
 			</div>
-		</div>	
+		</div>
 		<div class="flip-container" ontouchstart="this.classList.toggle('hover');">
 			<div class="flipper">
 				<div class="front">
@@ -136,7 +131,7 @@
 					</div>
 				</div>
 			</div>
-		</div>	
+		</div>
 		<div class="flip-container" ontouchstart="this.classList.toggle('hover');">
 			<div class="flipper">
 				<div class="front">
@@ -149,7 +144,7 @@
 					</div>
 				</div>
 			</div>
-		</div>	
+		</div>
 		<div class="flip-container" ontouchstart="this.classList.toggle('hover');">
 			<div class="flipper">
 				<div class="front">
@@ -162,7 +157,7 @@
 					</div>
 				</div>
 			</div>
-		</div>	
+		</div>
 		<div class="flip-container" ontouchstart="this.classList.toggle('hover');">
 			<div class="flipper">
 				<div class="front">
@@ -175,21 +170,20 @@
 					</div>
 				</div>
 			</div>
-		</div>	
+		</div>
 	</div>
 </div>
 <div class="form-block">
 	<div class="container-fluid">
-		<div class="row">
 		<p class="form-title">Запрос на партнерство</p>
 			<form id="partner-form" class="partner-form" action="">
 				<fieldset>
 					<label for="organization">Наименование организации*</label>
-					<input id="organization" type="text" class="form-input" placeholder="ООО Название компании"/>
+					<input id="organization" type="text" class="form-input" placeholder="ООО Название компании" required="required" />
 				</fieldset>
 				<fieldset>
 					<label for="e-mail">E-mail организации*</label>
-					<input id="e-mail" type="email" class="form-input" placeholder="Example@gmail.ru"/>
+					<input id="e-mail" type="email" class="form-input" placeholder="Example@gmail.ru" required="required" />
 				</fieldset>
 				<fieldset>
 					<label for="comment">Комментарий</label>
@@ -199,6 +193,5 @@
 					<button id="btn" class="btn-form" type="submit">Отправить</button>
 				</fieldset>
 			</form>
-		</div>
 	</div>
 </div>

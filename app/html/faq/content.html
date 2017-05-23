@@ -1,27 +1,23 @@
 <div class="container-fluid">
-	<div class="row">
-		<section class="breadcrumbs">
-			<ul>
-				<li><a href="#"><span>Главная</span></a></li>
-				<li><a href="#"><span>Информация</span></a></li>
-				<li><a href="#" class="active"><span>Вопрос-ответ</span></a></li>
-			</ul>
-		</section>
+	<section class="breadcrumbs">
+		<ul>
+			<li><a href="#"><span>Главная</span></a></li>
+			<li><span class="active">Информация</span></li>
+			<li><span class="active">Вопрос-ответ</span></li>
+		</ul>
+	</section>
+	<div class="title-block">
+		<h1>Вопрос-ответ</h1>
 	</div>
-	<div class="row">
-		<div class="title-block">
-			<h2>Вопрос-ответ</h2>
-		</div>
-	</div>
-
-<div class="faq-block row">
+</div>
+<div class="container-fluid">
+<div class="faq-block">
 	<!-- questions -->
 	<div class="questions">
 		<!-- inner -->
 		<div class="questions-inner">
 			<span class="question"><i class="fa fa-angle-right fa-2x" aria-hidden="true"></i>Могу ли  я сделать заказ из региона?</span>
 			<div class="faq-answer">
-		<!-- 		<span class="icon-border"><i class="fa fa-angle-right" aria-hidden="true"></i></span> -->
 				<p class="answer">Да, у нас есть такая возможность. Такие проекты - одно из ведущих направлений нашей мастерской. Мы сделаем нужный вам стол из массива по вашему чертежу, а при невозможности его изготовления предложим свои доработки для воплощения ваших пожеланий.</p>
 			</div>
 		</div>
@@ -29,7 +25,6 @@
 		<div class="questions-inner">
 			<span class="question"><i class="fa fa-angle-right fa-2x" aria-hidden="true"></i>Можно ли заказать уникальный цвет для изделия?</span>
 			<div class="faq-answer">
-	<!-- 			<span class="icon-border"><i class="fa fa-angle-right" aria-hidden="true"></i></span> -->
 				<p class="answer">Да, у нас есть такая возможность. Такие проекты - одно из ведущих направлений нашей мастерской. Мы сделаем нужный вам стол из массива по вашему чертежу, а при невозможности его изготовления предложим свои доработки для воплощения ваших пожеланий.</p>
 			</div>
 		</div>
@@ -37,7 +32,6 @@
 		<div class="questions-inner">
 			<span class="question"><i class="fa fa-angle-right fa-2x" aria-hidden="true"></i>Изготавливаете ли вы под заказ лестницы и столешницы и другие элементы интельера из массива дерева? Могу ли я предоставить вам чертеж нужного мне стола с ножками и всеми комплектующими?</span>
 			<div class="faq-answer">
-<!-- 				<span class="icon-border"><i class="fa fa-angle-right" aria-hidden="true"></i></span> -->
 				<p class="answer">Да, у нас есть такая возможность. Такие проекты - одно из ведущих направлений нашей мастерской. Мы сделаем нужный вам стол из массива по вашему чертежу, а при невозможности его изготовления предложим свои доработки для воплощения ваших пожеланий.</p>
 			</div>
 		</div>
@@ -45,7 +39,6 @@
 		<div class="questions-inner">
 			<span class="question"><i class="fa fa-angle-right fa-2x" aria-hidden="true"></i>Какие виды оплаты вы принимаете?</span>
 			<div class="faq-answer">
-	<!-- 			<span class="icon-border"></span> -->
 				<p class="answer">Наличный, безналичный способ оплаты.</p>
 			</div>
 		</div>
@@ -53,7 +46,6 @@
 		<div class="questions-inner">
 			<span class="question"><i class="fa fa-angle-right fa-2x" aria-hidden="true"></i>Можно ли заказать уникальный цвет для изделия?</span>
 			<div class="faq-answer">
-			<!-- 	<span class="icon-border"><i class="fa fa-angle-right" aria-hidden="true"></i></span> -->
 				<p class="answer">Да, конечно.</p>
 			</div>
 		</div>
@@ -61,7 +53,6 @@
 		<div class="questions-inner">
 			<span class="question"><i class="fa fa-angle-right fa-2x" aria-hidden="true"></i>Какие виды техники используются при реставрации антикварной мебели?</span>
 			<div class="faq-answer">
-	<!-- 			<span class="icon-border"><i class="fa fa-angle-right" aria-hidden="true"></i></span> -->
 				<p class="answer">Да, у нас есть такая возможность. Такие проекты - одно из ведущих направлений нашей мастерской. Мы сделаем нужный вам стол из массива по вашему чертежу, а при невозможности его изготовления предложим свои доработки для воплощения ваших пожеланий.</p>
 			</div>
 		</div>
@@ -71,19 +62,19 @@
 		<form id="faq-form" class="form faq-form" action="">
 			<span class="title">Задать вопрос</span>
 			<fieldset>
-				<label for="name">ФИО*</label>
-				<input id="name" type="text" class="input" placeholder="Иванов Иван Иванович">
+				<label for="faq-name">ФИО*</label>
+				<input id="faq-name" type="text" class="input" placeholder="Иванов Иван Иванович" required="required">
 			</fieldset>
 			<fieldset>
-				<label for="mail">E-mail*</label>
-				<input id="mail" type="text" class="input" placeholder="Example@gmail.ru">
+				<label for="faq-mail">E-mail*</label>
+				<input id="faq-mail" type="email" class="input" placeholder="Example@gmail.ru" required="required">
 			</fieldset>
 			<fieldset>
 				<label for="question">Вопрос</label>
 				<textarea id="question" type="text" class="input" placeholder="Введите вопрос"></textarea>
 			</fieldset>
 			<fieldset>
-				<button id="submit" class="btn-submit" type="submit">Отправить</button>
+				<button id="faq-submit" class="btn-submit" type="submit">Отправить</button>
 			</fieldset>
 		</form>
 	</div>

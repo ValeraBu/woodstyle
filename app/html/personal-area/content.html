@@ -1,86 +1,107 @@
 <div class="container-fluid">
-	<div class="row">
-		<section class="breadcrumbs">
-			<ul>
-				<li><a href="#"><span>Главная</span></a></li>
-				<li><a href="#" class="active"><span>Личный кабинет</span></a></li>
-			</ul>
-		</section>
-	</div>
-	<div class="row">
-		<div class="title-block">
-			<h2>Личный кабинет</h2>
-		</div>
+	<section class="breadcrumbs">
+		<ul>
+			<li><a href="#"><span>Главная</span></a></li>
+			<li><span class="active">Личный кабинет</span></li>
+		</ul>
+	</section>
+	<div class="title-block">
+		<h1>Личный кабинет</h1>
 	</div>
 </div>
 <div class="registration-block">
 	<div class="container-fluid">
-		<div class="row">
-			<p class="registration-title">Данные аккаунта</p>
-		</div>
-		<div class="row">
-			<form id="account-form" class="form account-form" action="">
+		<div class="data-save">
+			<p class="data-true">Ваши данные сохранены!</p>
+			<p class="data-false">Произошла ошибка, повторите ввод данных</p>
+		</div>	
+		<p class="registration-title">Данные аккаунта</p>
+		<form id="account-form" class="form account-form" action="">
+			<div class="form-group">
+				<label for="your-name">ФИО*</label>
+				<input id="your-name" type="text" class="input" placeholder="Иванов Александр Иванович" required="required">
+				<span class="input-gradient"></span>
+			</div>
+			<div class="form-group">
+				<label for="your-mail">E-mail*</label>
+				<input id="your-mail" type="email" class="input" placeholder="Ivanoff@gmail.ru" required="required">
+			</div>
+			<div class="form-group">
+				<label for="your-phone">Телефон*</label>
+				<input id="your-phone" pattern="+7 ([0-9]{3}) [0-9]{3}-[0-9]{2}-[0-9]{2}"  type="tel" class="input" placeholder="8(921)765 45 28" required="required">
+			</div>
+			<div class="form-group password-group">
+				<label for="your-password">Пароль*</label>
+				<input id="your-password" type="password" class="input" placeholder="********" required="required">
+				<a class="hidden-password"></a>
+				<a href="#" class="change-link" data-toggle="modal" data-target="#password-modal">Изменить пароль</a>
+			</div>
+				<input id="submit-btn" class="btn-check" type="submit" value="Сохранить" disabled="">
+		</form>
+	</div>
+
+<!-- password-modal -->
+<div class="modal fade entrance-modal" id="password-modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"></span></button>
+	      </div>
+	      <div class="modal-body">
+	        <form id="form-entrance" class="form-entrance" action="post">
+		        <span class="title">Смена пароля</span>
 				<div class="form-group">
-					<label for="name">ФИО*</label>
-					<input id="name" type="text" class="input" placeholder="Иванов Александр Иванович">
-					<span class="input-gradient"></span>
+					<label for="new-password">Новый пароль</label>
+					<input id="new-password" type="password" class="input" placeholder="********" required="required">
+					<a href="" class="hidden-password"></a>
 				</div>
 				<div class="form-group">
-					<label for="mail">E-mail*</label>
-					<input id="mail" type="text" class="input" placeholder="Ivanoff@gmail.ru">
-				</div>
-				<div class="form-group">
-					<label for="phone">Телефон*</label>
-					<input id="phone" type="number" class="input" placeholder="8(921)765 45 28">
-					<a href="#" class="change-link">Изменить телефон</a>
-				</div>
-				<div class="form-group password-group">
-					<label for="password">Пароль*</label>
-					<input id="password" type="password" class="input" placeholder="********">
+					<label for="repeat-password">Повторите пароль*</label>
+					<input id="repeat-password" type="password" class="input" placeholder="********" required="required" aria-required="true">
 					<a class="hidden-password"></a>
-					<a href="#" class="change-link">Изменить пароль</a>
 				</div>
-					<input id="submit" class="btn-check" type="submit" value="Сохранить">
+
+				<div class="form-group">
+					<input id="submit-password" class="btn-submit" value="Сохранить"/>
+				</div>
 			</form>
-		</div>
+	      </div>
+	    </div>
+	  </div>
 	</div>
 </div>
 <div class="container-fluid">
-	<div class="row">
-		<p class="registration-title">Подписаться на рассылку</p>
+	<div class="subscription-save">
+		<p>Рассылка подключена!</p>
+		<p>Рассылка отключена</p>
 	</div>
-	<div class="row">
-		<form id="sub-form" class="form sub-form" action="">
-			<div class="form-group">
-				<label for="sub-mail">E-mail*</label>
-				<input id="sub-mail" type="text" class="input" placeholder="Ivanoff@gmail.ru">
-				<a href="#" class="change-link">Отписаться</a>
-			</div>
-			<div class="form-group">
-				<input id="sub-btn" class="sub-btn" type="submit" value="Подписаться">
-			</div>
-		</form>
-	</div>
+	<p class="registration-title">Подписаться на рассылку</p>
+	<form id="sub-form" class="form sub-form" action="">
+		<div class="form-group">
+			<label for="sub-mail">E-mail</label>
+			<input id="sub-mail" type="text" class="input" placeholder="Ivanoff@gmail.ru">
+			<a href="#" class="change-link">Отписаться</a>
+		</div>
+		<div class="form-group">
+			<input id="sub-btn" class="sub-btn" type="submit" value="Подписаться">
+		</div>
+	</form>
 </div>
 <div class="registration-block">
 	<div class="container-fluid">
-		<div class="row">
-			<p class="registration-title">Мои заказы</p>
+		<p class="registration-title">Мои заказы</p>
+		<div class="order-item">
+			<a href="#" class="order-number">Заказ № 45611</a>
+			<p>Статус заказа: <span>Ожидает обработки менеджером</span></p>
 		</div>
-		<div class="row">
-			<div class="order-item">
-				<a href="#" class="order-number">Заказ № 45611</a>
-				<p>Статус заказа: <span>Ожидает обработки менеджером</span></p>
-			</div>
-			<div class="order-item">
-				<a href="#" class="order-number">Заказ № 11613</a>
-				<p>Статус заказа: <span>Ожидает оплаты</span></p>
-				<a class="order-btn" href="#">Оплатить</a>
-			</div>
-			<div class="order-item">
-				<a href="#" class="order-number">Заказ № 20448</a>
-				<p>Статус заказа: <span>Выдан</span></p>
-			</div>
+		<div class="order-item">
+			<a href="#" class="order-number">Заказ № 11613</a>
+			<p>Статус заказа: <span>Ожидает оплаты</span></p>
+			<a class="order-btn" href="#">Оплатить</a>
+		</div>
+		<div class="order-item">
+			<a href="#" class="order-number">Заказ № 20448</a>
+			<p>Статус заказа: <span>Выдан</span></p>
 		</div>
 	</div>
 </div>

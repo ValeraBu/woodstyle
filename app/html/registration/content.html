@@ -1,53 +1,56 @@
 <div class="container-fluid">
-	<div class="row">
-		<section class="breadcrumbs">
-			<ul>
-				<li><a href="#"><span>Главная</span></a></li>
-				<li><a href="#"><span>Личный кабинет</span></a></li>
-				<li><a href="#" class="active"><span>Регистрация</span></a></li>
-			</ul>
-		</section>
-	</div>
-	<div class="row">
-		<div class="title-block">
-			<h2>Регистрация</h2>
-		</div>
+	<section class="breadcrumbs">
+		<ul>
+			<li><a href="#"><span>Главная</span></a></li>
+			<li><a href="#"><span>Личный кабинет</span></a></li>
+			<li><span class="active">Регистрация</span></li>
+		</ul>
+	</section>
+	<div class="title-block">
+		<h1>Регистрация</h1>
 	</div>
 </div>
 <div class="registration-block">
 	<div class="container-fluid">
-		<div class="row">
-			<p class="registration-title">Данные аккаунта</p>
-		</div>
-		<div class="row">
-			<form id="check-form" class="form check-form" action="">
+		<p class="registration-title">Данные аккаунта</p>
+		<form id="check-form" class="form check-form" action="">
+			<div class="form-group">
+				<label for="check-name">ФИО*</label>
+				<input id="check-name" type="text" class="input" placeholder="Иванов Александр Иванович" required="required">
+				<span class="input-gradient"></span>
+			</div>
+			<div class="form-group">
+				<label for="check-mail">E-mail*</label>
+				<input id="check-mail" type="email" class="input" placeholder="Ivanoff@gmail.ru" required="required">
+			</div>
+			<div class="form-group">
+				<label for="check-phone">Телефон*</label>
+				<input id="check-phone" pattern="+7 ([0-9]{3}) [0-9]{3}-[0-9]{2}-[0-9]{2}"  type="tel" class="input" placeholder="8(921)765 45 28" required="required">
+			</div>
+			<div class="form-group password-group">
+				<label for="check-password">Пароль*</label>
+				<input id="check-password" type="password" class="input" placeholder="********" required="required">
+				<a class="hidden-password"></a>
+			</div>
+			<div class="form-group">
+				<label for="repeat-password">Повторите пароль*</label>
+				<input id="repeat-password" type="password" class="input" placeholder="********" required="required">
+				<a class="hidden-password"></a>
+			</div>
+			<div class="form-group">
+				<input id="check-submit" class="btn-check" type="submit" value="Зарегистрироваться">
+			</div>
+			<div class="recapcha">
 				<div class="form-group">
-					<label for="name">ФИО*</label>
-					<input id="name" type="text" class="input" placeholder="Иванов Александр Иванович">
-					<span class="input-gradient"></span>
+				<b>Защита от автоматической регистрации</b>
+					<input type="hidden" name="captcha_sid" value="0a5abcefc16c5bcf4444a51a272ac562" />
+					<img src="/bitrix/tools/captcha.php?captcha_sid=0a5abcefc16c5bcf4444a51a272ac562" width="180" height="40" alt="CAPTCHA" />
 				</div>
 				<div class="form-group">
-					<label for="mail">E-mail*</label>
-					<input id="mail" type="text" class="input" placeholder="Ivanoff@gmail.ru">
+					Введите слово на картинке:<span class="starrequired">*</span>
+					<input type="text" name="captcha_word" maxlength="50" value="" />
 				</div>
-				<div class="form-group">
-					<label for="phone">Телефон*</label>
-					<input id="phone" type="number" class="input" placeholder="8(921)765 45 28">
-				</div>
-				<div class="form-group password-group">
-					<label for="password">Пароль*</label>
-					<input id="password" type="password" class="input" placeholder="********">
-					<a class="hidden-password"></a>
-				</div>
-				<div class="form-group">
-					<label for="repeat-password">Повторите пароль*</label>
-					<input id="repeat-password" type="password" class="input" placeholder="********">
-					<a class="hidden-password"></a>
-				</div>
-				<div class="form-group">
-					<input id="submit" class="btn-check" type="submit" value="Зарегистрироваться">
-				</div>
-			</form>
-		</div>
+			</div>
+		</form>
 	</div>
 </div>
