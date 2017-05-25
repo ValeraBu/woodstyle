@@ -1096,7 +1096,7 @@ jQuery.Deferred = function( func ) {
         newSlides = document.createDocumentFragment();
         originalSlides = _.$slider.children();
 
-        if(_.options.rows > 1) {
+        if(_.options.rows > 0) {
 
             slidesPerSection = _.options.slidesPerRow * _.options.rows;
             numOfSlides = Math.ceil(
@@ -1351,7 +1351,7 @@ jQuery.Deferred = function( func ) {
 
         var _ = this, originalSlides;
 
-        if(_.options.rows > 1) {
+        if(_.options.rows > 0) {
             originalSlides = _.$slides.children().children();
             originalSlides.removeAttr('style');
             _.$slider.empty().append(originalSlides);
@@ -11585,6 +11585,4535 @@ var widgetsSpinner = $.ui.spinner;
 
 
 }));
+// ==================================================
+// fancyBox v3.0.47
+//
+// Licensed GPLv3 for open source use
+// or fancyBox Commercial License for commercial use
+//
+// http://fancyapps.com/fancybox/
+// Copyright 2017 fancyApps
+//
+// ==================================================
+;(function (window, document, $, undefined) {
+    'use strict';
+
+    // If there's no jQuery, fancyBox can't work
+    // =========================================
+
+    if ( !$ ) {
+        return undefined;
+    }
+
+    // Private default settings
+    // ========================
+
+    var defaults = {
+
+        // Animation duration in ms
+        speed : 330,
+
+        // Enable infinite gallery navigation
+        loop : true,
+
+        // Should zoom animation change opacity, too
+        // If opacity is 'auto', then fade-out if image and thumbnail have different aspect ratios
+        opacity : 'auto',
+
+        // Space around image, ignored if zoomed-in or viewport smaller than 800px
+        margin : [44, 0],
+
+        // Horizontal space between slides
+        gutter : 30,
+
+        // Should display toolbars
+        infobar : true,
+        buttons : true,
+
+        // What buttons should appear in the toolbar
+        slideShow  : true,
+        fullScreen : true,
+        thumbs     : true,
+        closeBtn   : true,
+
+        // Should apply small close button at top right corner of the content
+        // If 'auto' - will be set for content having type 'html', 'inline' or 'ajax'
+        smallBtn : 'auto',
+
+        image : {
+
+            // Wait for images to load before displaying
+            // Requires predefined image dimensions
+            // If 'auto' - will zoom in thumbnail if 'width' and 'height' attributes are found
+            preload : "auto",
+
+            // Protect an image from downloading by right-click
+            protect : false
+
+        },
+
+        ajax : {
+
+            // Object containing settings for ajax request
+            settings : {
+
+                // This helps to indicate that request comes from the modal
+                // Feel free to change naming
+                data : {
+                    fancybox : true
+                }
+            }
+
+        },
+
+        iframe : {
+
+            // Iframe template
+            tpl : '<iframe id="fancybox-frame{rnd}" name="fancybox-frame{rnd}" class="fancybox-iframe" frameborder="0" vspace="0" hspace="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen allowtransparency="true" src=""></iframe>',
+
+            // Preload iframe before displaying it
+            // This allows to calculate iframe content width and height
+            // (note: Due to "Same Origin Policy", you can't get cross domain data).
+            preload : true,
+
+            // Scrolling attribute for iframe tag
+            scrolling : 'no',
+
+            // Custom CSS styling for iframe wrapping element
+            css : {}
+
+        },
+
+        // Custom CSS class for layout
+        baseClass : '',
+
+        // Custom CSS class for slide element
+        slideClass : '',
+
+        // Base template for layout
+        baseTpl	: '<div class="fancybox-container" role="dialog" tabindex="-1">' +
+                '<div class="fancybox-bg"></div>' +
+                '<div class="fancybox-controls">' +
+                    '<div class="fancybox-infobar">' +
+                        '<button data-fancybox-previous class="fancybox-button fancybox-button--left" title="Previous"></button>' +
+                        '<div class="fancybox-infobar__body">' +
+                            '<span class="js-fancybox-index"></span>&nbsp;/&nbsp;<span class="js-fancybox-count"></span>' +
+                        '</div>' +
+                        '<button data-fancybox-next class="fancybox-button fancybox-button--right" title="Next"></button>' +
+                    '</div>' +
+                    '<div class="fancybox-buttons">' +
+                        '<button data-fancybox-close class="fancybox-button fancybox-button--close" title="Close (Esc)"></button>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="fancybox-slider-wrap">' +
+                    '<div class="fancybox-slider"></div>' +
+                '</div>' +
+                '<div class="fancybox-caption-wrap"><div class="fancybox-caption"></div></div>' +
+            '</div>',
+
+        // Loading indicator template
+        spinnerTpl : '<div class="fancybox-loading"></div>',
+
+        // Error message template
+        errorTpl : '<div class="fancybox-error"><p>The requested content cannot be loaded. <br /> Please try again later.<p></div>',
+
+        // This will be appended to html content, if "smallBtn" option is not set to false
+        closeTpl : '<button data-fancybox-close class="fancybox-close-small"></button>',
+
+        // Container is injected into this element
+        parentEl : 'body',
+
+        // Enable gestures (tap, zoom, pan and pinch)
+        touch : true,
+
+        // Enable keyboard navigation
+        keyboard : true,
+
+        // Try to focus on first focusable element after opening
+        focus : true,
+
+        // Close when clicked outside of the content
+        closeClickOutside : true,
+
+        // Callbacks
+        beforeLoad	 : $.noop,
+        afterLoad    : $.noop,
+        beforeMove 	 : $.noop,
+        afterMove    : $.noop,
+        onComplete	 : $.noop,
+
+        onInit       : $.noop,
+        beforeClose	 : $.noop,
+        afterClose	 : $.noop,
+        onActivate   : $.noop,
+        onDeactivate : $.noop
+
+    };
+
+    var $W = $(window);
+    var $D = $(document);
+
+    var called = 0;
+
+    // Check if an object is a jQuery object and not a native JavaScript object
+    // ========================================================================
+
+    var isQuery = function (obj) {
+        return obj && obj.hasOwnProperty && obj instanceof $;
+    };
+
+    // Handle multiple browsers for requestAnimationFrame()
+    // ====================================================
+
+    var requestAFrame = (function() {
+        return  window.requestAnimationFrame ||
+                window.webkitRequestAnimationFrame ||
+                window.mozRequestAnimationFrame ||
+                function( callback ) {
+                    window.setTimeout(callback, 1000 / 60); };
+                })();
+
+
+    // Check if element is inside the viewport by at least 1 pixel
+    // ===========================================================
+
+    var isElementInViewport = function( el ) {
+        var rect;
+
+        if ( typeof $ === "function" && el instanceof $ ) {
+            el = el[0];
+        }
+
+        rect = el.getBoundingClientRect();
+
+        return rect.bottom > 0 && rect.right > 0 &&
+                rect.left < (window.innerWidth || document.documentElement.clientWidth)  &&
+                rect.top < (window.innerHeight || document.documentElement.clientHeight);
+    };
+
+
+    // Class definition
+    // ================
+
+    var FancyBox = function( content, opts, index ) {
+        var self = this;
+
+        self.opts  = $.extend( true, { index : index }, defaults, opts || {} );
+        self.id    = self.opts.id || ++called;
+        self.group = [];
+
+        self.currIndex = parseInt( self.opts.index, 10 ) || 0;
+        self.prevIndex = null;
+
+        self.prevPos = null;
+        self.currPos = 0;
+
+        self.firstRun = null;
+
+        // Create group elements from original item collection
+        self.createGroup( content );
+
+        if ( !self.group.length ) {
+            return;
+        }
+
+        // Save last active element and current scroll position
+        self.$lastFocus = $(document.activeElement).blur();
+
+        // Collection of gallery objects
+        self.slides = {};
+
+        self.init( content );
+
+    };
+
+    $.extend(FancyBox.prototype, {
+
+        // Create DOM structure
+        // ====================
+
+        init : function() {
+            var self = this;
+
+            var galleryHasHtml = false;
+
+            var testWidth;
+            var $container;
+
+            self.scrollTop  = $D.scrollTop();
+            self.scrollLeft = $D.scrollLeft();
+
+            if ( !$.fancybox.getInstance() ) {
+                testWidth = $( 'body' ).width();
+
+                $( 'html' ).addClass( 'fancybox-enabled' );
+
+                if ( $.fancybox.isTouch ) {
+
+                    // Ugly workaround for iOS page shifting issue (when inputs get focus)
+                    // Do not apply for images, otherwise top/bottom bars will appear
+                    $.each( self.group, function( key, item ) {
+                        if ( item.type !== 'image' && item.type !== 'iframe' ) {
+                            galleryHasHtml = true;
+                            return false;
+                        }
+                    });
+
+                    if ( galleryHasHtml ) {
+                        $('body').css({
+                            position : 'fixed',
+                            width    : testWidth,
+                            top      : self.scrollTop * -1
+                        });
+                    }
+
+                } else {
+
+                    // Compare page width after adding "overflow:hidden"
+                    testWidth = $( 'body' ).width() - testWidth;
+
+                    // Width has changed - compensate missing scrollbars
+                    if ( testWidth > 1 ) {
+                        $( '<style id="fancybox-noscroll" type="text/css">' ).html( '.compensate-for-scrollbar, .fancybox-enabled body { margin-right: ' + testWidth + 'px; }' ).appendTo( 'head' );
+                    }
+
+                }
+            }
+
+            $container = $( self.opts.baseTpl )
+                .attr('id', 'fancybox-container-' + self.id)
+                .data( 'FancyBox', self )
+                .addClass( self.opts.baseClass )
+                .hide()
+                .prependTo( self.opts.parentEl );
+
+            // Create object holding references to jQuery wrapped nodes
+            self.$refs = {
+                container   : $container,
+                bg          : $container.find('.fancybox-bg'),
+                controls    : $container.find('.fancybox-controls'),
+                buttons     : $container.find('.fancybox-buttons'),
+                slider_wrap : $container.find('.fancybox-slider-wrap'),
+                slider      : $container.find('.fancybox-slider'),
+                caption     : $container.find('.fancybox-caption')
+            };
+
+            self.trigger( 'onInit' );
+
+            // Bring to front and enable events
+            self.activate();
+
+            // Try to avoid running multiple times
+            if ( self.current ) {
+                return;
+            }
+
+            self.jumpTo( self.currIndex );
+
+        },
+
+
+        // Create array of gally item objects
+        // Check if each object has valid type and content
+        // ===============================================
+
+        createGroup : function ( content ) {
+            var self  = this;
+            var items = $.makeArray( content );
+
+            $.each(items, function( i, item ) {
+                var obj  = {},
+                    opts = {},
+                    data = [],
+                    $item,
+                    type,
+                    src,
+                    srcParts;
+
+                // Step 1 - Make sure we have an object
+
+                if ( $.isPlainObject( item ) ) {
+
+                    obj  = item;
+                    opts = item.opts || {};
+
+                } else if ( $.type( item ) === 'object' && $( item ).length ) {
+
+                    $item = $( item );
+                    data  = $item.data();
+
+                    opts = 'options' in data ? data.options : {};
+
+                    opts = $.type( opts ) === 'object' ? opts : {};
+
+                    obj.type = 'type' in data ? data.type : opts.type;
+                    obj.src  = 'src'  in data ? data.src  : ( opts.src || $item.attr( 'href' ) );
+
+                    opts.width   = 'width'   in data ? data.width   : opts.width;
+                    opts.height  = 'height'  in data ? data.height  : opts.height;
+                    opts.thumb   = 'thumb'   in data ? data.thumb   : opts.thumb;
+
+                    opts.selector = 'selector'  in data ? data.selector  : opts.selector;
+
+                    if ( 'srcset' in data ) {
+                        opts.image = { srcset : data.srcset };
+                    }
+
+                    opts.$orig = $item;
+
+                } else {
+
+                    obj = {
+                        type    : 'html',
+                        content : item + ''
+                    };
+
+                }
+
+                obj.opts = $.extend( true, {}, self.opts, opts );
+
+                // Step 2 - Make sure we have supported content type
+
+                type = obj.type;
+                src  = obj.src || '';
+
+                if ( !type ) {
+
+                    if ( obj.content ) {
+                        type = 'html';
+
+                    } else if ( src.match(/(^data:image\/[a-z0-9+\/=]*,)|(\.(jp(e|g|eg)|gif|png|bmp|webp|svg|ico)((\?|#).*)?$)/i) ) {
+                        type = 'image';
+
+                    } else if ( src.match(/\.(pdf)((\?|#).*)?$/i) ) {
+                        type = 'pdf';
+
+                    } else if ( src.charAt(0) === '#' ) {
+                        type = 'inline';
+
+                    }
+
+                    obj.type = type;
+
+                }
+
+                // Step 3 - Some adjustments
+
+                obj.index = self.group.length;
+
+                // Check if $orig and $thumb objects exist
+                if ( obj.opts.$orig && !obj.opts.$orig.length ) {
+                    delete obj.opts.$orig;
+                }
+
+                if ( !obj.opts.$thumb && obj.opts.$orig ) {
+                    obj.opts.$thumb = obj.opts.$orig.find( 'img:first' );
+                }
+
+                if ( obj.opts.$thumb && !obj.opts.$thumb.length ) {
+                    delete obj.opts.$thumb;
+                }
+
+                // Caption is a "special" option, it can be passed as a method
+                if ( $.type( obj.opts.caption ) === 'function' ) {
+                    obj.opts.caption = obj.opts.caption.apply( item, [ self, obj ] );
+
+                } else if ( 'caption' in data ) {
+                    obj.opts.caption = data.caption;
+
+                } else if ( opts.$orig ) {
+                    obj.opts.caption = $item.attr( 'title' );
+                }
+
+                // Make sure we have caption as a string
+                obj.opts.caption = obj.opts.caption === undefined ? '' : obj.opts.caption + '';
+
+                // Check if url contains selector used to filter the content
+                // Example: "ajax.html #something"
+                if ( type === 'ajax' ) {
+                    srcParts = src.split(/\s+/, 2);
+
+                    if ( srcParts.length > 1 ) {
+                        obj.src = srcParts.shift();
+
+                        obj.opts.selector = srcParts.shift();
+                    }
+                }
+
+                if ( obj.opts.smallBtn == 'auto' ) {
+
+                    if ( $.inArray( type, ['html', 'inline', 'ajax'] ) > -1 ) {
+                        obj.opts.buttons  = false;
+                        obj.opts.smallBtn = true;
+
+                    } else {
+                        obj.opts.smallBtn = false;
+                    }
+
+                }
+
+                if ( type === 'pdf' ) {
+
+                    obj.type = 'iframe';
+
+                    obj.opts.closeBtn = true;
+                    obj.opts.smallBtn = false;
+
+                    obj.opts.iframe.preload = false;
+
+                }
+
+                if ( obj.opts.modal ) {
+
+                    $.extend(true, obj.opts, {
+                        infobar		: 0,
+                        buttons		: 0,
+                        keyboard	: 0,
+                        slideShow	: 0,
+                        fullScreen	: 0,
+                        closeClickOutside	: 0
+                    });
+
+                }
+
+                self.group.push( obj );
+
+            });
+
+        },
+
+
+        // Attach an event handler functions for:
+        //   - navigation elements
+        //   - browser scrolling, resizing;
+        //   - focusing
+        //   - keyboard
+        // =================
+
+        addEvents : function() {
+            var self = this;
+
+            self.removeEvents();
+
+            // Make navigation elements clickable
+
+            self.$refs.container.on('click.fb-close', '[data-fancybox-close]', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+
+                self.close( e );
+
+            }).on('click.fb-previous', '[data-fancybox-previous]', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+
+                self.previous();
+
+            }).on('click.fb-next', '[data-fancybox-next]', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+
+                self.next();
+            });
+
+
+            // Handle page scrolling and browser resizing
+
+            $( window ).on('orientationchange.fb resize.fb', function(e) {
+                requestAFrame(function() {
+
+                    if ( e && e.originalEvent && e.originalEvent.type === "resize" ) {
+                        self.update();
+
+                    } else {
+                        self.$refs.slider_wrap.hide();
+
+                        requestAFrame(function () {
+                            self.$refs.slider_wrap.show();
+
+                            self.update();
+                        });
+
+                    }
+
+                });
+            });
+
+
+            // Trap focus
+
+            $D.on('focusin.fb', function(e) {
+                var instance = $.fancybox ? $.fancybox.getInstance() : null;
+
+                if ( instance && !$( e.target ).hasClass( 'fancybox-container' ) && !$.contains( instance.$refs.container[0], e.target ) ) {
+                    e.stopPropagation();
+
+                    instance.focus();
+
+                    // Sometimes page gets scrolled, set it back
+                    $W.scrollTop( self.scrollTop ).scrollLeft( self.scrollLeft );
+                }
+
+            });
+
+            // Enable keyboard navigation
+
+            $D.on('keydown.fb', function (e) {
+                var current = self.current,
+                    keycode = e.keyCode || e.which;
+
+                if ( !current || !current.opts.keyboard ) {
+                    return;
+                }
+
+                if ( $(e.target).is('input') || $(e.target).is('textarea') ) {
+                    return;
+                }
+
+                // Backspace and Esc keys
+                if ( keycode === 8 || keycode === 27 ) {
+                    e.preventDefault();
+
+                    self.close( e );
+
+                    return;
+                }
+
+                switch ( keycode ) {
+
+                    case 37: // Left arrow
+                    case 38: // Up arrow
+
+                        e.preventDefault();
+
+                        self.previous();
+
+                    break;
+
+                    case 39: // Right arrow
+                    case 40: // Down arrow
+
+                        e.preventDefault();
+
+                        self.next();
+
+                    break;
+
+                    case 80: // "P"
+					case 32: // Spacebar
+
+						e.preventDefault();
+
+						if ( self.SlideShow ) {
+							e.preventDefault();
+
+							self.SlideShow.toggle();
+						}
+
+					break;
+
+                    case 70: // "F"
+
+						if ( self.FullScreen ) {
+							e.preventDefault();
+
+							self.FullScreen.toggle();
+						}
+
+					break;
+
+                    case 71: // "G"
+
+						if ( self.Thumbs ) {
+							e.preventDefault();
+
+							self.Thumbs.toggle();
+						}
+
+					break;
+                }
+            });
+
+
+        },
+
+
+        // Remove events added by the core
+        // ===============================
+
+        removeEvents : function () {
+
+            $W.off( 'scroll.fb resize.fb orientationchange.fb' );
+            $D.off( 'keydown.fb focusin.fb click.fb-close' );
+
+            this.$refs.container.off('click.fb-close click.fb-previous click.fb-next');
+        },
+
+
+        // Slide to left
+        // ==================
+
+        previous : function( duration ) {
+            this.jumpTo( this.currIndex - 1, duration );
+        },
+
+
+        // Slide to right
+        // ===================
+
+        next : function( duration ) {
+            this.jumpTo( this.currIndex + 1, duration );
+        },
+
+
+        // Display current gallery item, move slider to current position
+        // =============================================================
+
+        jumpTo : function ( to, duration ) {
+            var self = this,
+                firstRun,
+                index,
+                pos,
+                loop;
+
+            firstRun = self.firstRun = ( self.firstRun === null );
+
+            index = pos = to = parseInt( to, 10 );
+            loop  = self.current ? self.current.opts.loop : false;
+
+            if ( self.isAnimating || ( index == self.currIndex && !firstRun ) ) {
+                return;
+            }
+
+            if ( self.group.length > 1 && loop ) {
+
+                index = index % self.group.length;
+                index = index < 0 ? self.group.length + index : index;
+
+                // Calculate closest position of upcoming item from the current one
+                if ( self.group.length == 2 ) {
+                    pos = to - self.currIndex + self.currPos;
+
+                } else {
+                    pos = index - self.currIndex + self.currPos;
+
+                    if ( Math.abs( self.currPos - ( pos + self.group.length ) ) < Math.abs( self.currPos - pos ) ) {
+                        pos = pos + self.group.length;
+
+                    } else if ( Math.abs( self.currPos - ( pos - self.group.length ) ) < Math.abs( self.currPos - pos ) ) {
+                        pos = pos - self.group.length;
+
+                    }
+                }
+
+            } else if ( !self.group[ index ] ) {
+                self.update( false, false, duration );
+
+                return;
+            }
+
+            if ( self.current ) {
+                self.current.$slide.removeClass('fancybox-slide--current fancybox-slide--complete');
+
+                self.updateSlide( self.current, true );
+            }
+
+            self.prevIndex = self.currIndex;
+            self.prevPos   = self.currPos;
+
+            self.currIndex = index;
+            self.currPos   = pos;
+
+            // Create slides
+
+            self.current = self.createSlide( pos );
+
+            if ( self.group.length > 1 ) {
+
+                if ( self.opts.loop || pos - 1 >= 0 ) {
+                    self.createSlide( pos - 1 );
+                }
+
+                if ( self.opts.loop || pos + 1 < self.group.length ) {
+                    self.createSlide( pos + 1 );
+                }
+            }
+
+            self.current.isMoved    = false;
+            self.current.isComplete = false;
+
+            duration = parseInt( duration === undefined ? self.current.opts.speed * 1.5 : duration, 10 );
+
+            // Move slider to the next position
+            // Note: the content might still be loading
+            self.trigger( 'beforeMove' );
+
+            self.updateControls();
+
+            if ( firstRun ) {
+                self.current.$slide.addClass('fancybox-slide--current');
+
+                self.$refs.container.show();
+
+                requestAFrame(function() {
+                    self.$refs.bg.css('transition-duration', self.current.opts.speed + 'ms');
+
+                    self.$refs.container.addClass( 'fancybox-container--ready' );
+                });
+            }
+
+            // Set position immediately on first opening
+            self.update( true, false, firstRun ? 0 : duration, function() {
+                self.afterMove();
+            });
+
+            self.loadSlide( self.current );
+
+            if ( !( firstRun && self.current.$ghost ) ) {
+                self.preload();
+            }
+
+        },
+
+
+        // Create new "slide" element
+        // These are gallery items  that are actually added to DOM
+        // =======================================================
+
+        createSlide : function( pos ) {
+
+            var self = this;
+            var $slide;
+            var index;
+            var found;
+
+            index = pos % self.group.length;
+            index = index < 0 ? self.group.length + index : index;
+
+            if ( !self.slides[ pos ] && self.group[ index ] ) {
+
+                // If we are looping and slide with that index already exists, then reuse it
+                if ( self.opts.loop && self.group.length > 2 ) {
+                    for (var key in self.slides) {
+                        if ( self.slides[ key ].index === index ) {
+                            found = self.slides[ key ];
+                            found.pos = pos;
+
+                            self.slides[ pos ] = found;
+
+                            delete self.slides[ key ];
+
+                            self.updateSlide( found );
+
+                            return found;
+                        }
+                    }
+                }
+
+                $slide = $('<div class="fancybox-slide"></div>').appendTo( self.$refs.slider );
+
+                self.slides[ pos ] = $.extend( true, {}, self.group[ index ], {
+                    pos      : pos,
+                    $slide   : $slide,
+                    isMoved  : false,
+                    isLoaded : false
+                });
+
+            }
+
+            return self.slides[ pos ];
+
+        },
+
+        zoomInOut : function( type, duration, callback ) {
+
+            var self     = this;
+            var current  = self.current;
+            var $what    = current.$placeholder;
+            var opacity  = current.opts.opacity;
+            var $thumb   = current.opts.$thumb;
+            var thumbPos = $thumb ? $thumb.offset() : 0;
+            var slidePos = current.$slide.offset();
+            var props;
+            var start;
+            var end;
+
+            if ( !$what || !current.isMoved || !thumbPos || !isElementInViewport( $thumb ) ) {
+                return false;
+            }
+
+            if ( type === 'In' && !self.firstRun ) {
+                return false;
+            }
+
+            $.fancybox.stop( $what );
+
+            self.isAnimating = true;
+
+            props = {
+                top    : thumbPos.top  - slidePos.top  + parseFloat( $thumb.css( "border-top-width" ) || 0 ),
+                left   : thumbPos.left - slidePos.left + parseFloat( $thumb.css( "border-left-width" ) || 0 ),
+                width  : $thumb.width(),
+                height : $thumb.height(),
+                scaleX : 1,
+                scaleY : 1
+            };
+
+            // Check if we need to animate opacity
+            if ( opacity == 'auto' ) {
+                opacity = Math.abs( current.width / current.height - props.width / props.height ) > 0.1;
+            }
+
+            if ( type === 'In' ) {
+                start = props;
+                end   = self.getFitPos( current );
+
+                end.scaleX = end.width  / start.width;
+                end.scaleY = end.height / start.height;
+
+                if ( opacity ) {
+                    start.opacity = 0.1;
+                    end.opacity   = 1;
+                }
+
+            } else {
+
+                start = $.fancybox.getTranslate( $what );
+                end   = props;
+
+                // Switch to thumbnail image to improve animation performance
+                if ( current.$ghost ) {
+                    current.$ghost.show();
+
+                    if ( current.$image ) {
+                        current.$image.remove();
+                    }
+                }
+
+                start.scaleX = start.width  / end.width;
+                start.scaleY = start.height / end.height;
+
+                start.width  = end.width;
+                start.height = end.height;
+
+                if ( opacity ) {
+                    end.opacity = 0;
+                }
+
+            }
+
+            self.updateCursor( end.width, end.height );
+
+            // There is no need to animate width/height properties
+            delete end.width;
+            delete end.height;
+
+            $.fancybox.setTranslate( $what, start );
+
+            $what.show();
+
+            self.trigger( 'beforeZoom' + type );
+
+            $what.css( 'transition', 'all ' + duration + 'ms' );
+
+            $.fancybox.setTranslate( $what, end );
+
+            setTimeout(function() {
+                var reset;
+
+                $what.css( 'transition', 'none' );
+
+                reset = $.fancybox.getTranslate( $what );
+
+                reset.scaleX = 1;
+                reset.scaleY = 1;
+
+                // Reset scalex/scaleY values; this helps for perfomance
+                $.fancybox.setTranslate( $what, reset );
+
+                self.trigger( 'afterZoom' + type );
+
+                callback.apply( self );
+
+                self.isAnimating = false;
+
+            }, duration);
+
+
+            return true;
+
+        },
+
+        // Check if image dimensions exceed parent element
+        // ===============================================
+
+        canPan : function() {
+
+            var self = this;
+
+            var current = self.current;
+            var $what   = current.$placeholder;
+
+            var rez = false;
+
+            if ( $what ) {
+                rez = self.getFitPos( current );
+                rez = Math.abs( $what.width() - rez.width ) > 1  || Math.abs( $what.height() - rez.height ) > 1;
+
+            }
+
+            return rez;
+
+        },
+
+
+        // Check if current image dimensions are smaller than actual
+        // =========================================================
+
+        isScaledDown : function() {
+
+            var self = this;
+
+            var current = self.current;
+            var $what   = current.$placeholder;
+
+            var rez = false;
+
+            if ( $what ) {
+                rez = $.fancybox.getTranslate( $what );
+                rez = rez.width < current.width || rez.height < current.height;
+            }
+
+            return rez;
+
+        },
+
+
+        // Scale image to the actual size of the image
+        // ===========================================
+
+        scaleToActual : function( x, y, duration ) {
+
+            var self = this;
+
+            var current = self.current;
+            var $what   = current.$placeholder;
+
+            var imgPos, posX, posY, scaleX, scaleY;
+
+            var canvasWidth  = parseInt( current.$slide.width(), 10 );
+            var canvasHeight = parseInt( current.$slide.height(), 10 );
+
+            var newImgWidth  = current.width;
+            var newImgHeight = current.height;
+
+            if ( !$what ) {
+                return;
+            }
+
+            self.isAnimating = true;
+
+            x = x === undefined ? canvasWidth  * 0.5  : x;
+            y = y === undefined ? canvasHeight * 0.5  : y;
+
+            imgPos = $.fancybox.getTranslate( $what );
+
+            scaleX  = newImgWidth  / imgPos.width;
+            scaleY  = newImgHeight / imgPos.height;
+
+            // Get center position for original image
+            posX = ( canvasWidth * 0.5  - newImgWidth * 0.5 );
+            posY = ( canvasHeight * 0.5 - newImgHeight * 0.5 );
+
+            // Make sure image does not move away from edges
+
+            if ( newImgWidth > canvasWidth ) {
+                posX = imgPos.left * scaleX - ( ( x * scaleX ) - x );
+
+                if ( posX > 0 ) {
+                    posX = 0;
+                }
+
+                if ( posX <  canvasWidth - newImgWidth ) {
+                    posX = canvasWidth - newImgWidth;
+                }
+            }
+
+            if ( newImgHeight > canvasHeight) {
+                posY = imgPos.top  * scaleY - ( ( y * scaleY ) - y );
+
+                if ( posY > 0 ) {
+                    posY = 0;
+                }
+
+                if ( posY <  canvasHeight - newImgHeight ) {
+                    posY = canvasHeight - newImgHeight;
+                }
+            }
+
+            self.updateCursor( newImgWidth, newImgHeight );
+
+            $.fancybox.animate( $what, null, {
+                top    : posY,
+                left   : posX,
+                scaleX : scaleX,
+                scaleY : scaleY
+            }, duration || current.opts.speed, function() {
+                self.isAnimating = false;
+            });
+
+        },
+
+
+        // Scale image to fit inside parent element
+        // ========================================
+
+        scaleToFit : function( duration ) {
+
+            var self = this;
+
+            var current = self.current;
+            var $what   = current.$placeholder;
+            var end;
+
+            if ( !$what ) {
+                return;
+            }
+
+            self.isAnimating = true;
+
+            end = self.getFitPos( current );
+
+            self.updateCursor( end.width, end.height );
+
+            $.fancybox.animate( $what, null, {
+                top    : end.top,
+                left   : end.left,
+                scaleX : end.width  / $what.width(),
+                scaleY : end.height / $what.height()
+            }, duration || current.opts.speed, function() {
+                self.isAnimating = false;
+            });
+
+        },
+
+        // Calculate image size to fit inside viewport
+        // ===========================================
+
+        getFitPos : function( slide ) {
+            var $what = slide.$placeholder || slide.$content;
+
+            var imgWidth  = slide.width;
+            var imgHeight = slide.height;
+
+            var margin = slide.opts.margin;
+
+            var canvasWidth, canvasHeight, minRatio, top, left, width, height;
+
+            if ( !$what || !$what.length || ( !imgWidth && !imgHeight) ) {
+                return false;
+            }
+
+            // Convert "margin to CSS style: [ top, right, bottom, left ]
+            if ( $.type( margin ) === "number" ) {
+                margin = [ margin, margin ];
+            }
+
+            if ( margin.length == 2 ) {
+                margin = [ margin[0], margin[1], margin[0], margin[1] ];
+            }
+
+            if ( $W.width() < 800 ) {
+                margin = [0, 0, 0, 0];
+            }
+
+            canvasWidth  = parseInt( slide.$slide.width(), 10 )  - ( margin[ 1 ] + margin[ 3 ] );
+            canvasHeight = parseInt( slide.$slide.height(), 10 ) - ( margin[ 0 ] + margin[ 2 ] );
+
+            minRatio = Math.min(1, canvasWidth / imgWidth, canvasHeight / imgHeight );
+
+            // Use floor rounding to make sure it really fits
+
+            width  = Math.floor( minRatio * imgWidth );
+            height = Math.floor( minRatio * imgHeight );
+
+            top  = Math.floor( ( canvasHeight - height ) * 0.5 ) + margin[ 0 ];
+            left = Math.floor( ( canvasWidth  - width )  * 0.5 ) + margin[ 3 ];
+
+            return {
+                top    : top,
+                left   : left,
+                width  : width,
+                height : height
+            };
+
+        },
+
+        // Move slider to current position
+        // Update all slides (and their content)
+        // =====================================
+
+        update : function( andSlides, andContent, duration, callback ) {
+
+            var self = this;
+            var leftValue;
+
+            if ( self.isAnimating === true || !self.current ) {
+                return;
+            }
+
+            leftValue = ( self.current.pos * Math.floor( self.current.$slide.width() ) * -1 ) - ( self.current.pos * self.current.opts.gutter );
+            duration  = parseInt( duration, 10 ) || 0;
+
+            $.fancybox.stop( self.$refs.slider );
+
+            if ( andSlides === false ) {
+                self.updateSlide( self.current, andContent );
+
+            } else {
+
+                $.each( self.slides, function( key, slide ) {
+                    self.updateSlide( slide, andContent );
+                });
+
+            }
+
+            if ( duration ) {
+
+                $.fancybox.animate( self.$refs.slider, null, {
+                    top  : 0,
+                    left : leftValue
+                }, duration, function() {
+                    self.current.isMoved = true;
+
+                    if ( $.type( callback ) === 'function' ) {
+                        callback.apply( self );
+                    }
+
+                });
+
+            } else {
+
+                $.fancybox.setTranslate( self.$refs.slider, { top : 0, left : leftValue } );
+
+                self.current.isMoved = true;
+
+                if ( $.type( callback ) === 'function' ) {
+                    callback.apply( self );
+                }
+
+            }
+
+        },
+
+
+        // Update slide position and scale content to fit
+        // ==============================================
+
+        updateSlide : function( slide, andContent ) {
+
+            var self  = this;
+            var $what = slide.$placeholder;
+            var leftPos;
+
+            slide = slide || self.current;
+
+            if ( !slide || self.isClosing ) {
+                return;
+            }
+
+            leftPos = ( slide.pos * Math.floor( slide.$slide.width() )  ) + ( slide.pos * slide.opts.gutter);
+
+            if ( leftPos !== slide.leftPos ) {
+                $.fancybox.setTranslate( slide.$slide, { top: 0, left : leftPos } );
+
+                slide.leftPos = leftPos;
+            }
+
+            if ( andContent !== false && $what ) {
+                $.fancybox.setTranslate( $what, self.getFitPos( slide ) );
+
+                if ( slide.pos === self.currPos ) {
+                    self.updateCursor();
+                }
+            }
+
+            slide.$slide.trigger( 'refresh' );
+
+            self.trigger( 'onUpdate', slide );
+        },
+
+        // Update cursor style depending if content can be zoomed
+        // ======================================================
+
+        updateCursor : function( nextWidth, nextHeight ) {
+
+            var self = this;
+            var canScale;
+
+            var $container = self.$refs.container.removeClass('fancybox-controls--canzoomIn fancybox-controls--canzoomOut fancybox-controls--canGrab');
+
+            if ( self.isClosing || !self.opts.touch ) {
+                return;
+            }
+
+            if ( nextWidth !== undefined && nextHeight !== undefined ) {
+                canScale = nextWidth < self.current.width && nextHeight < self.current.height;
+
+            } else {
+                canScale = self.isScaledDown();
+            }
+
+            if ( canScale ) {
+                $container.addClass('fancybox-controls--canzoomIn');
+
+            } else if ( self.group.length < 2 ) {
+                $container.addClass('fancybox-controls--canzoomOut');
+
+            } else {
+                $container.addClass('fancybox-controls--canGrab');
+            }
+
+        },
+
+        // Load content into the slide
+        // ===========================
+
+        loadSlide : function( slide ) {
+
+            var self = this, type, $slide;
+            var ajaxLoad;
+
+            if ( !slide || slide.isLoaded || slide.isLoading ) {
+                return;
+            }
+
+            slide.isLoading = true;
+
+            self.trigger( 'beforeLoad', slide );
+
+            type   = slide.type;
+            $slide = slide.$slide;
+
+            $slide
+                .off( 'refresh' )
+                .trigger( 'onReset' )
+                .addClass( 'fancybox-slide--' + ( type || 'unknown' ) )
+                .addClass( slide.opts.slideClass );
+
+            // Create content depending on the type
+
+            switch ( type ) {
+
+                case 'image':
+
+                    self.setImage( slide );
+
+                break;
+
+                case 'iframe':
+
+                    self.setIframe( slide );
+
+                break;
+
+                case 'html':
+
+                    self.setContent( slide, slide.content );
+
+                break;
+
+                case 'inline':
+
+                    if ( $( slide.src ).length ) {
+                        self.setContent( slide, $( slide.src ) );
+
+                    } else {
+                        self.setError( slide );
+                    }
+
+                break;
+
+                case 'ajax':
+
+                    self.showLoading( slide );
+
+                    ajaxLoad = $.ajax( $.extend( {}, slide.opts.ajax.settings, {
+
+                        url: slide.src,
+
+                        success: function ( data, textStatus ) {
+
+                            if ( textStatus === 'success' ) {
+                                self.setContent( slide, data );
+                            }
+
+                        },
+
+                        error: function ( jqXHR, textStatus ) {
+
+                            if ( jqXHR && textStatus !== 'abort' ) {
+                                self.setError( slide );
+                            }
+
+                        }
+
+                    }));
+
+                    $slide.one( 'onReset', function () {
+                        ajaxLoad.abort();
+                    });
+
+                break;
+
+                default:
+
+                    self.setError( slide );
+
+                break;
+
+            }
+
+            return true;
+
+        },
+
+
+        // Use thumbnail image, if possible
+        // ================================
+
+        setImage : function( slide ) {
+
+            var self   = this;
+            var srcset = slide.opts.image.srcset;
+
+            var found, temp, pxRatio, windowWidth;
+
+            if ( slide.isLoaded && !slide.hasError ) {
+                self.afterLoad( slide );
+
+                return;
+            }
+
+            // If we have "srcset", then we need to find matching "src" value.
+            // This is necessary, because when you set an src attribute, the browser will preload the image
+            // before any javascript or even CSS is applied.
+            if ( srcset ) {
+                pxRatio     = window.devicePixelRatio || 1;
+                windowWidth = window.innerWidth  * pxRatio;
+
+                temp = srcset.split(',').map(function (el) {
+            		var ret = {};
+
+            		el.trim().split(/\s+/).forEach(function (el, i) {
+                        var value = parseInt(el.substring(0, el.length - 1), 10);
+
+            			if ( i === 0 ) {
+            				return (ret.url = el);
+            			}
+
+                        if ( value ) {
+                            ret.value   = value;
+                            ret.postfix = el[el.length - 1];
+                        }
+
+            		});
+
+            		return ret;
+            	});
+
+                // Sort by value
+                temp.sort(function (a, b) {
+                  return a.value - b.value;
+                });
+
+                // Ok, now we have an array of all srcset values
+                for ( var j = 0; j < temp.length; j++ ) {
+                    var el = temp[ j ];
+
+                    if ( ( el.postfix === 'w' && el.value >= windowWidth ) || ( el.postfix === 'x' && el.value >= pxRatio ) ) {
+                        found = el;
+                        break;
+                    }
+                }
+
+                // If not found, take the last one
+                if ( !found && temp.length ) {
+                    found = temp[ temp.length - 1 ];
+                }
+
+                if ( found ) {
+                    slide.src = found.url;
+
+                    // If we have default width/height values, we can calculate height for matching source
+                    if ( slide.width && slide.height && found.postfix == 'w' ) {
+                        slide.height = ( slide.width / slide.height ) * found.value;
+                        slide.width  = found.value;
+                    }
+                }
+            }
+
+            slide.$placeholder = $('<div class="fancybox-placeholder"></div>')
+                .hide()
+                .appendTo( slide.$slide );
+
+            if ( slide.opts.preload !== false && slide.opts.width && slide.opts.height && ( slide.opts.thumb || slide.opts.$thumb ) ) {
+
+                slide.width  = slide.opts.width;
+                slide.height = slide.opts.height;
+
+                slide.$ghost = $('<img />')
+                    .one('load error', function() {
+
+                        if ( self.isClosing ) {
+                            return;
+                        }
+
+                        // Start preloading full size image
+                        $('<img/>')[0].src = slide.src;
+
+                        // zoomIn or just show
+                        self.revealImage( slide, function() {
+
+                            self.setBigImage( slide );
+
+                            if ( self.firstRun && slide.index === self.currIndex ) {
+                                self.preload();
+                            }
+                        });
+
+                    })
+                    .addClass( 'fancybox-image' )
+                    .appendTo( slide.$placeholder )
+                    .attr( 'src', slide.opts.thumb || slide.opts.$thumb.attr( 'src' ) );
+
+            } else {
+
+                self.setBigImage( slide );
+
+            }
+
+        },
+
+
+        // Create full-size image
+        // ======================
+
+        setBigImage : function ( slide ) {
+            var self = this;
+            var $img = $('<img />');
+
+            slide.$image = $img
+                .one('error', function() {
+
+                    self.setError( slide );
+
+                })
+                .one('load', function() {
+
+                    // Clear timeout that checks if loading icon needs to be displayed
+                    clearTimeout( slide.timouts );
+
+                    slide.timouts = null;
+
+                    if ( self.isClosing ) {
+                        return;
+                    }
+
+                    slide.width  = this.naturalWidth;
+                    slide.height = this.naturalHeight;
+
+                    if ( slide.opts.image.srcset ) {
+                        $img.attr('sizes', '100vw').attr('srcset', slide.opts.image.srcset);
+                    }
+
+                    self.afterLoad( slide );
+
+                    if ( slide.$ghost ) {
+                        slide.timouts = setTimeout(function() {
+                            slide.$ghost.hide();
+
+                        }, 350);
+                    }
+
+                })
+                .addClass('fancybox-image')
+                .attr('src', slide.src)
+                .appendTo( slide.$placeholder );
+
+            if ( $img[0].complete ) {
+                  $img.trigger('load');
+
+            } else if( $img[0].error ) {
+                 $img.trigger('error');
+
+            } else {
+
+                slide.timouts = setTimeout(function() {
+                    if ( !$img[0].complete && !slide.hasError ) {
+                        self.showLoading( slide );
+                    }
+
+                }, 150);
+
+            }
+
+            if ( slide.opts.image.protect ) {
+                $('<div class="fancybox-spaceball"></div>').appendTo( slide.$placeholder ).on('contextmenu.fb',function(e){
+                     if ( e.button == 2 ) {
+                         e.preventDefault();
+                     }
+
+                    return true;
+                });
+            }
+
+        },
+
+        // Simply show image holder without animation
+        // It has been hidden initially to avoid flickering
+        // ================================================
+
+        revealImage : function( slide, callback ) {
+
+            var self = this;
+
+            callback = callback || $.noop;
+
+            if ( slide.type !== 'image' || slide.hasError || slide.isRevealed === true ) {
+
+                callback.apply( self );
+
+                return;
+            }
+
+            slide.isRevealed = true;
+
+            if ( !( slide.pos === self.currPos && self.zoomInOut( 'In', slide.opts.speed, callback ) ) ) {
+
+                if ( slide.$ghost && !slide.isLoaded ) {
+                    self.updateSlide( slide, true );
+                }
+
+                if ( slide.pos === self.currPos ) {
+                    $.fancybox.animate( slide.$placeholder, { opacity: 0 }, { opacity: 1 }, 300, callback );
+
+                } else {
+                    slide.$placeholder.show();
+                }
+
+                callback.apply( self );
+
+            }
+
+        },
+
+        // Create iframe wrapper, iframe and bindings
+        // ==========================================
+
+        setIframe : function( slide ) {
+            var self	= this,
+                opts    = slide.opts.iframe,
+                $slide	= slide.$slide,
+                $iframe;
+
+            slide.$content = $('<div class="fancybox-content"></div>')
+                .css( opts.css )
+                .appendTo( $slide );
+
+            $iframe = $( opts.tpl.replace(/\{rnd\}/g, new Date().getTime()) )
+                .attr('scrolling', $.fancybox.isTouch ? 'auto' : opts.scrolling)
+                .appendTo( slide.$content );
+
+            if ( opts.preload ) {
+                slide.$content.addClass( 'fancybox-tmp' );
+
+                self.showLoading( slide );
+
+                // Unfortunately, it is not always possible to determine if iframe is successfully loaded
+                // (due to browser security policy)
+
+                $iframe.on('load.fb error.fb', function(e) {
+                    this.isReady = 1;
+
+                    slide.$slide.trigger( 'refresh' );
+
+                    self.afterLoad( slide );
+
+                });
+
+                // Recalculate iframe content size
+
+                $slide.on('refresh.fb', function() {
+                    var $wrap = slide.$content,
+                        $contents,
+                        $body,
+                        scrollWidth,
+                        frameWidth,
+                        frameHeight;
+
+                    if ( $iframe[0].isReady !== 1 ) {
+                        return;
+                    }
+
+                    // Check if content is accessible,
+                    // it will fail if frame is not with the same origin
+
+                    try {
+                        $contents = $iframe.contents();
+                        $body     = $contents.find('body');
+
+                    } catch (ignore) {}
+
+                    // Calculate dimensions for the wrapper
+
+                    if ( $body && $body.length && !( opts.css.width !== undefined && opts.css.height !== undefined ) ) {
+
+                        scrollWidth = $iframe[0].contentWindow.document.documentElement.scrollWidth;
+
+                        frameWidth	= Math.ceil( $body.outerWidth(true) + ( $wrap.width() - scrollWidth ) );
+                        frameHeight	= Math.ceil( $body.outerHeight(true) );
+
+                        // Resize wrapper to fit iframe content
+
+                        $wrap.css({
+                            'width'  : opts.css.width  === undefined ? frameWidth  + ( $wrap.outerWidth()  - $wrap.innerWidth() )  : opts.css.width,
+                            'height' : opts.css.height === undefined ? frameHeight + ( $wrap.outerHeight() - $wrap.innerHeight() ) : opts.css.height
+                        });
+
+                    }
+
+                    $wrap.removeClass( 'fancybox-tmp' );
+
+                });
+
+            } else {
+
+                this.afterLoad( slide );
+
+            }
+
+            $iframe.attr( 'src', slide.src );
+
+            if ( slide.opts.smallBtn ) {
+                slide.$content.prepend( slide.opts.closeTpl );
+            }
+
+            // Remove iframe if closing or changing gallery item
+
+            $slide.one('onReset', function () {
+
+                // This helps IE not to throw errors when closing
+
+                try {
+
+                    $(this).find('iframe').hide().attr('src', '//about:blank');
+
+                } catch (ignore) {}
+
+                $(this).empty();
+
+                slide.isLoaded = false;
+
+            });
+
+        },
+
+
+        // Wrap and append content to the slide
+        // ======================================
+
+        setContent : function ( slide, content ) {
+
+            var self = this;
+
+            if ( self.isClosing ) {
+                return;
+            }
+
+            self.hideLoading( slide );
+
+            slide.$slide.empty();
+
+            if ( isQuery( content ) && content.parent().length ) {
+
+                // If it is a jQuery object, then it will be moved to the box.
+                // The placeholder is created so we will know where to put it back.
+                // If user is navigating gallery fast, then the content might be already moved to the box
+
+                if ( content.data( 'placeholder' ) ) {
+                    content.parents('.fancybox-slide').trigger( 'onReset' );
+                }
+
+                content.data({'placeholder' : $('<div></div>' ).hide().insertAfter( content ) }).css('display', 'inline-block');
+
+            } else {
+
+                if ( $.type( content ) === 'string' ) {
+
+                    content = $('<div>').append( content ).contents();
+
+                    if ( content[0].nodeType === 3 ) {
+                        content = $('<div>').html( content );
+                    }
+
+                }
+
+                if ( slide.opts.selector ) {
+                    content = $('<div>').html( content ).find( slide.opts.selector );
+                }
+
+            }
+
+            slide.$slide.one('onReset', function () {
+                var placeholder = isQuery( content ) ? content.data('placeholder') : 0;
+
+                if ( placeholder ) {
+                    content.hide().replaceAll( placeholder );
+
+                    content.data( 'placeholder', null );
+                }
+
+                if ( !slide.hasError ) {
+                    $(this).empty();
+
+                    slide.isLoaded = false;
+                }
+
+            });
+
+            slide.$content = $( content ).appendTo( slide.$slide );
+
+            if ( slide.opts.smallBtn === true ) {
+                slide.$content.find( '.fancybox-close-small' ).remove().end().eq(0).append( slide.opts.closeTpl );
+            }
+
+            this.afterLoad( slide );
+
+        },
+
+        // Display error message
+        // =====================
+
+        setError : function ( slide ) {
+
+            slide.hasError = true;
+
+            this.setContent( slide, slide.opts.errorTpl );
+
+        },
+
+
+        showLoading : function( slide ) {
+            var self = this;
+
+            slide = slide || self.current;
+
+            if ( slide && !slide.$spinner ) {
+                slide.$spinner = $( self.opts.spinnerTpl ).appendTo( slide.$slide );
+            }
+
+        },
+
+        hideLoading : function( slide ) {
+
+            var self = this;
+
+            slide = slide || self.current;
+
+            if ( slide && slide.$spinner ) {
+                slide.$spinner.remove();
+
+                delete slide.$spinner;
+            }
+
+        },
+
+        afterMove : function() {
+
+            var self    = this;
+            var current = self.current;
+            var slides  = {};
+
+            if ( !current ) {
+                return;
+            }
+
+            current.$slide.siblings().trigger( 'onReset' );
+
+            // Remove unnecessary slides
+            $.each( self.slides, function( key, slide ) {
+
+                if (  slide.pos >= self.currPos - 1 && slide.pos <= self.currPos + 1 ) {
+                    slides[ slide.pos ] = slide;
+
+                } else if ( slide ) {
+                    slide.$slide.remove();
+                }
+
+            });
+
+            self.slides = slides;
+
+            self.trigger( 'afterMove' );
+
+            if ( current.isLoaded ) {
+                self.complete();
+            }
+
+        },
+
+        // Adjustments after slide has been loaded
+        // =======================================
+
+        afterLoad : function( slide ) {
+
+            var self = this;
+
+            if ( self.isClosing ) {
+                return;
+            }
+
+            slide.isLoading = false;
+            slide.isLoaded  = true;
+
+            self.trigger( 'afterLoad', slide );
+
+            self.hideLoading( slide );
+
+            // Resize content to fit inside slide
+            // Skip if slide has an $ghost element, because then it has been already processed
+            if ( !slide.$ghost ) {
+                self.updateSlide( slide, true );
+            }
+
+            if ( slide.index === self.currIndex && slide.isMoved ) {
+                self.complete();
+
+            } else if ( !slide.$ghost ) {
+                self.revealImage( slide );
+            }
+
+        },
+
+
+        // Final adjustments after current gallery item is moved to position
+        // and it`s content is loaded
+        // ==================================================================
+
+        complete : function() {
+
+            var self = this;
+
+            var current = self.current;
+
+            self.revealImage( current, function() {
+                current.isComplete = true;
+
+                current.$slide.addClass('fancybox-slide--complete');
+
+                self.updateCursor();
+
+                self.trigger( 'onComplete' );
+
+                // Try to focus on the first focusable element, skip for images and iframes
+                if ( current.opts.focus && !( current.type === 'image' || current.type === 'iframe' ) ) {
+                    self.focus();
+                }
+
+            });
+
+        },
+
+
+        // Preload next and previous slides
+        // ================================
+
+        preload : function() {
+            var self = this;
+            var next, prev;
+
+            if ( self.group.length < 2 ) {
+                return;
+            }
+
+            next  = self.slides[ self.currPos + 1 ];
+            prev  = self.slides[ self.currPos - 1 ];
+
+            if ( next && next.type === 'image' ) {
+                self.loadSlide( next );
+            }
+
+            if ( prev && prev.type === 'image' ) {
+                self.loadSlide( prev );
+            }
+
+        },
+
+
+        // Try to find and focus on the first focusable element
+        // ====================================================
+
+        focus : function() {
+            var current = this.current;
+            var $el;
+
+            $el = current && current.isComplete ? current.$slide.find('button,:input,[tabindex],a:not(".disabled")').filter(':visible:first') : null;
+
+            if ( !$el || !$el.length ) {
+                $el = this.$refs.container;
+            }
+
+            $el.focus();
+
+            // Scroll position of wrapper element sometimes changes after focusing (IE)
+            this.$refs.slider_wrap.scrollLeft(0);
+
+            // And the same goes for slide element
+            if ( current ) {
+                current.$slide.scrollTop(0);
+            }
+
+        },
+
+
+        // Activates current instance - brings container to the front and enables keyboard,
+        // notifies other instances about deactivating
+        // =================================================================================
+
+        activate : function () {
+            var self = this;
+
+            // Deactivate all instances
+
+            $( '.fancybox-container' ).each(function () {
+                var instance = $(this).data( 'FancyBox' );
+
+                // Skip self and closing instances
+
+                if (instance && instance.uid !== self.uid && !instance.isClosing) {
+                    instance.trigger( 'onDeactivate' );
+                }
+
+            });
+
+            if ( self.current ) {
+
+                if ( self.$refs.container.index() > 0 ) {
+                    self.$refs.container.prependTo( document.body );
+                }
+
+                self.updateControls();
+            }
+
+            self.trigger( 'onActivate' );
+
+            self.addEvents();
+
+        },
+
+
+        // Start closing procedure
+        // This will start "zoom-out" animation if needed and clean everything up afterwards
+        // =================================================================================
+
+        close : function( e ) {
+
+            var self     = this;
+            var current  = self.current;
+            var duration = current.opts.speed;
+
+            var done = $.proxy(function() {
+
+                self.cleanUp( e );  // Now "this" is again our instance
+
+            }, this);
+
+            if ( self.isAnimating || self.isClosing ) {
+                return false;
+            }
+
+            // If beforeClose callback prevents closing, make sure content is centered
+            if ( self.trigger( 'beforeClose', e ) === false ) {
+                $.fancybox.stop( self.$refs.slider );
+
+                requestAFrame(function() {
+                    self.update( true, true, 150 );
+                });
+
+                return;
+            }
+
+            self.isClosing = true;
+
+            if ( current.timouts ) {
+                clearTimeout( current.timouts );
+            }
+
+            if ( e !== true) {
+                $.fancybox.stop( self.$refs.slider );
+            }
+
+            self.$refs.container
+                .removeClass('fancybox-container--active')
+                .addClass('fancybox-container--closing');
+
+            current.$slide
+                .removeClass('fancybox-slide--complete')
+                .siblings()
+                .remove();
+
+
+            if ( !current.isMoved ) {
+                current.$slide.css('overflow', 'visible');
+            }
+
+            // Remove all events
+            // If there are multiple instances, they will be set again by "activate" method
+
+            self.removeEvents();
+
+            // Clean up
+
+            self.hideLoading( current );
+
+            self.hideControls();
+
+            self.updateCursor();
+
+            self.$refs.bg.css('transition-duration', duration + 'ms');
+
+            this.$refs.container.removeClass( 'fancybox-container--ready' );
+
+            if ( e === true ) {
+                setTimeout( done, duration );
+
+            } else if ( !self.zoomInOut( 'Out', duration, done ) ) {
+                $.fancybox.animate( self.$refs.container, null, { opacity : 0 }, duration, "easeInSine", done );
+            }
+
+        },
+
+
+        // Final adjustments after removing the instance
+        // =============================================
+
+        cleanUp : function( e ) {
+            var self = this,
+                instance;
+
+            self.$refs.slider.children().trigger( 'onReset' );
+
+            self.$refs.container.empty().remove();
+
+            self.trigger( 'afterClose', e );
+
+            self.current = null;
+
+            // Check if there are other instances
+            instance = $.fancybox.getInstance();
+
+            if ( instance ) {
+                instance.activate();
+
+            } else {
+
+                $( 'html' ).removeClass( 'fancybox-enabled' );
+                $( 'body' ).removeAttr( 'style' );
+
+                $W.scrollTop( self.scrollTop ).scrollLeft( self.scrollLeft );
+
+                $( '#fancybox-noscroll' ).remove();
+
+            }
+
+            // Place back focus
+            if ( self.$lastFocus ) {
+                self.$lastFocus.focus();
+            }
+
+        },
+
+
+        // Call callback and trigger an event
+        // ==================================
+
+        trigger : function( name, slide ) {
+            var args  = Array.prototype.slice.call(arguments, 1),
+                self  = this,
+                obj   = slide && slide.opts ? slide : self.current,
+                rez;
+
+            if ( obj ) {
+                args.unshift( obj );
+
+            } else {
+                obj = self;
+            }
+
+            args.unshift( self );
+
+            if ( $.isFunction( obj.opts[ name ] ) ) {
+                rez = obj.opts[ name ].apply( obj, args );
+            }
+
+            if ( rez === false ) {
+                return rez;
+            }
+
+            if ( name === 'afterClose' ) {
+                $( document ).trigger( name + '.fb', args );
+
+            } else {
+                self.$refs.container.trigger( name + '.fb', args );
+            }
+
+        },
+
+
+        // Toggle toolbar and caption
+        // ==========================
+
+        toggleControls : function( force ) {
+
+            if ( this.isHiddenControls ) {
+                this.updateControls( force );
+
+            } else {
+                this.hideControls();
+            }
+
+
+        },
+
+
+        // Hide toolbar and caption
+        // ========================
+
+        hideControls : function () {
+
+            this.isHiddenControls = true;
+
+            this.$refs.container.removeClass('fancybox-show-controls');
+
+            this.$refs.container.removeClass('fancybox-show-caption');
+
+        },
+
+
+        // Update infobar values, navigation button states and reveal caption
+        // ==================================================================
+
+        updateControls : function ( force ) {
+
+            var self = this;
+
+            var $container = self.$refs.container;
+            var $caption   = self.$refs.caption;
+
+            // Toggle infobar and buttons
+
+            var current  = self.current;
+            var index    = current.index;
+            var opts     = current.opts;
+            var caption  = opts.caption;
+
+            if ( this.isHiddenControls && force !== true ) {
+                return;
+            }
+
+            this.isHiddenControls = false;
+
+            $container
+                .addClass('fancybox-show-controls')
+                .toggleClass('fancybox-show-infobar', !!opts.infobar && self.group.length > 1)
+                .toggleClass('fancybox-show-buttons', !!opts.buttons )
+                .toggleClass('fancybox-is-modal',     !!opts.modal );
+
+            $('.fancybox-button--left',  $container).toggleClass( 'fancybox-button--disabled', (!opts.loop && index <= 0 ) );
+            $('.fancybox-button--right', $container).toggleClass( 'fancybox-button--disabled', (!opts.loop && index >= self.group.length - 1) );
+
+            $('.fancybox-button--play',  $container).toggle( !!( opts.slideShow && self.group.length > 1) );
+            $('.fancybox-button--close', $container).toggle( !!opts.closeBtn );
+
+            // Update infobar values
+
+            $('.js-fancybox-count', $container).html( self.group.length );
+            $('.js-fancybox-index', $container).html( index + 1 );
+
+            // Recalculate content dimensions
+            current.$slide.trigger( 'refresh' );
+
+            // Reveal or create new caption
+            if ( $caption ) {
+                $caption.empty();
+            }
+
+            if ( caption && caption.length ) {
+                $caption.html( caption );
+
+                this.$refs.container.addClass( 'fancybox-show-caption ');
+
+                self.$caption = $caption;
+
+            } else {
+                this.$refs.container.removeClass( 'fancybox-show-caption' );
+            }
+
+        }
+
+    });
+
+
+    $.fancybox = {
+
+        version  : "3.0.47",
+        defaults : defaults,
+
+
+        // Get current instance and execute a command.
+        //
+        // Examples of usage:
+        //
+        //   $instance = $.fancybox.getInstance();
+        //   $.fancybox.getInstance().jumpTo( 1 );
+        //   $.fancybox.getInstance( 'jumpTo', 1 );
+        //   $.fancybox.getInstance( function() {
+        //       console.info( this.currIndex );
+        //   });
+        // ======================================================
+
+        getInstance : function ( command ) {
+            var instance = $('.fancybox-container:not(".fancybox-container--closing"):first').data( 'FancyBox' );
+            var args     = Array.prototype.slice.call(arguments, 1);
+
+            if ( instance instanceof FancyBox ) {
+
+                if ( $.type( command ) === 'string' ) {
+                    instance[ command ].apply( instance, args );
+
+                } else if ( $.type( command ) === 'function' ) {
+                    command.apply( instance, args );
+
+                }
+
+                return instance;
+            }
+
+            return false;
+
+        },
+
+
+        // Create new instance
+        // ===================
+
+        open : function ( items, opts, index ) {
+            return new FancyBox( items, opts, index );
+        },
+
+
+        // Close current or all instances
+        // ==============================
+
+        close : function ( all ) {
+            var instance = this.getInstance();
+
+            if ( instance ) {
+                instance.close();
+
+                // Try to find and close next instance
+
+                if ( all === true ) {
+                    this.close();
+                }
+            }
+
+        },
+
+
+        // Test for the existence of touch events in the browser
+        // Limit to mobile devices
+        // ====================================================
+
+        isTouch : document.createTouch !== undefined && /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent),
+
+
+        // Detect if 'translate3d' support is available
+        // ============================================
+
+        use3d : (function() {
+            var div = document.createElement('div');
+
+            return window.getComputedStyle( div ).getPropertyValue('transform') && !(document.documentMode && document.documentMode <= 11);
+        }()),
+
+
+        // Helper function to get current visual state of an element
+        // returns array[ top, left, horizontal-scale, vertical-scale, opacity ]
+        // =====================================================================
+
+        getTranslate : function( $el ) {
+            var position, matrix;
+
+            if ( !$el || !$el.length ) {
+                return false;
+            }
+
+            position = $el.get( 0 ).getBoundingClientRect();
+            matrix   = $el.eq( 0 ).css('transform');
+
+            if ( matrix && matrix.indexOf( 'matrix' ) !== -1 ) {
+                matrix = matrix.split('(')[1];
+                matrix = matrix.split(')')[0];
+                matrix = matrix.split(',');
+            } else {
+                matrix = [];
+            }
+
+            if ( matrix.length ) {
+
+                // If IE
+                if ( matrix.length > 10 ) {
+                    matrix = [ matrix[13], matrix[12], matrix[0], matrix[5] ];
+
+                } else {
+                    matrix = [ matrix[5], matrix[4], matrix[0], matrix[3]];
+                }
+
+                matrix = matrix.map(parseFloat);
+
+            } else {
+                matrix = [ 0, 0, 1, 1 ];
+            }
+
+            return {
+                top     : matrix[ 0 ],
+                left    : matrix[ 1 ],
+                scaleX  : matrix[ 2 ],
+                scaleY  : matrix[ 3 ],
+                opacity : parseFloat( $el.css('opacity') ),
+                width   : position.width,
+                height  : position.height
+            };
+
+        },
+
+
+        // Shortcut for setting "translate3d" properties for element
+        // Can set be used to set opacity, too
+        // ========================================================
+
+        setTranslate : function( $el, props ) {
+            var str  = '';
+            var css  = {};
+
+            if ( !$el || !props ) {
+                return;
+            }
+
+            if ( props.left !== undefined || props.top !== undefined ) {
+
+                str = ( props.left === undefined ? $el.position().top : props.left )  + 'px, ' + ( props.top === undefined ? $el.position().top : props.top ) + 'px';
+
+                if ( this.use3d ) {
+                    str = 'translate3d(' + str + ', 0px)';
+
+                } else {
+                    str = 'translate(' + str + ')';
+                }
+
+            }
+
+            if ( props.scaleX !== undefined && props.scaleY !== undefined ) {
+                str = (str.length ? str + ' ' : '') + 'scale(' + props.scaleX + ', ' + props.scaleY + ')';
+            }
+
+            if ( str.length ) {
+                css.transform = str;
+            }
+
+            if ( props.opacity !== undefined ) {
+                css.opacity = props.opacity;
+            }
+
+            if ( props.width !== undefined ) {
+                css.width = props.width;
+            }
+
+            if ( props.height !== undefined ) {
+                css.height = props.height;
+            }
+
+            return $el.css( css );
+
+        },
+
+
+        // Common easings for entrances and exits
+        // t: current time, b: begInnIng value, c: change In value, d: duration
+        // ====================================================================
+
+        easing : {
+            easeOutCubic : function (t, b, c, d) {
+                return c * ((t=t/d-1)*t*t + 1) + b;
+            },
+            easeInCubic : function (t, b, c, d) {
+                return c * (t/=d)*t*t + b;
+            },
+            easeOutSine : function (t, b, c, d) {
+                return c * Math.sin(t/d * (Math.PI/2)) + b;
+            },
+            easeInSine : function (t, b, c, d) {
+                return -c * Math.cos(t/d * (Math.PI/2)) + c + b;
+            }
+        },
+
+
+        // Stop fancyBox animation
+        // =======================
+
+        stop : function( $el ) {
+
+            $el.removeData( 'animateID' );
+
+        },
+
+        // Animate element using "translate3d"
+        // Usage:
+        // animate( element, start properties, end properties, duration, easing, callback )
+        // or
+        // animate( element, start properties, end properties, duration, callback )
+        // =================================================================================
+
+        animate : function( $el, from, to, duration, easing, done ) {
+
+            var self = this;
+
+            var lastTime = null;
+            var animTime = 0;
+
+            var curr;
+            var diff;
+            var id;
+
+            var finish = function() {
+                if ( to.scaleX !== undefined && to.scaleY !== undefined && from && from.width !== undefined && from.height !== undefined ) {
+                    to.width  = from.width  * to.scaleX;
+                    to.height = from.height * to.scaleY;
+
+                    to.scaleX = 1;
+                    to.scaleY = 1;
+                }
+
+                self.setTranslate( $el, to );
+
+                done();
+            };
+
+            var frame = function ( timestamp ) {
+                curr = [];
+                diff = 0;
+
+                // If "stop" method has been called on this element, then just stop
+                if ( !$el.length || $el.data( 'animateID' ) !== id ) {
+                    return;
+                }
+
+                timestamp = timestamp || Date.now();
+
+                if ( lastTime ) {
+                    diff = timestamp - lastTime;
+                }
+
+                lastTime = timestamp;
+                animTime += diff;
+
+                // Are we done?
+                if ( animTime >= duration ) {
+
+                    finish();
+
+                    return;
+                }
+
+                for ( var prop in to ) {
+
+                    if ( to.hasOwnProperty( prop ) && from[ prop ] !== undefined ) {
+
+                        if ( from[ prop ] == to[ prop ] ) {
+                            curr[ prop ] = to[ prop ];
+
+                        } else {
+                            curr[ prop ] = self.easing[ easing ]( animTime, from[ prop ], to[ prop ] - from[ prop ], duration );
+                        }
+
+                    }
+                }
+
+                self.setTranslate( $el, curr );
+
+                requestAFrame( frame );
+            };
+
+            self.animateID = id = self.animateID === undefined ? 1 : self.animateID + 1;
+
+            $el.data( 'animateID', id );
+
+            if ( done === undefined && $.type(easing) == 'function' ) {
+                done   = easing;
+                easing = undefined;
+            }
+
+            if ( !easing ) {
+                easing = "easeOutCubic";
+            }
+
+            done = done || $.noop;
+
+            if ( from ) {
+                this.setTranslate( $el, from );
+
+            } else {
+
+                // We need current values to calculate change in time
+                from = this.getTranslate( $el );
+            }
+
+            if ( duration ) {
+                $el.show();
+
+                requestAFrame( frame );
+
+            } else {
+                finish();
+            }
+
+        }
+
+    };
+
+
+    // Event handler for click event to "fancyboxed" links
+    // ===================================================
+
+    function _run( e ) {
+        var target	= e.currentTarget,
+            opts	= e.data ? e.data.options : {},
+            items	= e.data ? e.data.items : [],
+            value	= '',
+            index	= 0;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Get all related items and find index for clicked one
+
+        if ( $(target).attr( 'data-fancybox' ) ) {
+            value = $(target).data( 'fancybox' );
+        }
+
+        if ( value ) {
+            items = items.length ? items.filter( '[data-fancybox="' + value + '"]' ) : $( '[data-fancybox=' + value + ']' );
+            index = items.index( target );
+
+        } else {
+            items = [ target ];
+        }
+
+        $.fancybox.open( items, opts, index );
+    }
+
+
+    // Create a jQuery plugin
+    // ======================
+
+    $.fn.fancybox = function (options) {
+
+        this.off('click.fb-start').on('click.fb-start', {
+            items   : this,
+            options : options || {}
+        }, _run);
+
+        return this;
+
+    };
+
+
+    // Self initializing plugin
+    // ========================
+
+    $(document).on('click.fb-start', '[data-fancybox]', _run);
+
+}(window, document, window.jQuery));
+
+// ==========================================================================
+//
+// Media
+// Adds additional media type support
+//
+// ==========================================================================
+;(function ($) {
+
+	'use strict';
+
+	// Formats matching url to final form
+
+	var format = function (url, rez, params) {
+		if ( !url ) {
+			return;
+		}
+
+		params = params || '';
+
+		if ( $.type(params) === "object" ) {
+			params = $.param(params, true);
+		}
+
+		$.each(rez, function (key, value) {
+			url = url.replace('$' + key, value || '');
+		});
+
+		if (params.length) {
+			url += (url.indexOf('?') > 0 ? '&' : '?') + params;
+		}
+
+		return url;
+	};
+
+	// Object containing properties for each media type
+
+	var media = {
+		youtube: {
+			matcher: /(youtube\.com|youtu\.be|youtube\-nocookie\.com)\/(watch\?(.*&)?v=|v\/|u\/|embed\/?)?(videoseries\?list=(.*)|[\w-]{11}|\?listType=(.*)&list=(.*))(.*)/i,
+			params: {
+				autoplay: 1,
+				autohide: 1,
+				fs: 1,
+				rel: 0,
+				hd: 1,
+				wmode: 'transparent',
+				enablejsapi: 1,
+				html5: 1
+			},
+			paramPlace : 8,
+			type: 'iframe',
+			url: '//www.youtube.com/embed/$4',
+			thumb: '//img.youtube.com/vi/$4/hqdefault.jpg'
+		},
+
+		vimeo: {
+			matcher: /^.+vimeo.com\/(.*\/)?([\d]+)(.*)?/,
+			params: {
+				autoplay: 1,
+				hd: 1,
+				show_title: 1,
+				show_byline: 1,
+				show_portrait: 0,
+				fullscreen: 1,
+				api: 1
+			},
+			paramPlace : 3,
+			type: 'iframe',
+			url: '//player.vimeo.com/video/$2'
+		},
+
+		metacafe: {
+			matcher: /metacafe.com\/watch\/(\d+)\/(.*)?/,
+			type: 'iframe',
+			url: '//www.metacafe.com/embed/$1/?ap=1'
+		},
+
+		dailymotion: {
+			matcher: /dailymotion.com\/video\/(.*)\/?(.*)/,
+			params: {
+				additionalInfos: 0,
+				autoStart: 1
+			},
+			type: 'iframe',
+			url: '//www.dailymotion.com/embed/video/$1'
+		},
+
+		vine: {
+			matcher: /vine.co\/v\/([a-zA-Z0-9\?\=\-]+)/,
+			type: 'iframe',
+			url: '//vine.co/v/$1/embed/simple'
+		},
+
+		instagram: {
+			matcher: /(instagr\.am|instagram\.com)\/p\/([a-zA-Z0-9_\-]+)\/?/i,
+			type: 'image',
+			url: '//$1/p/$2/media/?size=l'
+		},
+
+		// Examples:
+		// http://maps.google.com/?ll=48.857995,2.294297&spn=0.007666,0.021136&t=m&z=16
+		// http://maps.google.com/?ll=48.857995,2.294297&spn=0.007666,0.021136&t=m&z=16
+		// https://www.google.lv/maps/place/Googleplex/@37.4220041,-122.0833494,17z/data=!4m5!3m4!1s0x0:0x6c296c66619367e0!8m2!3d37.4219998!4d-122.0840572
+		google_maps: {
+			matcher: /(maps\.)?google\.([a-z]{2,3}(\.[a-z]{2})?)\/(((maps\/(place\/(.*)\/)?\@(.*),(\d+.?\d+?)z))|(\?ll=))(.*)?/i,
+			type: 'iframe',
+			url: function (rez) {
+				return '//maps.google.' + rez[2] + '/?ll=' + ( rez[9] ? rez[9] + '&z=' + Math.floor(  rez[10]  ) + ( rez[12] ? rez[12].replace(/^\//, "&") : '' )  : rez[12] ) + '&output=' + ( rez[12] && rez[12].indexOf('layer=c') > 0 ? 'svembed' : 'embed' );
+			}
+		}
+	};
+
+	$(document).on('onInit.fb', function (e, instance) {
+
+		$.each(instance.group, function( i, item ) {
+
+			var url	 = item.src || '',
+				type = false,
+				thumb,
+				rez,
+				params,
+				urlParams,
+				o,
+				provider;
+
+			// Skip items that already have content type
+			if ( item.type ) {
+				return;
+			}
+
+			// Look for any matching media type
+
+			$.each(media, function ( n, el ) {
+				rez = url.match(el.matcher);
+				o   = {};
+				provider = n;
+
+				if (!rez) {
+					return;
+				}
+
+				type = el.type;
+
+				if ( el.paramPlace && rez[ el.paramPlace ] ) {
+					urlParams = rez[ el.paramPlace ];
+
+					if ( urlParams[ 0 ] == '?' ) {
+						urlParams = urlParams.substring(1);
+					}
+
+					urlParams = urlParams.split('&');
+
+					for ( var m = 0; m < urlParams.length; ++m ) {
+						var p = urlParams[ m ].split('=', 2);
+
+						if ( p.length == 2 ) {
+							o[ p[0] ] = decodeURIComponent( p[1].replace(/\+/g, " ") );
+						}
+					}
+				}
+
+				params = $.extend( true, {}, el.params, item.opts[ n ], o );
+
+				url   = $.type(el.url) === "function" ? el.url.call(this, rez, params, item) : format(el.url, rez, params);
+				thumb = $.type(el.thumb) === "function" ? el.thumb.call(this, rez, params, item) : format(el.thumb, rez);
+
+				if ( provider === 'vimeo' ) {
+					url = url.replace('&%23', '#');
+				}
+
+				return false;
+			});
+
+			// If it is found, then change content type and update the url
+
+			if ( type ) {
+				item.src  = url;
+				item.type = type;
+
+				if ( !item.opts.thumb && !(item.opts.$thumb && item.opts.$thumb.length ) ) {
+					item.opts.thumb = thumb;
+				}
+
+				if ( type === 'iframe' ) {
+					$.extend(true, item.opts, {
+						iframe : {
+							preload   : false,
+							scrolling : "no"
+						},
+						smallBtn   : false,
+						closeBtn   : true,
+						fullScreen : false,
+						slideShow  : false
+					});
+
+					item.opts.slideClass += ' fancybox-slide--video';
+				}
+
+			} else {
+
+				// If no content type is found, then set it to `iframe` as fallback
+				item.type = 'iframe';
+
+			}
+
+		});
+
+	});
+
+}(window.jQuery));
+
+// ==========================================================================
+//
+// Guestures
+// Adds touch guestures, handles click and tap events
+//
+// ==========================================================================
+;(function (window, document, $) {
+	'use strict';
+
+	var requestAFrame = (function() {
+		return  window.requestAnimationFrame ||
+				window.webkitRequestAnimationFrame ||
+				window.mozRequestAnimationFrame ||
+				function( callback ) {
+					window.setTimeout(callback, 1000 / 60); };
+				})();
+
+
+	var pointers = function( e ) {
+		var result = [];
+
+		e = e.originalEvent || e || window.e;
+		e = e.touches && e.touches.length ? e.touches : ( e.changedTouches && e.changedTouches.length ? e.changedTouches : [ e ] );
+
+		for ( var key in e ) {
+
+			if ( e[ key ].pageX ) {
+				result.push( { x : e[ key ].pageX, y : e[ key ].pageY } );
+
+			} else if ( e[ key ].clientX ) {
+				result.push( { x : e[ key ].clientX, y : e[ key ].clientY } );
+			}
+		}
+
+		return result;
+	};
+
+	var distance = function( point2, point1, what ) {
+
+		if ( !point1 || !point2 ) {
+			return 0;
+		}
+
+		if ( what === 'x' ) {
+			return point2.x - point1.x;
+
+		} else if ( what === 'y' ) {
+			return point2.y - point1.y;
+		}
+
+		return Math.sqrt( Math.pow( point2.x - point1.x, 2 ) + Math.pow( point2.y - point1.y, 2 ) );
+
+	};
+
+	var isClickable = function( $el ) {
+
+	 	return $el.is('a') || $el.is('button') || $el.is('input') || $el.is('select') || $el.is('textarea') || $.isFunction( $el.get(0).onclick );
+
+	};
+
+	var hasScrollbars = function( el ) {
+		var overflowY = window.getComputedStyle( el )['overflow-y'];
+		var overflowX = window.getComputedStyle( el )['overflow-x'];
+
+		var vertical   = (overflowY === 'scroll' || overflowY === 'auto') && el.scrollHeight > el.clientHeight;
+		var horizontal = (overflowX === 'scroll' || overflowX === 'auto') && el.scrollWidth > el.clientWidth;
+
+		return vertical || horizontal;
+	};
+
+	var isScrollable = function ( $el ) {
+
+		var rez = false;
+
+		while ( true ) {
+			rez	= hasScrollbars( $el.get(0) );
+
+			if ( rez ) {
+				break;
+			}
+
+			$el = $el.parent();
+
+			if ( !$el.length || $el.hasClass('fancybox-slider') || $el.is('body') ) {
+				break;
+			}
+
+		}
+
+		return rez;
+
+	};
+
+
+	var Guestures = function ( instance ) {
+
+		var self = this;
+
+		self.instance = instance;
+
+		self.$wrap       = instance.$refs.slider_wrap;
+		self.$slider     = instance.$refs.slider;
+		self.$container  = instance.$refs.container;
+
+		self.destroy();
+
+		self.$wrap.on('touchstart.fb mousedown.fb', $.proxy(self, "ontouchstart"));
+
+	};
+
+	Guestures.prototype.destroy = function() {
+
+		this.$wrap.off('touchstart.fb mousedown.fb touchmove.fb mousemove.fb touchend.fb touchcancel.fb mouseup.fb mouseleave.fb');
+
+	};
+
+	Guestures.prototype.ontouchstart = function( e ) {
+
+		var self = this;
+
+		var $target  = $( e.target );
+		var instance = self.instance;
+		var current  = instance.current;
+		var $content = current.$content || current.$placeholder;
+
+		self.startPoints = pointers( e );
+
+		self.$target  = $target;
+		self.$content = $content;
+
+		self.canvasWidth  = Math.round( current.$slide[0].clientWidth );
+		self.canvasHeight = Math.round( current.$slide[0].clientHeight );
+
+		self.startEvent = e;
+
+		// Skip if clicked on the scrollbar
+		if ( e.originalEvent.clientX > self.canvasWidth + current.$slide.offset().left ) {
+			return true;
+		}
+
+		// Ignore taping on links, buttons and scrollable items
+		if ( isClickable( $target ) || isClickable( $target.parent() ) || ( isScrollable( $target ) ) ) {
+			return;
+		}
+
+		// If "touch" is disabled, then handle click event
+		if ( !current.opts.touch ) {
+			self.endPoints = self.startPoints;
+
+			return self.ontap();
+		}
+
+		// Ignore right click
+		if ( e.originalEvent && e.originalEvent.button == 2 ) {
+			return;
+		}
+
+		e.stopPropagation();
+		e.preventDefault();
+
+		if ( !current || self.instance.isAnimating || self.instance.isClosing ) {
+			return;
+		}
+
+		// Prevent zooming if already swiping
+		if ( !self.startPoints || ( self.startPoints.length > 1 && !current.isMoved ) ) {
+			return;
+		}
+
+		self.$wrap.off('touchmove.fb mousemove.fb',  $.proxy(self, "ontouchmove"));
+		self.$wrap.off('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(self, "ontouchend"));
+
+		self.$wrap.on('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(self, "ontouchend"));
+		self.$wrap.on('touchmove.fb mousemove.fb',  $.proxy(self, "ontouchmove"));
+
+		self.startTime = new Date().getTime();
+		self.distanceX = self.distanceY = self.distance = 0;
+
+		self.canTap    = false;
+		self.isPanning = false;
+		self.isSwiping = false;
+		self.isZooming = false;
+
+		self.sliderStartPos = $.fancybox.getTranslate( self.$slider );
+
+		self.contentStartPos = $.fancybox.getTranslate( self.$content );
+		self.contentLastPos  = null;
+
+		if ( self.startPoints.length === 1 && !self.isZooming ) {
+			self.canTap = current.isMoved;
+
+			if ( current.type === 'image' && ( self.contentStartPos.width > self.canvasWidth + 1 || self.contentStartPos.height > self.canvasHeight + 1 ) ) {
+
+				$.fancybox.stop( self.$content );
+
+				self.isPanning = true;
+
+			} else {
+
+				$.fancybox.stop( self.$slider );
+
+				self.isSwiping = true;
+			}
+
+			self.$container.addClass('fancybox-controls--isGrabbing');
+
+		}
+
+		if ( self.startPoints.length === 2 && current.isMoved  && !current.hasError && current.type === 'image' && ( current.isLoaded || current.$ghost ) ) {
+
+			self.isZooming = true;
+
+			self.isSwiping = false;
+			self.isPanning = false;
+
+			$.fancybox.stop( self.$content );
+
+			self.centerPointStartX = ( ( self.startPoints[0].x + self.startPoints[1].x ) * 0.5 ) - $(window).scrollLeft();
+			self.centerPointStartY = ( ( self.startPoints[0].y + self.startPoints[1].y ) * 0.5 ) - $(window).scrollTop();
+
+			self.percentageOfImageAtPinchPointX = ( self.centerPointStartX - self.contentStartPos.left ) / self.contentStartPos.width;
+			self.percentageOfImageAtPinchPointY = ( self.centerPointStartY - self.contentStartPos.top  ) / self.contentStartPos.height;
+
+			self.startDistanceBetweenFingers = distance( self.startPoints[0], self.startPoints[1] );
+		}
+
+	};
+
+	Guestures.prototype.ontouchmove = function( e ) {
+
+		var self = this;
+
+		e.preventDefault();
+
+		self.newPoints = pointers( e );
+
+		if ( !self.newPoints || !self.newPoints.length ) {
+			return;
+		}
+
+		self.distanceX = distance( self.newPoints[0], self.startPoints[0], 'x' );
+		self.distanceY = distance( self.newPoints[0], self.startPoints[0], 'y' );
+
+		self.distance = distance( self.newPoints[0], self.startPoints[0] );
+
+		// Skip false ontouchmove events (Chrome)
+		if ( self.distance > 0 ) {
+
+			if ( self.isSwiping ) {
+				self.onSwipe();
+
+			} else if ( self.isPanning ) {
+				self.onPan();
+
+			} else if ( self.isZooming ) {
+				self.onZoom();
+			}
+
+		}
+
+	};
+
+	Guestures.prototype.onSwipe = function() {
+
+		var self = this;
+
+		var swiping = self.isSwiping;
+		var left    = self.sliderStartPos.left;
+		var angle;
+
+		if ( swiping === true ) {
+
+			if ( Math.abs( self.distance ) > 10 )  {
+
+				if ( self.instance.group.length < 2 ) {
+					self.isSwiping  = 'y';
+
+				} else if ( !self.instance.current.isMoved || self.instance.opts.touch.vertical === false || ( self.instance.opts.touch.vertical === 'auto' && $( window ).width() > 800 ) ) {
+					self.isSwiping  = 'x';
+
+				} else {
+					angle = Math.abs( Math.atan2( self.distanceY, self.distanceX ) * 180 / Math.PI );
+
+					self.isSwiping = ( angle > 45 && angle < 135 ) ? 'y' : 'x';
+				}
+
+				self.canTap  = false;
+
+				self.instance.current.isMoved = false;
+
+				// Reset points to avoid jumping, because we dropped first swipes to calculate the angle
+				self.startPoints = self.newPoints;
+			}
+
+		} else {
+
+			if ( swiping == 'x' ) {
+
+				// Sticky edges
+				if ( !self.instance.current.opts.loop && self.instance.current.index === 0  && self.distanceX > 0 ) {
+					left = left + Math.pow( self.distanceX, 0.8 );
+
+				} else if ( !self.instance.current.opts.loop &&self.instance.current.index === self.instance.group.length - 1 && self.distanceX < 0 ) {
+					left = left - Math.pow( -self.distanceX, 0.8 );
+
+				} else {
+					left = left + self.distanceX;
+				}
+
+			}
+
+			self.sliderLastPos = {
+				top  : swiping == 'x' ? 0 : self.sliderStartPos.top + self.distanceY,
+				left : left
+			};
+
+			requestAFrame(function() {
+				$.fancybox.setTranslate( self.$slider, self.sliderLastPos );
+			});
+		}
+
+	};
+
+	Guestures.prototype.onPan = function() {
+
+		var self = this;
+
+		var newOffsetX, newOffsetY, newPos;
+
+		self.canTap = false;
+
+		if ( self.contentStartPos.width > self.canvasWidth ) {
+			newOffsetX = self.contentStartPos.left + self.distanceX;
+
+		} else {
+			newOffsetX = self.contentStartPos.left;
+		}
+
+		newOffsetY = self.contentStartPos.top + self.distanceY;
+
+		newPos = self.limitMovement( newOffsetX, newOffsetY, self.contentStartPos.width, self.contentStartPos.height );
+
+		newPos.scaleX = self.contentStartPos.scaleX;
+		newPos.scaleY = self.contentStartPos.scaleY;
+
+		self.contentLastPos = newPos;
+
+		requestAFrame(function() {
+			$.fancybox.setTranslate( self.$content, self.contentLastPos );
+		});
+	};
+
+	// Make panning sticky to the edges
+	Guestures.prototype.limitMovement = function( newOffsetX, newOffsetY, newWidth, newHeight ) {
+
+		var self = this;
+
+		var minTranslateX, minTranslateY, maxTranslateX, maxTranslateY;
+
+		var canvasWidth  = self.canvasWidth;
+		var canvasHeight = self.canvasHeight;
+
+		var currentOffsetX = self.contentStartPos.left;
+		var currentOffsetY = self.contentStartPos.top;
+
+		var distanceX = self.distanceX;
+		var distanceY = self.distanceY;
+
+		// Slow down proportionally to traveled distance
+
+		minTranslateX = Math.max(0, canvasWidth  * 0.5 - newWidth  * 0.5 );
+		minTranslateY = Math.max(0, canvasHeight * 0.5 - newHeight * 0.5 );
+
+		maxTranslateX = Math.min( canvasWidth  - newWidth,  canvasWidth  * 0.5 - newWidth  * 0.5 );
+		maxTranslateY = Math.min( canvasHeight - newHeight, canvasHeight * 0.5 - newHeight * 0.5 );
+
+		if ( newWidth > canvasWidth ) {
+
+			//   ->
+			if ( distanceX > 0 && newOffsetX > minTranslateX ) {
+				newOffsetX = minTranslateX - 1 + Math.pow( -minTranslateX + currentOffsetX + distanceX, 0.8 ) || 0;
+			}
+
+			//    <-
+			if ( distanceX  < 0 && newOffsetX < maxTranslateX ) {
+				newOffsetX = maxTranslateX + 1 - Math.pow( maxTranslateX - currentOffsetX - distanceX, 0.8 ) || 0;
+			}
+
+		}
+
+		if ( newHeight > canvasHeight ) {
+
+			//   \/
+			if ( distanceY > 0 && newOffsetY > minTranslateY ) {
+				newOffsetY = minTranslateY - 1 + Math.pow(-minTranslateY + currentOffsetY + distanceY, 0.8 ) || 0;
+			}
+
+			//   /\
+			if ( distanceY < 0 && newOffsetY < maxTranslateY ) {
+				newOffsetY = maxTranslateY + 1 - Math.pow ( maxTranslateY - currentOffsetY - distanceY, 0.8 ) || 0;
+			}
+
+		}
+
+		return {
+			top  : newOffsetY,
+			left : newOffsetX
+		};
+
+	};
+
+
+	Guestures.prototype.limitPosition = function( newOffsetX, newOffsetY, newWidth, newHeight ) {
+
+		var self = this;
+
+		var canvasWidth  = self.canvasWidth;
+		var canvasHeight = self.canvasHeight;
+
+		if ( newWidth > canvasWidth ) {
+			newOffsetX = newOffsetX > 0 ? 0 : newOffsetX;
+			newOffsetX = newOffsetX < canvasWidth - newWidth ? canvasWidth - newWidth : newOffsetX;
+
+		} else {
+
+			// Center horizontally
+			newOffsetX = Math.max( 0, canvasWidth / 2 - newWidth / 2 );
+
+		}
+
+		if ( newHeight > canvasHeight ) {
+			newOffsetY = newOffsetY > 0 ? 0 : newOffsetY;
+			newOffsetY = newOffsetY < canvasHeight - newHeight ? canvasHeight - newHeight : newOffsetY;
+
+		} else {
+
+			// Center vertically
+			newOffsetY = Math.max( 0, canvasHeight / 2 - newHeight / 2 );
+
+		}
+
+		return {
+			top  : newOffsetY,
+			left : newOffsetX
+		};
+
+	};
+
+	Guestures.prototype.onZoom = function() {
+
+		var self = this;
+
+		// Calculate current distance between points to get pinch ratio and new width and height
+
+		var currentWidth  = self.contentStartPos.width;
+		var currentHeight = self.contentStartPos.height;
+
+		var currentOffsetX = self.contentStartPos.left;
+		var currentOffsetY = self.contentStartPos.top;
+
+		var endDistanceBetweenFingers = distance( self.newPoints[0], self.newPoints[1] );
+
+		var pinchRatio = endDistanceBetweenFingers / self.startDistanceBetweenFingers;
+
+		var newWidth  = Math.floor( currentWidth  * pinchRatio );
+		var newHeight = Math.floor( currentHeight * pinchRatio );
+
+		// This is the translation due to pinch-zooming
+		var translateFromZoomingX = (currentWidth  - newWidth)  * self.percentageOfImageAtPinchPointX;
+		var translateFromZoomingY = (currentHeight - newHeight) * self.percentageOfImageAtPinchPointY;
+
+		//Point between the two touches
+
+		var centerPointEndX = ((self.newPoints[0].x + self.newPoints[1].x) / 2) - $(window).scrollLeft();
+		var centerPointEndY = ((self.newPoints[0].y + self.newPoints[1].y) / 2) - $(window).scrollTop();
+
+		// And this is the translation due to translation of the centerpoint
+		// between the two fingers
+
+		var translateFromTranslatingX = centerPointEndX - self.centerPointStartX;
+		var translateFromTranslatingY = centerPointEndY - self.centerPointStartY;
+
+		// The new offset is the old/current one plus the total translation
+
+		var newOffsetX = currentOffsetX + ( translateFromZoomingX + translateFromTranslatingX );
+		var newOffsetY = currentOffsetY + ( translateFromZoomingY + translateFromTranslatingY );
+
+		var newPos = {
+			top    : newOffsetY,
+			left   : newOffsetX,
+			scaleX : self.contentStartPos.scaleX * pinchRatio,
+			scaleY : self.contentStartPos.scaleY * pinchRatio
+		};
+
+		self.canTap = false;
+
+		self.newWidth  = newWidth;
+		self.newHeight = newHeight;
+
+		self.contentLastPos = newPos;
+
+		requestAFrame(function() {
+			$.fancybox.setTranslate( self.$content, self.contentLastPos );
+		});
+
+	};
+
+	Guestures.prototype.ontouchend = function( e ) {
+
+		var self = this;
+
+		var current = self.instance.current;
+
+		var dMs = Math.max( (new Date().getTime() ) - self.startTime, 1);
+
+		var swiping = self.isSwiping;
+		var panning = self.isPanning;
+		var zooming = self.isZooming;
+
+		self.endPoints = pointers( e );
+
+		self.$container.removeClass('fancybox-controls--isGrabbing');
+
+		self.$wrap.off('touchmove.fb mousemove.fb',  $.proxy(this, "ontouchmove"));
+		self.$wrap.off('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(this, "ontouchend"));
+
+		self.isSwiping = false;
+		self.isPanning = false;
+		self.isZooming = false;
+
+		if ( self.canTap )  {
+			return self.ontap();
+		}
+
+		// Speed in px/ms
+		self.velocityX = self.distanceX / dMs * 0.5;
+		self.velocityY = self.distanceY / dMs * 0.5;
+
+		self.speed = current.opts.speed || 330;
+
+		self.speedX = Math.max( self.speed * 0.75, Math.min( self.speed * 1.5, ( 1 / Math.abs( self.velocityX ) ) * self.speed ) );
+		self.speedY = Math.max( self.speed * 0.75, Math.min( self.speed * 1.5, ( 1 / Math.abs( self.velocityY ) ) * self.speed ) );
+
+		if ( panning ) {
+			self.endPanning();
+
+		} else if ( zooming ) {
+			self.endZooming();
+
+		} else {
+			self.endSwiping( swiping );
+		}
+
+		return;
+	};
+
+	Guestures.prototype.endSwiping = function( swiping ) {
+
+		var self = this;
+
+		// Close if swiped vertically / navigate if horizontally
+
+		if ( swiping == 'y' && Math.abs( self.distanceY ) > 50 ) {
+
+			// Continue vertical movement
+
+			$.fancybox.animate( self.$slider, null, {
+				top     : self.sliderStartPos.top + self.distanceY + self.velocityY * 150,
+				left    : self.sliderStartPos.left,
+				opacity : 0
+			}, self.speedY );
+
+			self.instance.close( true );
+
+		} else if ( swiping == 'x' && self.distanceX > 50 ) {
+			self.instance.previous( self.speedX );
+
+		} else if ( swiping == 'x' && self.distanceX < -50 ) {
+			self.instance.next( self.speedX );
+
+		} else {
+
+			// Move back to center
+			self.instance.update( false, true, 150 );
+
+		}
+
+	};
+
+	Guestures.prototype.endPanning = function() {
+
+		var self = this;
+		var newOffsetX, newOffsetY, newPos;
+
+		if ( !self.contentLastPos ) {
+			return;
+		}
+
+		newOffsetX = self.contentLastPos.left + ( self.velocityX * self.speed * 2 );
+		newOffsetY = self.contentLastPos.top  + ( self.velocityY * self.speed * 2 );
+
+		newPos = self.limitPosition( newOffsetX, newOffsetY, self.contentStartPos.width, self.contentStartPos.height );
+
+		 newPos.width  = self.contentStartPos.width;
+		 newPos.height = self.contentStartPos.height;
+
+		$.fancybox.animate( self.$content, null, newPos, self.speed, "easeOutSine" );
+
+	};
+
+
+	Guestures.prototype.endZooming = function() {
+
+		var self = this;
+
+		var current = self.instance.current;
+
+		var newOffsetX, newOffsetY, newPos, reset;
+
+		var newWidth  = self.newWidth;
+		var newHeight = self.newHeight;
+
+		if ( !self.contentLastPos ) {
+			return;
+		}
+
+		newOffsetX = self.contentLastPos.left;
+		newOffsetY = self.contentLastPos.top;
+
+		reset = {
+		   	top    : newOffsetY,
+		   	left   : newOffsetX,
+		   	width  : newWidth,
+		   	height : newHeight,
+			scaleX : 1,
+			scaleY : 1
+	   };
+
+	   // Reset scalex/scaleY values; this helps for perfomance and does not break animation
+	   $.fancybox.setTranslate( self.$content, reset );
+
+		if ( newWidth < self.canvasWidth && newHeight < self.canvasHeight ) {
+			self.instance.scaleToFit( 150 );
+
+		} else if ( newWidth > current.width || newHeight > current.height ) {
+			self.instance.scaleToActual( self.centerPointStartX, self.centerPointStartY, 150 );
+
+		} else {
+
+			newPos = self.limitPosition( newOffsetX, newOffsetY, newWidth, newHeight );
+
+			$.fancybox.animate( self.$content, null, newPos, self.speed, "easeOutSine" );
+
+		}
+
+	};
+
+	Guestures.prototype.ontap = function() {
+
+		var self = this;
+
+		var instance = self.instance;
+		var current  = instance.current;
+
+		var x = self.endPoints[0].x;
+		var y = self.endPoints[0].y;
+
+		x = x - self.$wrap.offset().left;
+		y = y - self.$wrap.offset().top;
+
+		// Stop slideshow
+		if ( instance.SlideShow && instance.SlideShow.isActive ) {
+			instance.SlideShow.stop();
+		}
+
+		if ( !$.fancybox.isTouch ) {
+
+			if ( current.opts.closeClickOutside && self.$target.is('.fancybox-slide') ) {
+				instance.close( self.startEvent );
+
+				return;
+			}
+
+			if ( current.type == 'image' && current.isMoved ) {
+
+				if ( instance.canPan() ) {
+					instance.scaleToFit();
+
+				} else if ( instance.isScaledDown() ) {
+					instance.scaleToActual( x, y );
+
+				} else if ( instance.group.length < 2 ) {
+					instance.close( self.startEvent );
+				}
+
+			}
+
+			return;
+		}
+
+
+		// Double tap
+		if ( self.tapped ) {
+
+			clearTimeout( self.tapped );
+
+			self.tapped = null;
+
+			if ( Math.abs( x - self.x ) > 50 || Math.abs( y - self.y ) > 50 || !current.isMoved ) {
+				return this;
+			}
+
+			if ( current.type == 'image' && ( current.isLoaded || current.$ghost ) ) {
+
+				if ( instance.canPan() ) {
+					instance.scaleToFit();
+
+				} else if ( instance.isScaledDown() ) {
+					instance.scaleToActual( x, y );
+
+				}
+
+			}
+
+		} else {
+
+			// Single tap
+
+			self.x = x;
+			self.y = y;
+
+			self.tapped = setTimeout(function() {
+				self.tapped = null;
+
+				instance.toggleControls( true );
+
+			}, 300);
+		}
+
+		return this;
+	};
+
+	$(document).on('onActivate.fb', function (e, instance) {
+
+		if ( instance && !instance.Guestures ) {
+			instance.Guestures = new Guestures( instance );
+		}
+
+	});
+
+	$(document).on('beforeClose.fb', function (e, instance) {
+
+		if ( instance && instance.Guestures ) {
+			instance.Guestures.destroy();
+		}
+
+	});
+
+
+}(window, document, window.jQuery));
+
+// ==========================================================================
+//
+// SlideShow
+// Enables slideshow functionality
+//
+// Example of usage:
+// $.fancybox.getInstance().slideShow.start()
+//
+// ==========================================================================
+;(function (document, $) {
+	'use strict';
+
+	var SlideShow = function( instance ) {
+
+		this.instance = instance;
+
+		this.init();
+
+	};
+
+	$.extend( SlideShow.prototype, {
+		timer    : null,
+		isActive : false,
+		$button  : null,
+		speed    : 3000,
+
+		init : function() {
+			var self = this;
+
+			self.$button = $('<button data-fancybox-play class="fancybox-button fancybox-button--play" title="Slideshow (P)"></button>')
+				.appendTo( self.instance.$refs.buttons );
+
+			self.instance.$refs.container.on('click', '[data-fancybox-play]', function() {
+				self.toggle();
+			});
+
+		},
+
+		set : function() {
+			var self = this;
+
+			// Check if reached last element
+			if ( self.instance && self.instance.current && (self.instance.current.opts.loop || self.instance.currIndex < self.instance.group.length - 1 )) {
+
+				self.timer = setTimeout(function() {
+					self.instance.next();
+
+				}, self.instance.current.opts.slideShow.speed || self.speed);
+
+			} else {
+				self.stop();
+			}
+		},
+
+		clear : function() {
+			var self = this;
+
+			clearTimeout( self.timer );
+
+			self.timer = null;
+		},
+
+		start : function() {
+			var self = this;
+
+			self.stop();
+
+			if ( self.instance && self.instance.current && ( self.instance.current.opts.loop || self.instance.currIndex < self.instance.group.length - 1 )) {
+
+				self.instance.$refs.container.on({
+					'beforeLoad.fb.player'	: $.proxy(self, "clear"),
+					'onComplete.fb.player'	: $.proxy(self, "set"),
+				});
+
+				self.isActive = true;
+
+				if ( self.instance.current.isComplete ) {
+					self.set();
+				}
+
+				self.instance.$refs.container.trigger('onPlayStart');
+
+				self.$button.addClass('fancybox-button--pause');
+			}
+
+		},
+
+		stop: function() {
+			var self = this;
+
+			self.clear();
+
+			self.instance.$refs.container
+				.trigger('onPlayEnd')
+				.off('.player');
+
+			self.$button.removeClass('fancybox-button--pause');
+
+			self.isActive = false;
+		},
+
+		toggle : function() {
+			var self = this;
+
+			if ( self.isActive ) {
+				self.stop();
+
+			} else {
+				self.start();
+			}
+		}
+
+	});
+
+	$(document).on('onInit.fb', function(e, instance) {
+
+		if ( instance && instance.group.length > 1 && !!instance.opts.slideShow && !instance.SlideShow ) {
+			instance.SlideShow = new SlideShow( instance );
+		}
+
+	});
+
+	$(document).on('beforeClose.fb onDeactivate.fb', function(e, instance) {
+
+		if ( instance && instance.SlideShow ) {
+			instance.SlideShow.stop();
+		}
+
+	});
+
+}(document, window.jQuery));
+
+// ==========================================================================
+//
+// FullScreen
+// Adds fullscreen functionality
+//
+// ==========================================================================
+;(function (document, $) {
+	'use strict';
+
+	// Collection of methods supported by user browser
+	var fn = (function () {
+
+		var fnMap = [
+			[
+				'requestFullscreen',
+				'exitFullscreen',
+				'fullscreenElement',
+				'fullscreenEnabled',
+				'fullscreenchange',
+				'fullscreenerror'
+			],
+			// new WebKit
+			[
+				'webkitRequestFullscreen',
+				'webkitExitFullscreen',
+				'webkitFullscreenElement',
+				'webkitFullscreenEnabled',
+				'webkitfullscreenchange',
+				'webkitfullscreenerror'
+
+			],
+			// old WebKit (Safari 5.1)
+			[
+				'webkitRequestFullScreen',
+				'webkitCancelFullScreen',
+				'webkitCurrentFullScreenElement',
+				'webkitCancelFullScreen',
+				'webkitfullscreenchange',
+				'webkitfullscreenerror'
+
+			],
+			[
+				'mozRequestFullScreen',
+				'mozCancelFullScreen',
+				'mozFullScreenElement',
+				'mozFullScreenEnabled',
+				'mozfullscreenchange',
+				'mozfullscreenerror'
+			],
+			[
+				'msRequestFullscreen',
+				'msExitFullscreen',
+				'msFullscreenElement',
+				'msFullscreenEnabled',
+				'MSFullscreenChange',
+				'MSFullscreenError'
+			]
+		];
+
+		var val;
+		var ret = {};
+		var i, j;
+
+		for ( i = 0; i < fnMap.length; i++ ) {
+			val = fnMap[ i ];
+
+			if ( val && val[ 1 ] in document ) {
+				for ( j = 0; j < val.length; j++ ) {
+					ret[ fnMap[ 0 ][ j ] ] = val[ j ];
+				}
+
+				return ret;
+			}
+		}
+
+		return false;
+	})();
+
+	if ( !fn ) {
+		return;
+	}
+
+	var FullScreen = {
+		request : function ( elem ) {
+
+			elem = elem || document.documentElement;
+
+			elem[ fn.requestFullscreen ]( elem.ALLOW_KEYBOARD_INPUT );
+
+		},
+		exit : function () {
+			document[ fn.exitFullscreen ]();
+		},
+		toggle : function ( elem ) {
+
+			if ( this.isFullscreen() ) {
+				this.exit();
+			} else {
+				this.request( elem );
+			}
+
+		},
+		isFullscreen : function()  {
+			return Boolean( document[ fn.fullscreenElement ] );
+		},
+		enabled : function()  {
+			return Boolean( document[ fn.fullscreenEnabled ] );
+		}
+	};
+
+	$(document).on({
+		'onInit.fb' : function(e, instance) {
+			var $container;
+
+			if ( instance && !!instance.opts.fullScreen && !instance.FullScreen) {
+				$container = instance.$refs.container;
+
+				instance.$refs.button_fs = $('<button data-fancybox-fullscreen class="fancybox-button fancybox-button--fullscreen" title="Full screen (F)"></button>')
+					.appendTo( instance.$refs.buttons );
+
+				$container.on('click.fb-fullscreen', '[data-fancybox-fullscreen]', function(e) {
+
+					e.stopPropagation();
+					e.preventDefault();
+
+					FullScreen.toggle( $container[ 0 ] );
+
+				});
+
+				if ( instance.opts.fullScreen.requestOnStart === true ) {
+					FullScreen.request( $container[ 0 ] );
+				}
+
+			}
+
+		}, 'beforeMove.fb' : function(e, instance) {
+
+			if ( instance && instance.$refs.button_fs ) {
+				instance.$refs.button_fs.toggle( !!instance.current.opts.fullScreen );
+			}
+
+		}, 'beforeClose.fb':  function() {
+			FullScreen.exit();
+		}
+	});
+
+	$(document).on(fn.fullscreenchange, function() {
+		var instance = $.fancybox.getInstance();
+		var  $what   = instance ? instance.current.$placeholder : null;
+
+		if ( $what ) {
+
+			// If image is zooming, then this will force it to stop and reposition properly
+			$what.css( 'transition', 'none' );
+
+			instance.isAnimating = false;
+
+			instance.update( true, true, 0 );
+		}
+
+	});
+
+}(document, window.jQuery));
+
+// ==========================================================================
+//
+// Thumbs
+// Displays thumbnails in a grid
+//
+// ==========================================================================
+;(function (document, $) {
+	'use strict';
+
+	var FancyThumbs = function( instance ) {
+
+		this.instance = instance;
+
+		this.init();
+
+	};
+
+	$.extend( FancyThumbs.prototype, {
+
+		$button		: null,
+		$grid		: null,
+		$list		: null,
+		isVisible	: false,
+
+		init : function() {
+			var self = this;
+
+			self.$button = $('<button data-fancybox-thumbs class="fancybox-button fancybox-button--thumbs" title="Thumbnails (G)"></button>')
+				.appendTo( this.instance.$refs.buttons )
+				.on('touchend click', function(e) {
+					e.stopPropagation();
+					e.preventDefault();
+
+					self.toggle();
+				});
+
+		},
+
+		create : function() {
+			var instance = this.instance,
+				list,
+				src;
+
+			this.$grid = $('<div class="fancybox-thumbs"></div>').appendTo( instance.$refs.container );
+
+			list = '<ul>';
+
+			$.each(instance.group, function( i, item ) {
+
+				src = item.opts.thumb || ( item.opts.$thumb ? item.opts.$thumb.attr('src') : null );
+
+				if ( !src && item.type === 'image' ) {
+					src = item.src;
+				}
+
+				if ( src && src.length ) {
+					list += '<li data-index="' + i + '"  tabindex="0" class="fancybox-thumbs-loading"><img data-src="' + src + '" /></li>';
+				}
+
+			});
+
+			list += '</ul>';
+
+			this.$list = $( list ).appendTo( this.$grid ).on('click touchstart', 'li', function() {
+
+				instance.jumpTo( $(this).data('index') );
+
+			});
+
+			this.$list.find('img').hide().one('load', function() {
+
+				var $parent		= $(this).parent().removeClass('fancybox-thumbs-loading'),
+					thumbWidth	= $parent.outerWidth(),
+					thumbHeight	= $parent.outerHeight(),
+					width,
+					height,
+					widthRatio,
+					heightRatio;
+
+				width  = this.naturalWidth	|| this.width;
+				height = this.naturalHeight	|| this.height;
+
+				//Calculate thumbnail width/height and center it
+
+				widthRatio  = width  / thumbWidth;
+				heightRatio = height / thumbHeight;
+
+				if (widthRatio >= 1 && heightRatio >= 1) {
+					if (widthRatio > heightRatio) {
+						width  = width / heightRatio;
+						height = thumbHeight;
+
+					} else {
+						width  = thumbWidth;
+						height = height / widthRatio;
+					}
+				}
+
+				$(this).css({
+					width         : Math.floor(width),
+					height        : Math.floor(height),
+					'margin-top'  : Math.min( 0, Math.floor(thumbHeight * 0.3 - height * 0.3 ) ),
+					'margin-left' : Math.min( 0, Math.floor(thumbWidth  * 0.5 - width  * 0.5 ) )
+				}).show();
+
+			})
+			.each(function() {
+				this.src = $( this ).data( 'src' );
+			});
+
+		},
+
+		focus : function() {
+
+			if ( this.instance.current ) {
+				this.$list
+					.children()
+					.removeClass('fancybox-thumbs-active')
+					.filter('[data-index="' + this.instance.current.index  + '"]')
+					.addClass('fancybox-thumbs-active')
+					.focus();
+			}
+
+		},
+
+		close : function() {
+
+			this.$grid.hide();
+
+		},
+
+		update : function() {
+
+			this.instance.$refs.container.toggleClass('fancybox-container--thumbs', this.isVisible);
+
+			if ( this.isVisible ) {
+
+				if ( !this.$grid ) {
+					this.create();
+				}
+
+				this.$grid.show();
+
+				this.focus();
+
+			} else if ( this.$grid ) {
+				this.$grid.hide();
+			}
+
+			this.instance.update();
+
+		},
+
+		hide : function() {
+
+			this.isVisible = false;
+
+			this.update();
+
+		},
+
+		show : function() {
+
+			this.isVisible = true;
+
+			this.update();
+
+		},
+
+		toggle : function() {
+
+			if ( this.isVisible ) {
+				this.hide();
+
+			} else {
+				this.show();
+			}
+		}
+
+	});
+
+	$(document).on('onInit.fb', function(e, instance) {
+		var first  = instance.group[0],
+			second = instance.group[1];
+
+		if ( !!instance.opts.thumbs && !instance.Thumbs && instance.group.length > 1 && (
+		    		( first.type == 'image'  || first.opts.thumb  || first.opts.$thumb ) &&
+		    		( second.type == 'image' || second.opts.thumb || second.opts.$thumb )
+			 	)
+		   ) {
+
+			instance.Thumbs = new FancyThumbs( instance );
+		}
+
+	});
+
+	$(document).on('beforeMove.fb', function(e, instance, item) {
+		var self = instance && instance.Thumbs;
+
+		if ( !self ) {
+			return;
+		}
+
+		if ( item.modal ) {
+
+			self.$button.hide();
+
+			self.hide();
+
+		} else {
+
+			if ( instance.opts.thumbs.showOnStart === true && instance.firstRun ) {
+				self.show();
+
+			}
+
+			self.$button.show();
+
+			if ( self.isVisible ) {
+				self.focus();
+			}
+
+		}
+
+	});
+
+	$(document).on('beforeClose.fb', function(e, instance) {
+
+		if ( instance && instance.Thumbs) {
+			if ( instance.Thumbs.isVisible && instance.opts.thumbs.hideOnClosing !== false ) {
+				instance.Thumbs.close();
+			}
+
+			instance.Thumbs = null;
+		}
+
+	});
+
+}(document, window.jQuery));
+
+// ==========================================================================
+//
+// Hash
+// Enables linking to each modal
+//
+// ==========================================================================
+;(function (document, window, $) {
+	'use strict';
+
+	// Simple $.escapeSelector polyfill (for jQuery prior v3)
+	if ( !$.escapeSelector ) {
+		$.escapeSelector = function( sel ) {
+			var rcssescape = /([\0-\x1f\x7f]|^-?\d)|^-$|[^\x80-\uFFFF\w-]/g;
+			var fcssescape = function( ch, asCodePoint ) {
+				if ( asCodePoint ) {
+					// U+0000 NULL becomes U+FFFD REPLACEMENT CHARACTER
+					if ( ch === "\0" ) {
+						return "\uFFFD";
+					}
+
+					// Control characters and (dependent upon position) numbers get escaped as code points
+					return ch.slice( 0, -1 ) + "\\" + ch.charCodeAt( ch.length - 1 ).toString( 16 ) + " ";
+				}
+
+				// Other potentially-special ASCII characters get backslash-escaped
+				return "\\" + ch;
+			};
+
+			return ( sel + "" ).replace( rcssescape, fcssescape );
+		};
+	}
+
+	// Variable containing last hash value set by fancyBox
+	// It will be used to determine if fancyBox needs to close after hash change is detected
+    var currentHash = null;
+
+	// Get info about gallery name and current index from url
+    function parseUrl() {
+        var hash    = window.location.hash.substr( 1 );
+        var rez     = hash.split( '-' );
+        var index   = rez.length > 1 && /^\+?\d+$/.test( rez[ rez.length - 1 ] ) ? parseInt( rez.pop( -1 ), 10 ) || 1 : 1;
+        var gallery = rez.join( '-' );
+
+		// Index is starting from 1
+		if ( index < 1 ) {
+			index = 1;
+		}
+
+        return {
+            hash    : hash,
+            index   : index,
+            gallery : gallery
+        };
+    }
+
+	// Trigger click evnt on links to open new fancyBox instance
+	function triggerFromUrl( url ) {
+		var $el;
+
+        if ( url.gallery !== '' ) {
+
+			// If we can find element matching 'data-fancybox' atribute, then trigger click event for that ..
+			$el = $( "[data-fancybox='" + $.escapeSelector( url.gallery ) + "']" ).eq( url.index - 1 );
+
+            if ( $el.length ) {
+				$el.trigger( 'click' );
+
+			} else {
+
+				// .. if not, try finding element by ID
+				$( "#" + $.escapeSelector( url.gallery ) + "" ).trigger( 'click' );
+
+			}
+
+        }
+	}
+
+	// Get gallery name from current instance
+	function getGallery( instance ) {
+		var opts;
+
+		if ( !instance ) {
+			return false;
+		}
+
+		opts = instance.current ? instance.current.opts : instance.opts;
+
+		return opts.$orig ? opts.$orig.data( 'fancybox' ) : ( opts.hash || '' );
+	}
+
+	// Star when DOM becomes ready
+    $(function() {
+
+		// Small delay is used to allow other scripts to process "dom ready" event
+		setTimeout(function() {
+
+			// Check if this module is not disabled
+			if ( $.fancybox.defaults.hash === false ) {
+				return;
+			}
+
+			// Check if need to close after url has changed
+		    $(window).on('hashchange.fb', function() {
+		        var url = parseUrl();
+
+				if ( $.fancybox.getInstance() ) {
+					if ( currentHash && currentHash !== url.gallery + '-' + url.index )  {
+						currentHash = null;
+
+						$.fancybox.close();
+					}
+
+				} else if ( url.gallery !== '' ) {
+		            triggerFromUrl( url );
+		        }
+
+		    });
+
+			// Update hash when opening/closing fancyBox
+		    $(document).on({
+				'onInit.fb' : function( e, instance ) {
+					var url     = parseUrl();
+					var gallery = getGallery( instance );
+
+					// Make sure gallery start index matches index from hash
+					if ( gallery && url.gallery && gallery == url.gallery ) {
+						instance.currIndex = url.index - 1;
+					}
+
+				}, 'beforeMove.fb' : function( e, instance, current ) {
+		            var gallery = getGallery( instance );
+
+		            // Update window hash
+		            if ( gallery && gallery !== '' ) {
+
+						if ( window.location.hash.indexOf( gallery ) < 0 ) {
+			                instance.opts.origHash = window.location.hash;
+			            }
+
+						currentHash = gallery + ( instance.group.length > 1 ? '-' + ( current.index + 1 ) : '' );
+
+						if ( "pushState" in history ) {
+		                    history.pushState( '', document.title, window.location.pathname + window.location.search + '#' +  currentHash );
+
+						} else {
+							window.location.hash = currentHash;
+						}
+
+		            }
+
+		        }, 'beforeClose.fb' : function( e, instance, current ) {
+					var gallery  = getGallery( instance );
+					var origHash = instance && instance.opts.origHash ? instance.opts.origHash : '';
+
+		            // Remove hash from location bar
+		            if ( gallery && gallery !== '' ) {
+		                if ( "pushState" in history ) {
+		                    history.pushState( '', document.title, window.location.pathname + window.location.search + origHash );
+
+		                } else {
+		                    window.location.hash = origHash;
+		                }
+		            }
+
+					currentHash = null;
+		        }
+		    });
+
+			// Check current hash and trigger click event on matching element to start fancyBox, if needed
+			triggerFromUrl( parseUrl() );
+
+		}, 50);
+    });
+
+
+}(document, window, window.jQuery));
+
+/*
+    jQuery Masked Input Plugin
+    Copyright (c) 2007 - 2015 Josh Bush (digitalbush.com)
+    Licensed under the MIT license (http://digitalbush.com/projects/masked-input-plugin/#license)
+    Version: 1.4.1
+*/
+!function(factory) {
+    "function" == typeof define && define.amd ? define([ "jquery" ], factory) : factory("object" == typeof exports ? require("jquery") : jQuery);
+}(function($) {
+    var caretTimeoutId, ua = navigator.userAgent, iPhone = /iphone/i.test(ua), chrome = /chrome/i.test(ua), android = /android/i.test(ua);
+    $.mask = {
+        definitions: {
+            "9": "[0-9]",
+            a: "[A-Za-z]",
+            "*": "[A-Za-z0-9]"
+        },
+        autoclear: !0,
+        dataName: "rawMaskFn",
+        placeholder: "_"
+    }, $.fn.extend({
+        caret: function(begin, end) {
+            var range;
+            if (0 !== this.length && !this.is(":hidden")) return "number" == typeof begin ? (end = "number" == typeof end ? end : begin, 
+            this.each(function() {
+                this.setSelectionRange ? this.setSelectionRange(begin, end) : this.createTextRange && (range = this.createTextRange(), 
+                range.collapse(!0), range.moveEnd("character", end), range.moveStart("character", begin), 
+                range.select());
+            })) : (this[0].setSelectionRange ? (begin = this[0].selectionStart, end = this[0].selectionEnd) : document.selection && document.selection.createRange && (range = document.selection.createRange(), 
+            begin = 0 - range.duplicate().moveStart("character", -1e5), end = begin + range.text.length), 
+            {
+                begin: begin,
+                end: end
+            });
+        },
+        unmask: function() {
+            return this.trigger("unmask");
+        },
+        mask: function(mask, settings) {
+            var input, defs, tests, partialPosition, firstNonMaskPos, lastRequiredNonMaskPos, len, oldVal;
+            if (!mask && this.length > 0) {
+                input = $(this[0]);
+                var fn = input.data($.mask.dataName);
+                return fn ? fn() : void 0;
+            }
+            return settings = $.extend({
+                autoclear: $.mask.autoclear,
+                placeholder: $.mask.placeholder,
+                completed: null
+            }, settings), defs = $.mask.definitions, tests = [], partialPosition = len = mask.length, 
+            firstNonMaskPos = null, $.each(mask.split(""), function(i, c) {
+                "?" == c ? (len--, partialPosition = i) : defs[c] ? (tests.push(new RegExp(defs[c])), 
+                null === firstNonMaskPos && (firstNonMaskPos = tests.length - 1), partialPosition > i && (lastRequiredNonMaskPos = tests.length - 1)) : tests.push(null);
+            }), this.trigger("unmask").each(function() {
+                function tryFireCompleted() {
+                    if (settings.completed) {
+                        for (var i = firstNonMaskPos; lastRequiredNonMaskPos >= i; i++) if (tests[i] && buffer[i] === getPlaceholder(i)) return;
+                        settings.completed.call(input);
+                    }
+                }
+                function getPlaceholder(i) {
+                    return settings.placeholder.charAt(i < settings.placeholder.length ? i : 0);
+                }
+                function seekNext(pos) {
+                    for (;++pos < len && !tests[pos]; ) ;
+                    return pos;
+                }
+                function seekPrev(pos) {
+                    for (;--pos >= 0 && !tests[pos]; ) ;
+                    return pos;
+                }
+                function shiftL(begin, end) {
+                    var i, j;
+                    if (!(0 > begin)) {
+                        for (i = begin, j = seekNext(end); len > i; i++) if (tests[i]) {
+                            if (!(len > j && tests[i].test(buffer[j]))) break;
+                            buffer[i] = buffer[j], buffer[j] = getPlaceholder(j), j = seekNext(j);
+                        }
+                        writeBuffer(), input.caret(Math.max(firstNonMaskPos, begin));
+                    }
+                }
+                function shiftR(pos) {
+                    var i, c, j, t;
+                    for (i = pos, c = getPlaceholder(pos); len > i; i++) if (tests[i]) {
+                        if (j = seekNext(i), t = buffer[i], buffer[i] = c, !(len > j && tests[j].test(t))) break;
+                        c = t;
+                    }
+                }
+                function androidInputEvent() {
+                    var curVal = input.val(), pos = input.caret();
+                    if (oldVal && oldVal.length && oldVal.length > curVal.length) {
+                        for (checkVal(!0); pos.begin > 0 && !tests[pos.begin - 1]; ) pos.begin--;
+                        if (0 === pos.begin) for (;pos.begin < firstNonMaskPos && !tests[pos.begin]; ) pos.begin++;
+                        input.caret(pos.begin, pos.begin);
+                    } else {
+                        for (checkVal(!0); pos.begin < len && !tests[pos.begin]; ) pos.begin++;
+                        input.caret(pos.begin, pos.begin);
+                    }
+                    tryFireCompleted();
+                }
+                function blurEvent() {
+                    checkVal(), input.val() != focusText && input.change();
+                }
+                function keydownEvent(e) {
+                    if (!input.prop("readonly")) {
+                        var pos, begin, end, k = e.which || e.keyCode;
+                        oldVal = input.val(), 8 === k || 46 === k || iPhone && 127 === k ? (pos = input.caret(), 
+                        begin = pos.begin, end = pos.end, end - begin === 0 && (begin = 46 !== k ? seekPrev(begin) : end = seekNext(begin - 1), 
+                        end = 46 === k ? seekNext(end) : end), clearBuffer(begin, end), shiftL(begin, end - 1), 
+                        e.preventDefault()) : 13 === k ? blurEvent.call(this, e) : 27 === k && (input.val(focusText), 
+                        input.caret(0, checkVal()), e.preventDefault());
+                    }
+                }
+                function keypressEvent(e) {
+                    if (!input.prop("readonly")) {
+                        var p, c, next, k = e.which || e.keyCode, pos = input.caret();
+                        if (!(e.ctrlKey || e.altKey || e.metaKey || 32 > k) && k && 13 !== k) {
+                            if (pos.end - pos.begin !== 0 && (clearBuffer(pos.begin, pos.end), shiftL(pos.begin, pos.end - 1)), 
+                            p = seekNext(pos.begin - 1), len > p && (c = String.fromCharCode(k), tests[p].test(c))) {
+                                if (shiftR(p), buffer[p] = c, writeBuffer(), next = seekNext(p), android) {
+                                    var proxy = function() {
+                                        $.proxy($.fn.caret, input, next)();
+                                    };
+                                    setTimeout(proxy, 0);
+                                } else input.caret(next);
+                                pos.begin <= lastRequiredNonMaskPos && tryFireCompleted();
+                            }
+                            e.preventDefault();
+                        }
+                    }
+                }
+                function clearBuffer(start, end) {
+                    var i;
+                    for (i = start; end > i && len > i; i++) tests[i] && (buffer[i] = getPlaceholder(i));
+                }
+                function writeBuffer() {
+                    input.val(buffer.join(""));
+                }
+                function checkVal(allow) {
+                    var i, c, pos, test = input.val(), lastMatch = -1;
+                    for (i = 0, pos = 0; len > i; i++) if (tests[i]) {
+                        for (buffer[i] = getPlaceholder(i); pos++ < test.length; ) if (c = test.charAt(pos - 1), 
+                        tests[i].test(c)) {
+                            buffer[i] = c, lastMatch = i;
+                            break;
+                        }
+                        if (pos > test.length) {
+                            clearBuffer(i + 1, len);
+                            break;
+                        }
+                    } else buffer[i] === test.charAt(pos) && pos++, partialPosition > i && (lastMatch = i);
+                    return allow ? writeBuffer() : partialPosition > lastMatch + 1 ? settings.autoclear || buffer.join("") === defaultBuffer ? (input.val() && input.val(""), 
+                    clearBuffer(0, len)) : writeBuffer() : (writeBuffer(), input.val(input.val().substring(0, lastMatch + 1))), 
+                    partialPosition ? i : firstNonMaskPos;
+                }
+                var input = $(this), buffer = $.map(mask.split(""), function(c, i) {
+                    return "?" != c ? defs[c] ? getPlaceholder(i) : c : void 0;
+                }), defaultBuffer = buffer.join(""), focusText = input.val();
+                input.data($.mask.dataName, function() {
+                    return $.map(buffer, function(c, i) {
+                        return tests[i] && c != getPlaceholder(i) ? c : null;
+                    }).join("");
+                }), input.one("unmask", function() {
+                    input.off(".mask").removeData($.mask.dataName);
+                }).on("focus.mask", function() {
+                    if (!input.prop("readonly")) {
+                        clearTimeout(caretTimeoutId);
+                        var pos;
+                        focusText = input.val(), pos = checkVal(), caretTimeoutId = setTimeout(function() {
+                            input.get(0) === document.activeElement && (writeBuffer(), pos == mask.replace("?", "").length ? input.caret(0, pos) : input.caret(pos));
+                        }, 10);
+                    }
+                }).on("blur.mask", blurEvent).on("keydown.mask", keydownEvent).on("keypress.mask", keypressEvent).on("input.mask paste.mask", function() {
+                    input.prop("readonly") || setTimeout(function() {
+                        var pos = checkVal(!0);
+                        input.caret(pos), tryFireCompleted();
+                    }, 0);
+                }), chrome && android && input.off("input.mask").on("input.mask", androidInputEvent), 
+                checkVal();
+            });
+        }
+    });
+});
 /*!
  * Bootstrap v3.3.7 (http://getbootstrap.com)
  * Copyright 2011-2016 Twitter, Inc.
@@ -13963,11 +18492,2127 @@ if (typeof jQuery === 'undefined') {
 
 }(jQuery);
 
+/*!
+ * @fileOverview TouchSwipe - jQuery Plugin
+ * @version 1.6.18
+ *
+ * @author Matt Bryson http://www.github.com/mattbryson
+ * @see https://github.com/mattbryson/TouchSwipe-Jquery-Plugin
+ * @see http://labs.rampinteractive.co.uk/touchSwipe/
+ * @see http://plugins.jquery.com/project/touchSwipe
+ * @license
+ * Copyright (c) 2010-2015 Matt Bryson
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ *
+ */
 
-jQuery(document).ready(function($){
+/*
+ *
+ * Changelog
+ * $Date: 2010-12-12 (Wed, 12 Dec 2010) $
+ * $version: 1.0.0
+ * $version: 1.0.1 - removed multibyte comments
+ *
+ * $Date: 2011-21-02 (Mon, 21 Feb 2011) $
+ * $version: 1.1.0 	- added allowPageScroll property to allow swiping and scrolling of page
+ *					- changed handler signatures so one handler can be used for multiple events
+ * $Date: 2011-23-02 (Wed, 23 Feb 2011) $
+ * $version: 1.2.0 	- added click handler. This is fired if the user simply clicks and does not swipe. The event object and click target are passed to handler.
+ *					- If you use the http://code.google.com/p/jquery-ui-for-ipad-and-iphone/ plugin, you can also assign jQuery mouse events to children of a touchSwipe object.
+ * $version: 1.2.1 	- removed console log!
+ *
+ * $version: 1.2.2 	- Fixed bug where scope was not preserved in callback methods.
+ *
+ * $Date: 2011-28-04 (Thurs, 28 April 2011) $
+ * $version: 1.2.4 	- Changed licence terms to be MIT or GPL inline with jQuery. Added check for support of touch events to stop non compatible browsers erroring.
+ *
+ * $Date: 2011-27-09 (Tues, 27 September 2011) $
+ * $version: 1.2.5 	- Added support for testing swipes with mouse on desktop browser (thanks to https://github.com/joelhy)
+ *
+ * $Date: 2012-14-05 (Mon, 14 May 2012) $
+ * $version: 1.2.6 	- Added timeThreshold between start and end touch, so user can ignore slow swipes (thanks to Mark Chase). Default is null, all swipes are detected
+ *
+ * $Date: 2012-05-06 (Tues, 05 June 2012) $
+ * $version: 1.2.7 	- Changed time threshold to have null default for backwards compatibility. Added duration param passed back in events, and refactored how time is handled.
+ *
+ * $Date: 2012-05-06 (Tues, 05 June 2012) $
+ * $version: 1.2.8 	- Added the possibility to return a value like null or false in the trigger callback. In that way we can control when the touch start/move should take effect or not (simply by returning in some cases return null; or return false;) This effects the ontouchstart/ontouchmove event.
+ *
+ * $Date: 2012-06-06 (Wed, 06 June 2012) $
+ * $version: 1.3.0 	- Refactored whole plugin to allow for methods to be executed, as well as exposed defaults for user override. Added 'enable', 'disable', and 'destroy' methods
+ *
+ * $Date: 2012-05-06 (Fri, 05 June 2012) $
+ * $version: 1.3.1 	- Bug fixes  - bind() with false as last argument is no longer supported in jQuery 1.6, also, if you just click, the duration is now returned correctly.
+ *
+ * $Date: 2012-29-07 (Sun, 29 July 2012) $
+ * $version: 1.3.2	- Added fallbackToMouseEvents option to NOT capture mouse events on non touch devices.
+ * 			- Added "all" fingers value to the fingers property, so any combination of fingers triggers the swipe, allowing event handlers to check the finger count
+ *
+ * $Date: 2012-09-08 (Thurs, 9 Aug 2012) $
+ * $version: 1.3.3	- Code tidy prep for minefied version
+ *
+ * $Date: 2012-04-10 (wed, 4 Oct 2012) $
+ * $version: 1.4.0	- Added pinch support, pinchIn and pinchOut
+ *
+ * $Date: 2012-11-10 (Thurs, 11 Oct 2012) $
+ * $version: 1.5.0	- Added excludedElements, a jquery selector that specifies child elements that do NOT trigger swipes. By default, this is .noSwipe
+ *
+ * $Date: 2012-22-10 (Mon, 22 Oct 2012) $
+ * $version: 1.5.1	- Fixed bug with jQuery 1.8 and trailing comma in excludedElements
+ *					- Fixed bug with IE and eventPreventDefault()
+ * $Date: 2013-01-12 (Fri, 12 Jan 2013) $
+ * $version: 1.6.0	- Fixed bugs with pinching, mainly when both pinch and swipe enabled, as well as adding time threshold for multifinger gestures, so releasing one finger beofre the other doesnt trigger as single finger gesture.
+ *					- made the demo site all static local HTML pages so they can be run locally by a developer
+ *					- added jsDoc comments and added documentation for the plugin
+ *					- code tidy
+ *					- added triggerOnTouchLeave property that will end the event when the user swipes off the element.
+ * $Date: 2013-03-23 (Sat, 23 Mar 2013) $
+ * $version: 1.6.1	- Added support for ie8 touch events
+ * $version: 1.6.2	- Added support for events binding with on / off / bind in jQ for all callback names.
+ *                   - Deprecated the 'click' handler in favour of tap.
+ *                   - added cancelThreshold property
+ *                   - added option method to update init options at runtime
+ * $version 1.6.3    - added doubletap, longtap events and longTapThreshold, doubleTapThreshold property
+ *
+ * $Date: 2013-04-04 (Thurs, 04 April 2013) $
+ * $version 1.6.4    - Fixed bug with cancelThreshold introduced in 1.6.3, where swipe status no longer fired start event, and stopped once swiping back.
+ *
+ * $Date: 2013-08-24 (Sat, 24 Aug 2013) $
+ * $version 1.6.5    - Merged a few pull requests fixing various bugs, added AMD support.
+ *
+ * $Date: 2014-06-04 (Wed, 04 June 2014) $
+ * $version 1.6.6 	- Merge of pull requests.
+ *    				- IE10 touch support
+ *    				- Only prevent default event handling on valid swipe
+ *    				- Separate license/changelog comment
+ *    				- Detect if the swipe is valid at the end of the touch event.
+ *    				- Pass fingerdata to event handlers.
+ *    				- Add 'hold' gesture
+ *    				- Be more tolerant about the tap distance
+ *    				- Typos and minor fixes
+ *
+ * $Date: 2015-22-01 (Thurs, 22 Jan 2015) $
+ * $version 1.6.7    - Added patch from https://github.com/mattbryson/TouchSwipe-Jquery-Plugin/issues/206 to fix memory leak
+ *
+ * $Date: 2015-2-2 (Mon, 2 Feb 2015) $
+ * $version 1.6.8    - Added preventDefaultEvents option to proxy events regardless.
+ *					- Fixed issue with swipe and pinch not triggering at the same time
+ *
+ * $Date: 2015-9-6 (Tues, 9 June 2015) $
+ * $version 1.6.9    - Added PR from jdalton/hybrid to fix pointer events
+ *					- Added scrolling demo
+ *					- Added version property to plugin
+ *
+ * $Date: 2015-1-10 (Wed, 1 October 2015) $
+ * $version 1.6.10    - Added PR from beatspace to fix tap events
+ * $version 1.6.11    - Added PRs from indri-indri ( Doc tidyup), kkirsche ( Bower tidy up ), UziTech (preventDefaultEvents fixes )
+ *					 - Allowed setting multiple options via .swipe("options", options_hash) and more simply .swipe(options_hash) or exisitng instances
+ * $version 1.6.12    - Fixed bug with multi finger releases above 2 not triggering events
+ *
+ * $Date: 2015-12-18 (Fri, 18 December 2015) $
+ * $version 1.6.13    - Added PRs
+ *                    - Fixed #267 allowPageScroll not working correctly
+ * $version 1.6.14    - Fixed #220 / #248 doubletap not firing with swipes, #223 commonJS compatible
+ * $version 1.6.15    - More bug fixes
+ *
+ * $Date: 2016-04-29 (Fri, 29 April 2016) $
+ * $version 1.6.16    - Swipes with 0 distance now allow default events to trigger.  So tapping any form elements or A tags will allow default interaction, but swiping will trigger a swipe.
+                        Removed the a, input, select etc from the excluded Children list as the 0 distance tap solves that issue.
+* $Date: 2016-05-19  (Fri, 29 April 2016) $
+* $version 1.6.17     - Fixed context issue when calling instance methods via $("selector").swipe("method");
+* $version 1.6.18     - now honors fallbackToMouseEvents=false for MS Pointer events when a Mouse is used.
+
+ */
+
+/**
+ * See (http://jquery.com/).
+ * @name $
+ * @class
+ * See the jQuery Library  (http://jquery.com/) for full details.  This just
+ * documents the function and classes that are added to jQuery by this plug-in.
+ */
+
+/**
+ * See (http://jquery.com/)
+ * @name fn
+ * @class
+ * See the jQuery Library  (http://jquery.com/) for full details.  This just
+ * documents the function and classes that are added to jQuery by this plug-in.
+ * @memberOf $
+ */
+
+
+(function(factory) {
+  if (typeof define === 'function' && define.amd && define.amd.jQuery) {
+    // AMD. Register as anonymous module.
+    define(['jquery'], factory);
+  } else if (typeof module !== 'undefined' && module.exports) {
+    // CommonJS Module
+    factory(require("jquery"));
+  } else {
+    // Browser globals.
+    factory(jQuery);
+  }
+}(function($) {
+  "use strict";
+
+  //Constants
+  var VERSION = "1.6.18",
+    LEFT = "left",
+    RIGHT = "right",
+    UP = "up",
+    DOWN = "down",
+    IN = "in",
+    OUT = "out",
+
+    NONE = "none",
+    AUTO = "auto",
+
+    SWIPE = "swipe",
+    PINCH = "pinch",
+    TAP = "tap",
+    DOUBLE_TAP = "doubletap",
+    LONG_TAP = "longtap",
+    HOLD = "hold",
+
+    HORIZONTAL = "horizontal",
+    VERTICAL = "vertical",
+
+    ALL_FINGERS = "all",
+
+    DOUBLE_TAP_THRESHOLD = 10,
+
+    PHASE_START = "start",
+    PHASE_MOVE = "move",
+    PHASE_END = "end",
+    PHASE_CANCEL = "cancel",
+
+    SUPPORTS_TOUCH = 'ontouchstart' in window,
+
+    SUPPORTS_POINTER_IE10 = window.navigator.msPointerEnabled && !window.navigator.pointerEnabled && !SUPPORTS_TOUCH,
+
+    SUPPORTS_POINTER = (window.navigator.pointerEnabled || window.navigator.msPointerEnabled) && !SUPPORTS_TOUCH,
+
+    PLUGIN_NS = 'TouchSwipe';
+
+
+
+  /**
+  * The default configuration, and available options to configure touch swipe with.
+  * You can set the default values by updating any of the properties prior to instantiation.
+  * @name $.fn.swipe.defaults
+  * @namespace
+  * @property {int} [fingers=1] The number of fingers to detect in a swipe. Any swipes that do not meet this requirement will NOT trigger swipe handlers.
+  * @property {int} [threshold=75] The number of pixels that the user must move their finger by before it is considered a swipe.
+  * @property {int} [cancelThreshold=null] The number of pixels that the user must move their finger back from the original swipe direction to cancel the gesture.
+  * @property {int} [pinchThreshold=20] The number of pixels that the user must pinch their finger by before it is considered a pinch.
+  * @property {int} [maxTimeThreshold=null] Time, in milliseconds, between touchStart and touchEnd must NOT exceed in order to be considered a swipe.
+  * @property {int} [fingerReleaseThreshold=250] Time in milliseconds between releasing multiple fingers.  If 2 fingers are down, and are released one after the other, if they are within this threshold, it counts as a simultaneous release.
+  * @property {int} [longTapThreshold=500] Time in milliseconds between tap and release for a long tap
+  * @property {int} [doubleTapThreshold=200] Time in milliseconds between 2 taps to count as a double tap
+  * @property {function} [swipe=null] A handler to catch all swipes. See {@link $.fn.swipe#event:swipe}
+  * @property {function} [swipeLeft=null] A handler that is triggered for "left" swipes. See {@link $.fn.swipe#event:swipeLeft}
+  * @property {function} [swipeRight=null] A handler that is triggered for "right" swipes. See {@link $.fn.swipe#event:swipeRight}
+  * @property {function} [swipeUp=null] A handler that is triggered for "up" swipes. See {@link $.fn.swipe#event:swipeUp}
+  * @property {function} [swipeDown=null] A handler that is triggered for "down" swipes. See {@link $.fn.swipe#event:swipeDown}
+  * @property {function} [swipeStatus=null] A handler triggered for every phase of the swipe. See {@link $.fn.swipe#event:swipeStatus}
+  * @property {function} [pinchIn=null] A handler triggered for pinch in events. See {@link $.fn.swipe#event:pinchIn}
+  * @property {function} [pinchOut=null] A handler triggered for pinch out events. See {@link $.fn.swipe#event:pinchOut}
+  * @property {function} [pinchStatus=null] A handler triggered for every phase of a pinch. See {@link $.fn.swipe#event:pinchStatus}
+  * @property {function} [tap=null] A handler triggered when a user just taps on the item, rather than swipes it. If they do not move, tap is triggered, if they do move, it is not.
+  * @property {function} [doubleTap=null] A handler triggered when a user double taps on the item. The delay between taps can be set with the doubleTapThreshold property. See {@link $.fn.swipe.defaults#doubleTapThreshold}
+  * @property {function} [longTap=null] A handler triggered when a user long taps on the item. The delay between start and end can be set with the longTapThreshold property. See {@link $.fn.swipe.defaults#longTapThreshold}
+  * @property (function) [hold=null] A handler triggered when a user reaches longTapThreshold on the item. See {@link $.fn.swipe.defaults#longTapThreshold}
+  * @property {boolean} [triggerOnTouchEnd=true] If true, the swipe events are triggered when the touch end event is received (user releases finger).  If false, it will be triggered on reaching the threshold, and then cancel the touch event automatically.
+  * @property {boolean} [triggerOnTouchLeave=false] If true, then when the user leaves the swipe object, the swipe will end and trigger appropriate handlers.
+  * @property {string|undefined} [allowPageScroll='auto'] How the browser handles page scrolls when the user is swiping on a touchSwipe object. See {@link $.fn.swipe.pageScroll}.  <br/><br/>
+  									<code>"auto"</code> : all undefined swipes will cause the page to scroll in that direction. <br/>
+  									<code>"none"</code> : the page will not scroll when user swipes. <br/>
+  									<code>"horizontal"</code> : will force page to scroll on horizontal swipes. <br/>
+  									<code>"vertical"</code> : will force page to scroll on vertical swipes. <br/>
+  * @property {boolean} [fallbackToMouseEvents=true] If true mouse events are used when run on a non touch device, false will stop swipes being triggered by mouse events on non touch devices.
+  * @property {string} [excludedElements=".noSwipe"] A jquery selector that specifies child elements that do NOT trigger swipes. By default this excludes elements with the class .noSwipe .
+  * @property {boolean} [preventDefaultEvents=true] by default default events are cancelled, so the page doesn't move.  You can disable this so both native events fire as well as your handlers.
+
+  */
+  var defaults = {
+    fingers: 1,
+    threshold: 75,
+    cancelThreshold: null,
+    pinchThreshold: 20,
+    maxTimeThreshold: null,
+    fingerReleaseThreshold: 250,
+    longTapThreshold: 500,
+    doubleTapThreshold: 200,
+    swipe: null,
+    swipeLeft: null,
+    swipeRight: null,
+    swipeUp: null,
+    swipeDown: null,
+    swipeStatus: null,
+    pinchIn: null,
+    pinchOut: null,
+    pinchStatus: null,
+    click: null, //Deprecated since 1.6.2
+    tap: null,
+    doubleTap: null,
+    longTap: null,
+    hold: null,
+    triggerOnTouchEnd: true,
+    triggerOnTouchLeave: false,
+    allowPageScroll: "auto",
+    fallbackToMouseEvents: true,
+    excludedElements: ".noSwipe",
+    preventDefaultEvents: true
+  };
+
+
+
+  /**
+   * Applies TouchSwipe behaviour to one or more jQuery objects.
+   * The TouchSwipe plugin can be instantiated via this method, or methods within
+   * TouchSwipe can be executed via this method as per jQuery plugin architecture.
+   * An existing plugin can have its options changed simply by re calling .swipe(options)
+   * @see TouchSwipe
+   * @class
+   * @param {Mixed} method If the current DOMNode is a TouchSwipe object, and <code>method</code> is a TouchSwipe method, then
+   * the <code>method</code> is executed, and any following arguments are passed to the TouchSwipe method.
+   * If <code>method</code> is an object, then the TouchSwipe class is instantiated on the current DOMNode, passing the
+   * configuration properties defined in the object. See TouchSwipe
+   *
+   */
+  $.fn.swipe = function(method) {
+    var $this = $(this),
+      plugin = $this.data(PLUGIN_NS);
+
+    //Check if we are already instantiated and trying to execute a method
+    if (plugin && typeof method === 'string') {
+      if (plugin[method]) {
+        return plugin[method].apply(plugin, Array.prototype.slice.call(arguments, 1));
+      } else {
+        $.error('Method ' + method + ' does not exist on jQuery.swipe');
+      }
+    }
+
+    //Else update existing plugin with new options hash
+    else if (plugin && typeof method === 'object') {
+      plugin['option'].apply(plugin, arguments);
+    }
+
+    //Else not instantiated and trying to pass init object (or nothing)
+    else if (!plugin && (typeof method === 'object' || !method)) {
+      return init.apply(this, arguments);
+    }
+
+    return $this;
+  };
+
+  /**
+   * The version of the plugin
+   * @readonly
+   */
+  $.fn.swipe.version = VERSION;
+
+
+
+  //Expose our defaults so a user could override the plugin defaults
+  $.fn.swipe.defaults = defaults;
+
+  /**
+   * The phases that a touch event goes through.  The <code>phase</code> is passed to the event handlers.
+   * These properties are read only, attempting to change them will not alter the values passed to the event handlers.
+   * @namespace
+   * @readonly
+   * @property {string} PHASE_START Constant indicating the start phase of the touch event. Value is <code>"start"</code>.
+   * @property {string} PHASE_MOVE Constant indicating the move phase of the touch event. Value is <code>"move"</code>.
+   * @property {string} PHASE_END Constant indicating the end phase of the touch event. Value is <code>"end"</code>.
+   * @property {string} PHASE_CANCEL Constant indicating the cancel phase of the touch event. Value is <code>"cancel"</code>.
+   */
+  $.fn.swipe.phases = {
+    PHASE_START: PHASE_START,
+    PHASE_MOVE: PHASE_MOVE,
+    PHASE_END: PHASE_END,
+    PHASE_CANCEL: PHASE_CANCEL
+  };
+
+  /**
+   * The direction constants that are passed to the event handlers.
+   * These properties are read only, attempting to change them will not alter the values passed to the event handlers.
+   * @namespace
+   * @readonly
+   * @property {string} LEFT Constant indicating the left direction. Value is <code>"left"</code>.
+   * @property {string} RIGHT Constant indicating the right direction. Value is <code>"right"</code>.
+   * @property {string} UP Constant indicating the up direction. Value is <code>"up"</code>.
+   * @property {string} DOWN Constant indicating the down direction. Value is <code>"cancel"</code>.
+   * @property {string} IN Constant indicating the in direction. Value is <code>"in"</code>.
+   * @property {string} OUT Constant indicating the out direction. Value is <code>"out"</code>.
+   */
+  $.fn.swipe.directions = {
+    LEFT: LEFT,
+    RIGHT: RIGHT,
+    UP: UP,
+    DOWN: DOWN,
+    IN: IN,
+    OUT: OUT
+  };
+
+  /**
+   * The page scroll constants that can be used to set the value of <code>allowPageScroll</code> option
+   * These properties are read only
+   * @namespace
+   * @readonly
+   * @see $.fn.swipe.defaults#allowPageScroll
+   * @property {string} NONE Constant indicating no page scrolling is allowed. Value is <code>"none"</code>.
+   * @property {string} HORIZONTAL Constant indicating horizontal page scrolling is allowed. Value is <code>"horizontal"</code>.
+   * @property {string} VERTICAL Constant indicating vertical page scrolling is allowed. Value is <code>"vertical"</code>.
+   * @property {string} AUTO Constant indicating either horizontal or vertical will be allowed, depending on the swipe handlers registered. Value is <code>"auto"</code>.
+   */
+  $.fn.swipe.pageScroll = {
+    NONE: NONE,
+    HORIZONTAL: HORIZONTAL,
+    VERTICAL: VERTICAL,
+    AUTO: AUTO
+  };
+
+  /**
+   * Constants representing the number of fingers used in a swipe.  These are used to set both the value of <code>fingers</code> in the
+   * options object, as well as the value of the <code>fingers</code> event property.
+   * These properties are read only, attempting to change them will not alter the values passed to the event handlers.
+   * @namespace
+   * @readonly
+   * @see $.fn.swipe.defaults#fingers
+   * @property {string} ONE Constant indicating 1 finger is to be detected / was detected. Value is <code>1</code>.
+   * @property {string} TWO Constant indicating 2 fingers are to be detected / were detected. Value is <code>2</code>.
+   * @property {string} THREE Constant indicating 3 finger are to be detected / were detected. Value is <code>3</code>.
+   * @property {string} FOUR Constant indicating 4 finger are to be detected / were detected. Not all devices support this. Value is <code>4</code>.
+   * @property {string} FIVE Constant indicating 5 finger are to be detected / were detected. Not all devices support this. Value is <code>5</code>.
+   * @property {string} ALL Constant indicating any combination of finger are to be detected.  Value is <code>"all"</code>.
+   */
+  $.fn.swipe.fingers = {
+    ONE: 1,
+    TWO: 2,
+    THREE: 3,
+    FOUR: 4,
+    FIVE: 5,
+    ALL: ALL_FINGERS
+  };
+
+  /**
+   * Initialise the plugin for each DOM element matched
+   * This creates a new instance of the main TouchSwipe class for each DOM element, and then
+   * saves a reference to that instance in the elements data property.
+   * @internal
+   */
+  function init(options) {
+    //Prep and extend the options
+    if (options && (options.allowPageScroll === undefined && (options.swipe !== undefined || options.swipeStatus !== undefined))) {
+      options.allowPageScroll = NONE;
+    }
+
+    //Check for deprecated options
+    //Ensure that any old click handlers are assigned to the new tap, unless we have a tap
+    if (options.click !== undefined && options.tap === undefined) {
+      options.tap = options.click;
+    }
+
+    if (!options) {
+      options = {};
+    }
+
+    //pass empty object so we dont modify the defaults
+    options = $.extend({}, $.fn.swipe.defaults, options);
+
+    //For each element instantiate the plugin
+    return this.each(function() {
+      var $this = $(this);
+
+      //Check we havent already initialised the plugin
+      var plugin = $this.data(PLUGIN_NS);
+
+      if (!plugin) {
+        plugin = new TouchSwipe(this, options);
+        $this.data(PLUGIN_NS, plugin);
+      }
+    });
+  }
+
+  /**
+   * Main TouchSwipe Plugin Class.
+   * Do not use this to construct your TouchSwipe object, use the jQuery plugin method $.fn.swipe(); {@link $.fn.swipe}
+   * @private
+   * @name TouchSwipe
+   * @param {DOMNode} element The HTML DOM object to apply to plugin to
+   * @param {Object} options The options to configure the plugin with.  @link {$.fn.swipe.defaults}
+   * @see $.fh.swipe.defaults
+   * @see $.fh.swipe
+   * @class
+   */
+  function TouchSwipe(element, options) {
+
+    //take a local/instacne level copy of the options - should make it this.options really...
+    var options = $.extend({}, options);
+
+    var useTouchEvents = (SUPPORTS_TOUCH || SUPPORTS_POINTER || !options.fallbackToMouseEvents),
+      START_EV = useTouchEvents ? (SUPPORTS_POINTER ? (SUPPORTS_POINTER_IE10 ? 'MSPointerDown' : 'pointerdown') : 'touchstart') : 'mousedown',
+      MOVE_EV = useTouchEvents ? (SUPPORTS_POINTER ? (SUPPORTS_POINTER_IE10 ? 'MSPointerMove' : 'pointermove') : 'touchmove') : 'mousemove',
+      END_EV = useTouchEvents ? (SUPPORTS_POINTER ? (SUPPORTS_POINTER_IE10 ? 'MSPointerUp' : 'pointerup') : 'touchend') : 'mouseup',
+      LEAVE_EV = useTouchEvents ? (SUPPORTS_POINTER ? 'mouseleave' : null) : 'mouseleave', //we manually detect leave on touch devices, so null event here
+      CANCEL_EV = (SUPPORTS_POINTER ? (SUPPORTS_POINTER_IE10 ? 'MSPointerCancel' : 'pointercancel') : 'touchcancel');
+
+
+
+    //touch properties
+    var distance = 0,
+      direction = null,
+      currentDirection = null,
+      duration = 0,
+      startTouchesDistance = 0,
+      endTouchesDistance = 0,
+      pinchZoom = 1,
+      pinchDistance = 0,
+      pinchDirection = 0,
+      maximumsMap = null;
+
+
+
+    //jQuery wrapped element for this instance
+    var $element = $(element);
+
+    //Current phase of th touch cycle
+    var phase = "start";
+
+    // the current number of fingers being used.
+    var fingerCount = 0;
+
+    //track mouse points / delta
+    var fingerData = {};
+
+    //track times
+    var startTime = 0,
+      endTime = 0,
+      previousTouchEndTime = 0,
+      fingerCountAtRelease = 0,
+      doubleTapStartTime = 0;
+
+    //Timeouts
+    var singleTapTimeout = null,
+      holdTimeout = null;
+
+    // Add gestures to all swipable areas if supported
+    try {
+      $element.bind(START_EV, touchStart);
+      $element.bind(CANCEL_EV, touchCancel);
+    } catch (e) {
+      $.error('events not supported ' + START_EV + ',' + CANCEL_EV + ' on jQuery.swipe');
+    }
+
+    //
+    //Public methods
+    //
+
+    /**
+     * re-enables the swipe plugin with the previous configuration
+     * @function
+     * @name $.fn.swipe#enable
+     * @return {DOMNode} The Dom element that was registered with TouchSwipe
+     * @example $("#element").swipe("enable");
+     */
+    this.enable = function() {
+      //Incase we are already enabled, clean up...
+      this.disable();
+      $element.bind(START_EV, touchStart);
+      $element.bind(CANCEL_EV, touchCancel);
+      return $element;
+    };
+
+    /**
+     * disables the swipe plugin
+     * @function
+     * @name $.fn.swipe#disable
+     * @return {DOMNode} The Dom element that is now registered with TouchSwipe
+     * @example $("#element").swipe("disable");
+     */
+    this.disable = function() {
+      removeListeners();
+      return $element;
+    };
+
+    /**
+     * Destroy the swipe plugin completely. To use any swipe methods, you must re initialise the plugin.
+     * @function
+     * @name $.fn.swipe#destroy
+     * @example $("#element").swipe("destroy");
+     */
+    this.destroy = function() {
+      removeListeners();
+      $element.data(PLUGIN_NS, null);
+      $element = null;
+    };
+
+
+    /**
+     * Allows run time updating of the swipe configuration options.
+     * @function
+     * @name $.fn.swipe#option
+     * @param {String} property The option property to get or set, or a has of multiple options to set
+     * @param {Object} [value] The value to set the property to
+     * @return {Object} If only a property name is passed, then that property value is returned. If nothing is passed the current options hash is returned.
+     * @example $("#element").swipe("option", "threshold"); // return the threshold
+     * @example $("#element").swipe("option", "threshold", 100); // set the threshold after init
+     * @example $("#element").swipe("option", {threshold:100, fingers:3} ); // set multiple properties after init
+     * @example $("#element").swipe({threshold:100, fingers:3} ); // set multiple properties after init - the "option" method is optional!
+     * @example $("#element").swipe("option"); // Return the current options hash
+     * @see $.fn.swipe.defaults
+     *
+     */
+    this.option = function(property, value) {
+
+      if (typeof property === 'object') {
+        options = $.extend(options, property);
+      } else if (options[property] !== undefined) {
+        if (value === undefined) {
+          return options[property];
+        } else {
+          options[property] = value;
+        }
+      } else if (!property) {
+        return options;
+      } else {
+        $.error('Option ' + property + ' does not exist on jQuery.swipe.options');
+      }
+
+      return null;
+    }
+
+
+
+    //
+    // Private methods
+    //
+
+    //
+    // EVENTS
+    //
+    /**
+     * Event handler for a touch start event.
+     * Stops the default click event from triggering and stores where we touched
+     * @inner
+     * @param {object} jqEvent The normalised jQuery event object.
+     */
+    function touchStart(jqEvent) {
+
+      //If we already in a touch event (a finger already in use) then ignore subsequent ones..
+      if (getTouchInProgress()) {
+        return;
+      }
+
+      //Check if this element matches any in the excluded elements selectors,  or its parent is excluded, if so, DON'T swipe
+      if ($(jqEvent.target).closest(options.excludedElements, $element).length > 0) {
+        return;
+      }
+
+      //As we use Jquery bind for events, we need to target the original event object
+      //If these events are being programmatically triggered, we don't have an original event object, so use the Jq one.
+      var event = jqEvent.originalEvent ? jqEvent.originalEvent : jqEvent;
+
+
+      //If we have a pointer event, whoes type is 'mouse' and we have said NO mouse events, then dont do anything.
+      if(event.pointerType && event.pointerType=="mouse" && options.fallbackToMouseEvents==false) {
+        return;
+      };
+
+      var ret,
+        touches = event.touches,
+        evt = touches ? touches[0] : event;
+
+      phase = PHASE_START;
+
+      //If we support touches, get the finger count
+      if (touches) {
+        // get the total number of fingers touching the screen
+        fingerCount = touches.length;
+      }
+      //Else this is the desktop, so stop the browser from dragging content
+      else if (options.preventDefaultEvents !== false) {
+        jqEvent.preventDefault(); //call this on jq event so we are cross browser
+      }
+
+      //clear vars..
+      distance = 0;
+      direction = null;
+      currentDirection=null;
+      pinchDirection = null;
+      duration = 0;
+      startTouchesDistance = 0;
+      endTouchesDistance = 0;
+      pinchZoom = 1;
+      pinchDistance = 0;
+      maximumsMap = createMaximumsData();
+      cancelMultiFingerRelease();
+
+      //Create the default finger data
+      createFingerData(0, evt);
+
+      // check the number of fingers is what we are looking for, or we are capturing pinches
+      if (!touches || (fingerCount === options.fingers || options.fingers === ALL_FINGERS) || hasPinches()) {
+        // get the coordinates of the touch
+        startTime = getTimeStamp();
+
+        if (fingerCount == 2) {
+          //Keep track of the initial pinch distance, so we can calculate the diff later
+          //Store second finger data as start
+          createFingerData(1, touches[1]);
+          startTouchesDistance = endTouchesDistance = calculateTouchesDistance(fingerData[0].start, fingerData[1].start);
+        }
+
+        if (options.swipeStatus || options.pinchStatus) {
+          ret = triggerHandler(event, phase);
+        }
+      } else {
+        //A touch with more or less than the fingers we are looking for, so cancel
+        ret = false;
+      }
+
+      //If we have a return value from the users handler, then return and cancel
+      if (ret === false) {
+        phase = PHASE_CANCEL;
+        triggerHandler(event, phase);
+        return ret;
+      } else {
+        if (options.hold) {
+          holdTimeout = setTimeout($.proxy(function() {
+            //Trigger the event
+            $element.trigger('hold', [event.target]);
+            //Fire the callback
+            if (options.hold) {
+              ret = options.hold.call($element, event, event.target);
+            }
+          }, this), options.longTapThreshold);
+        }
+
+        setTouchInProgress(true);
+      }
+
+      return null;
+    };
+
+
+
+    /**
+     * Event handler for a touch move event.
+     * If we change fingers during move, then cancel the event
+     * @inner
+     * @param {object} jqEvent The normalised jQuery event object.
+     */
+    function touchMove(jqEvent) {
+
+      //As we use Jquery bind for events, we need to target the original event object
+      //If these events are being programmatically triggered, we don't have an original event object, so use the Jq one.
+      var event = jqEvent.originalEvent ? jqEvent.originalEvent : jqEvent;
+
+      //If we are ending, cancelling, or within the threshold of 2 fingers being released, don't track anything..
+      if (phase === PHASE_END || phase === PHASE_CANCEL || inMultiFingerRelease())
+        return;
+
+      var ret,
+        touches = event.touches,
+        evt = touches ? touches[0] : event;
+
+
+      //Update the  finger data
+      var currentFinger = updateFingerData(evt);
+      endTime = getTimeStamp();
+
+      if (touches) {
+        fingerCount = touches.length;
+      }
+
+      if (options.hold) {
+        clearTimeout(holdTimeout);
+      }
+
+      phase = PHASE_MOVE;
+
+      //If we have 2 fingers get Touches distance as well
+      if (fingerCount == 2) {
+
+        //Keep track of the initial pinch distance, so we can calculate the diff later
+        //We do this here as well as the start event, in case they start with 1 finger, and the press 2 fingers
+        if (startTouchesDistance == 0) {
+          //Create second finger if this is the first time...
+          createFingerData(1, touches[1]);
+
+          startTouchesDistance = endTouchesDistance = calculateTouchesDistance(fingerData[0].start, fingerData[1].start);
+        } else {
+          //Else just update the second finger
+          updateFingerData(touches[1]);
+
+          endTouchesDistance = calculateTouchesDistance(fingerData[0].end, fingerData[1].end);
+          pinchDirection = calculatePinchDirection(fingerData[0].end, fingerData[1].end);
+        }
+
+        pinchZoom = calculatePinchZoom(startTouchesDistance, endTouchesDistance);
+        pinchDistance = Math.abs(startTouchesDistance - endTouchesDistance);
+      }
+
+      if ((fingerCount === options.fingers || options.fingers === ALL_FINGERS) || !touches || hasPinches()) {
+
+        //The overall direction of the swipe. From start to now.
+        direction = calculateDirection(currentFinger.start, currentFinger.end);
+
+        //The immediate direction of the swipe, direction between the last movement and this one.
+        currentDirection = calculateDirection(currentFinger.last, currentFinger.end);
+
+        //Check if we need to prevent default event (page scroll / pinch zoom) or not
+        validateDefaultEvent(jqEvent, currentDirection);
+
+        //Distance and duration are all off the main finger
+        distance = calculateDistance(currentFinger.start, currentFinger.end);
+        duration = calculateDuration();
+
+        //Cache the maximum distance we made in this direction
+        setMaxDistance(direction, distance);
+
+        //Trigger status handler
+        ret = triggerHandler(event, phase);
+
+
+        //If we trigger end events when threshold are met, or trigger events when touch leaves element
+        if (!options.triggerOnTouchEnd || options.triggerOnTouchLeave) {
+
+          var inBounds = true;
+
+          //If checking if we leave the element, run the bounds check (we can use touchleave as its not supported on webkit)
+          if (options.triggerOnTouchLeave) {
+            var bounds = getbounds(this);
+            inBounds = isInBounds(currentFinger.end, bounds);
+          }
+
+          //Trigger end handles as we swipe if thresholds met or if we have left the element if the user has asked to check these..
+          if (!options.triggerOnTouchEnd && inBounds) {
+            phase = getNextPhase(PHASE_MOVE);
+          }
+          //We end if out of bounds here, so set current phase to END, and check if its modified
+          else if (options.triggerOnTouchLeave && !inBounds) {
+            phase = getNextPhase(PHASE_END);
+          }
+
+          if (phase == PHASE_CANCEL || phase == PHASE_END) {
+            triggerHandler(event, phase);
+          }
+        }
+      } else {
+        phase = PHASE_CANCEL;
+        triggerHandler(event, phase);
+      }
+
+      if (ret === false) {
+        phase = PHASE_CANCEL;
+        triggerHandler(event, phase);
+      }
+    }
+
+
+
+
+    /**
+     * Event handler for a touch end event.
+     * Calculate the direction and trigger events
+     * @inner
+     * @param {object} jqEvent The normalised jQuery event object.
+     */
+    function touchEnd(jqEvent) {
+      //As we use Jquery bind for events, we need to target the original event object
+      //If these events are being programmatically triggered, we don't have an original event object, so use the Jq one.
+      var event = jqEvent.originalEvent ? jqEvent.originalEvent : jqEvent,
+        touches = event.touches;
+
+      //If we are still in a touch with the device wait a fraction and see if the other finger comes up
+      //if it does within the threshold, then we treat it as a multi release, not a single release and end the touch / swipe
+      if (touches) {
+        if (touches.length && !inMultiFingerRelease()) {
+          startMultiFingerRelease(event);
+          return true;
+        } else if (touches.length && inMultiFingerRelease()) {
+          return true;
+        }
+      }
+
+      //If a previous finger has been released, check how long ago, if within the threshold, then assume it was a multifinger release.
+      //This is used to allow 2 fingers to release fractionally after each other, whilst maintaining the event as containing 2 fingers, not 1
+      if (inMultiFingerRelease()) {
+        fingerCount = fingerCountAtRelease;
+      }
+
+      //Set end of swipe
+      endTime = getTimeStamp();
+
+      //Get duration incase move was never fired
+      duration = calculateDuration();
+
+      //If we trigger handlers at end of swipe OR, we trigger during, but they didnt trigger and we are still in the move phase
+      if (didSwipeBackToCancel() || !validateSwipeDistance()) {
+        phase = PHASE_CANCEL;
+        triggerHandler(event, phase);
+      } else if (options.triggerOnTouchEnd || (options.triggerOnTouchEnd === false && phase === PHASE_MOVE)) {
+        //call this on jq event so we are cross browser
+        if (options.preventDefaultEvents !== false && jqEvent.cancelable !== false) {
+          jqEvent.preventDefault();
+        }
+        phase = PHASE_END;
+        triggerHandler(event, phase);
+      }
+      //Special cases - A tap should always fire on touch end regardless,
+      //So here we manually trigger the tap end handler by itself
+      //We dont run trigger handler as it will re-trigger events that may have fired already
+      else if (!options.triggerOnTouchEnd && hasTap()) {
+        //Trigger the pinch events...
+        phase = PHASE_END;
+        triggerHandlerForGesture(event, phase, TAP);
+      } else if (phase === PHASE_MOVE) {
+        phase = PHASE_CANCEL;
+        triggerHandler(event, phase);
+      }
+
+      setTouchInProgress(false);
+
+      return null;
+    }
+
+
+
+    /**
+     * Event handler for a touch cancel event.
+     * Clears current vars
+     * @inner
+     */
+    function touchCancel() {
+      // reset the variables back to default values
+      fingerCount = 0;
+      endTime = 0;
+      startTime = 0;
+      startTouchesDistance = 0;
+      endTouchesDistance = 0;
+      pinchZoom = 1;
+
+      //If we were in progress of tracking a possible multi touch end, then re set it.
+      cancelMultiFingerRelease();
+
+      setTouchInProgress(false);
+    }
+
+
+    /**
+     * Event handler for a touch leave event.
+     * This is only triggered on desktops, in touch we work this out manually
+     * as the touchleave event is not supported in webkit
+     * @inner
+     */
+    function touchLeave(jqEvent) {
+      //If these events are being programmatically triggered, we don't have an original event object, so use the Jq one.
+      var event = jqEvent.originalEvent ? jqEvent.originalEvent : jqEvent;
+
+      //If we have the trigger on leave property set....
+      if (options.triggerOnTouchLeave) {
+        phase = getNextPhase(PHASE_END);
+        triggerHandler(event, phase);
+      }
+    }
+
+    /**
+     * Removes all listeners that were associated with the plugin
+     * @inner
+     */
+    function removeListeners() {
+      $element.unbind(START_EV, touchStart);
+      $element.unbind(CANCEL_EV, touchCancel);
+      $element.unbind(MOVE_EV, touchMove);
+      $element.unbind(END_EV, touchEnd);
+
+      //we only have leave events on desktop, we manually calculate leave on touch as its not supported in webkit
+      if (LEAVE_EV) {
+        $element.unbind(LEAVE_EV, touchLeave);
+      }
+
+      setTouchInProgress(false);
+    }
+
+
+    /**
+     * Checks if the time and distance thresholds have been met, and if so then the appropriate handlers are fired.
+     */
+    function getNextPhase(currentPhase) {
+
+      var nextPhase = currentPhase;
+
+      // Ensure we have valid swipe (under time and over distance  and check if we are out of bound...)
+      var validTime = validateSwipeTime();
+      var validDistance = validateSwipeDistance();
+      var didCancel = didSwipeBackToCancel();
+
+      //If we have exceeded our time, then cancel
+      if (!validTime || didCancel) {
+        nextPhase = PHASE_CANCEL;
+      }
+      //Else if we are moving, and have reached distance then end
+      else if (validDistance && currentPhase == PHASE_MOVE && (!options.triggerOnTouchEnd || options.triggerOnTouchLeave)) {
+        nextPhase = PHASE_END;
+      }
+      //Else if we have ended by leaving and didn't reach distance, then cancel
+      else if (!validDistance && currentPhase == PHASE_END && options.triggerOnTouchLeave) {
+        nextPhase = PHASE_CANCEL;
+      }
+
+      return nextPhase;
+    }
+
+
+    /**
+     * Trigger the relevant event handler
+     * The handlers are passed the original event, the element that was swiped, and in the case of the catch all handler, the direction that was swiped, "left", "right", "up", or "down"
+     * @param {object} event the original event object
+     * @param {string} phase the phase of the swipe (start, end cancel etc) {@link $.fn.swipe.phases}
+     * @inner
+     */
+    function triggerHandler(event, phase) {
+
+
+
+      var ret,
+        touches = event.touches;
+
+      // SWIPE GESTURES
+      if (didSwipe() || hasSwipes()) {
+          ret = triggerHandlerForGesture(event, phase, SWIPE);
+      }
+
+      // PINCH GESTURES (if the above didn't cancel)
+      if ((didPinch() || hasPinches()) && ret !== false) {
+          ret = triggerHandlerForGesture(event, phase, PINCH);
+      }
+
+      // CLICK / TAP (if the above didn't cancel)
+      if (didDoubleTap() && ret !== false) {
+        //Trigger the tap events...
+        ret = triggerHandlerForGesture(event, phase, DOUBLE_TAP);
+      }
+
+      // CLICK / TAP (if the above didn't cancel)
+      else if (didLongTap() && ret !== false) {
+        //Trigger the tap events...
+        ret = triggerHandlerForGesture(event, phase, LONG_TAP);
+      }
+
+      // CLICK / TAP (if the above didn't cancel)
+      else if (didTap() && ret !== false) {
+        //Trigger the tap event..
+        ret = triggerHandlerForGesture(event, phase, TAP);
+      }
+
+
+
+      // If we are cancelling the gesture, then manually trigger the reset handler
+      if (phase === PHASE_CANCEL) {
+
+        touchCancel(event);
+      }
+
+
+
+
+      // If we are ending the gesture, then manually trigger the reset handler IF all fingers are off
+      if (phase === PHASE_END) {
+        //If we support touch, then check that all fingers are off before we cancel
+        if (touches) {
+          if (!touches.length) {
+            touchCancel(event);
+          }
+        } else {
+          touchCancel(event);
+        }
+      }
+
+      return ret;
+    }
+
+
+
+    /**
+     * Trigger the relevant event handler
+     * The handlers are passed the original event, the element that was swiped, and in the case of the catch all handler, the direction that was swiped, "left", "right", "up", or "down"
+     * @param {object} event the original event object
+     * @param {string} phase the phase of the swipe (start, end cancel etc) {@link $.fn.swipe.phases}
+     * @param {string} gesture the gesture to trigger a handler for : PINCH or SWIPE {@link $.fn.swipe.gestures}
+     * @return Boolean False, to indicate that the event should stop propagation, or void.
+     * @inner
+     */
+    function triggerHandlerForGesture(event, phase, gesture) {
+
+      var ret;
+
+      //SWIPES....
+      if (gesture == SWIPE) {
+        //Trigger status every time..
+        $element.trigger('swipeStatus', [phase, direction || null, distance || 0, duration || 0, fingerCount, fingerData, currentDirection]);
+
+        if (options.swipeStatus) {
+          ret = options.swipeStatus.call($element, event, phase, direction || null, distance || 0, duration || 0, fingerCount, fingerData, currentDirection);
+          //If the status cancels, then dont run the subsequent event handlers..
+          if (ret === false) return false;
+        }
+
+        if (phase == PHASE_END && validateSwipe()) {
+
+          //Cancel any taps that were in progress...
+          clearTimeout(singleTapTimeout);
+          clearTimeout(holdTimeout);
+
+          $element.trigger('swipe', [direction, distance, duration, fingerCount, fingerData, currentDirection]);
+
+          if (options.swipe) {
+            ret = options.swipe.call($element, event, direction, distance, duration, fingerCount, fingerData, currentDirection);
+            //If the status cancels, then dont run the subsequent event handlers..
+            if (ret === false) return false;
+          }
+
+          //trigger direction specific event handlers
+          switch (direction) {
+            case LEFT:
+              $element.trigger('swipeLeft', [direction, distance, duration, fingerCount, fingerData, currentDirection]);
+
+              if (options.swipeLeft) {
+                ret = options.swipeLeft.call($element, event, direction, distance, duration, fingerCount, fingerData, currentDirection);
+              }
+              break;
+
+            case RIGHT:
+              $element.trigger('swipeRight', [direction, distance, duration, fingerCount, fingerData, currentDirection]);
+
+              if (options.swipeRight) {
+                ret = options.swipeRight.call($element, event, direction, distance, duration, fingerCount, fingerData, currentDirection);
+              }
+              break;
+
+            case UP:
+              $element.trigger('swipeUp', [direction, distance, duration, fingerCount, fingerData, currentDirection]);
+
+              if (options.swipeUp) {
+                ret = options.swipeUp.call($element, event, direction, distance, duration, fingerCount, fingerData, currentDirection);
+              }
+              break;
+
+            case DOWN:
+              $element.trigger('swipeDown', [direction, distance, duration, fingerCount, fingerData, currentDirection]);
+
+              if (options.swipeDown) {
+                ret = options.swipeDown.call($element, event, direction, distance, duration, fingerCount, fingerData, currentDirection);
+              }
+              break;
+          }
+        }
+      }
+
+
+      //PINCHES....
+      if (gesture == PINCH) {
+        $element.trigger('pinchStatus', [phase, pinchDirection || null, pinchDistance || 0, duration || 0, fingerCount, pinchZoom, fingerData]);
+
+        if (options.pinchStatus) {
+          ret = options.pinchStatus.call($element, event, phase, pinchDirection || null, pinchDistance || 0, duration || 0, fingerCount, pinchZoom, fingerData);
+          //If the status cancels, then dont run the subsequent event handlers..
+          if (ret === false) return false;
+        }
+
+        if (phase == PHASE_END && validatePinch()) {
+
+          switch (pinchDirection) {
+            case IN:
+              $element.trigger('pinchIn', [pinchDirection || null, pinchDistance || 0, duration || 0, fingerCount, pinchZoom, fingerData]);
+
+              if (options.pinchIn) {
+                ret = options.pinchIn.call($element, event, pinchDirection || null, pinchDistance || 0, duration || 0, fingerCount, pinchZoom, fingerData);
+              }
+              break;
+
+            case OUT:
+              $element.trigger('pinchOut', [pinchDirection || null, pinchDistance || 0, duration || 0, fingerCount, pinchZoom, fingerData]);
+
+              if (options.pinchOut) {
+                ret = options.pinchOut.call($element, event, pinchDirection || null, pinchDistance || 0, duration || 0, fingerCount, pinchZoom, fingerData);
+              }
+              break;
+          }
+        }
+      }
+
+      if (gesture == TAP) {
+        if (phase === PHASE_CANCEL || phase === PHASE_END) {
+
+          clearTimeout(singleTapTimeout);
+          clearTimeout(holdTimeout);
+
+          //If we are also looking for doubelTaps, wait incase this is one...
+          if (hasDoubleTap() && !inDoubleTap()) {
+            doubleTapStartTime = getTimeStamp();
+
+            //Now wait for the double tap timeout, and trigger this single tap
+            //if its not cancelled by a double tap
+            singleTapTimeout = setTimeout($.proxy(function() {
+              doubleTapStartTime = null;
+              $element.trigger('tap', [event.target]);
+
+              if (options.tap) {
+                ret = options.tap.call($element, event, event.target);
+              }
+            }, this), options.doubleTapThreshold);
+
+          } else {
+            doubleTapStartTime = null;
+            $element.trigger('tap', [event.target]);
+            if (options.tap) {
+              ret = options.tap.call($element, event, event.target);
+            }
+          }
+        }
+      } else if (gesture == DOUBLE_TAP) {
+        if (phase === PHASE_CANCEL || phase === PHASE_END) {
+          clearTimeout(singleTapTimeout);
+          clearTimeout(holdTimeout);
+          doubleTapStartTime = null;
+          $element.trigger('doubletap', [event.target]);
+
+          if (options.doubleTap) {
+            ret = options.doubleTap.call($element, event, event.target);
+          }
+        }
+      } else if (gesture == LONG_TAP) {
+        if (phase === PHASE_CANCEL || phase === PHASE_END) {
+          clearTimeout(singleTapTimeout);
+          doubleTapStartTime = null;
+
+          $element.trigger('longtap', [event.target]);
+          if (options.longTap) {
+            ret = options.longTap.call($element, event, event.target);
+          }
+        }
+      }
+
+      return ret;
+    }
+
+
+    //
+    // GESTURE VALIDATION
+    //
+
+    /**
+     * Checks the user has swipe far enough
+     * @return Boolean if <code>threshold</code> has been set, return true if the threshold was met, else false.
+     * If no threshold was set, then we return true.
+     * @inner
+     */
+    function validateSwipeDistance() {
+      var valid = true;
+      //If we made it past the min swipe distance..
+      if (options.threshold !== null) {
+        valid = distance >= options.threshold;
+      }
+
+      return valid;
+    }
+
+    /**
+     * Checks the user has swiped back to cancel.
+     * @return Boolean if <code>cancelThreshold</code> has been set, return true if the cancelThreshold was met, else false.
+     * If no cancelThreshold was set, then we return true.
+     * @inner
+     */
+    function didSwipeBackToCancel() {
+      var cancelled = false;
+      if (options.cancelThreshold !== null && direction !== null) {
+        cancelled = (getMaxDistance(direction) - distance) >= options.cancelThreshold;
+      }
+
+      return cancelled;
+    }
+
+    /**
+     * Checks the user has pinched far enough
+     * @return Boolean if <code>pinchThreshold</code> has been set, return true if the threshold was met, else false.
+     * If no threshold was set, then we return true.
+     * @inner
+     */
+    function validatePinchDistance() {
+      if (options.pinchThreshold !== null) {
+        return pinchDistance >= options.pinchThreshold;
+      }
+      return true;
+    }
+
+    /**
+     * Checks that the time taken to swipe meets the minimum / maximum requirements
+     * @return Boolean
+     * @inner
+     */
+    function validateSwipeTime() {
+      var result;
+      //If no time set, then return true
+      if (options.maxTimeThreshold) {
+        if (duration >= options.maxTimeThreshold) {
+          result = false;
+        } else {
+          result = true;
+        }
+      } else {
+        result = true;
+      }
+
+      return result;
+    }
+
+
+    /**
+     * Checks direction of the swipe and the value allowPageScroll to see if we should allow or prevent the default behaviour from occurring.
+     * This will essentially allow page scrolling or not when the user is swiping on a touchSwipe object.
+     * @param {object} jqEvent The normalised jQuery representation of the event object.
+     * @param {string} direction The direction of the event. See {@link $.fn.swipe.directions}
+     * @see $.fn.swipe.directions
+     * @inner
+     */
+    function validateDefaultEvent(jqEvent, direction) {
+
+      //If the option is set, allways allow the event to bubble up (let user handle weirdness)
+      if (options.preventDefaultEvents === false) {
+        return;
+      }
+
+      if (options.allowPageScroll === NONE) {
+        jqEvent.preventDefault();
+      } else {
+        var auto = options.allowPageScroll === AUTO;
+
+        switch (direction) {
+          case LEFT:
+            if ((options.swipeLeft && auto) || (!auto && options.allowPageScroll != HORIZONTAL)) {
+              jqEvent.preventDefault();
+            }
+            break;
+
+          case RIGHT:
+            if ((options.swipeRight && auto) || (!auto && options.allowPageScroll != HORIZONTAL)) {
+              jqEvent.preventDefault();
+            }
+            break;
+
+          case UP:
+            if ((options.swipeUp && auto) || (!auto && options.allowPageScroll != VERTICAL)) {
+              jqEvent.preventDefault();
+            }
+            break;
+
+          case DOWN:
+            if ((options.swipeDown && auto) || (!auto && options.allowPageScroll != VERTICAL)) {
+              jqEvent.preventDefault();
+            }
+            break;
+
+          case NONE:
+
+            break;
+        }
+      }
+    }
+
+
+    // PINCHES
+    /**
+     * Returns true of the current pinch meets the thresholds
+     * @return Boolean
+     * @inner
+     */
+    function validatePinch() {
+      var hasCorrectFingerCount = validateFingers();
+      var hasEndPoint = validateEndPoint();
+      var hasCorrectDistance = validatePinchDistance();
+      return hasCorrectFingerCount && hasEndPoint && hasCorrectDistance;
+
+    }
+
+    /**
+     * Returns true if any Pinch events have been registered
+     * @return Boolean
+     * @inner
+     */
+    function hasPinches() {
+      //Enure we dont return 0 or null for false values
+      return !!(options.pinchStatus || options.pinchIn || options.pinchOut);
+    }
+
+    /**
+     * Returns true if we are detecting pinches, and have one
+     * @return Boolean
+     * @inner
+     */
+    function didPinch() {
+      //Enure we dont return 0 or null for false values
+      return !!(validatePinch() && hasPinches());
+    }
+
+
+
+
+    // SWIPES
+    /**
+     * Returns true if the current swipe meets the thresholds
+     * @return Boolean
+     * @inner
+     */
+    function validateSwipe() {
+      //Check validity of swipe
+      var hasValidTime = validateSwipeTime();
+      var hasValidDistance = validateSwipeDistance();
+      var hasCorrectFingerCount = validateFingers();
+      var hasEndPoint = validateEndPoint();
+      var didCancel = didSwipeBackToCancel();
+
+      // if the user swiped more than the minimum length, perform the appropriate action
+      // hasValidDistance is null when no distance is set
+      var valid = !didCancel && hasEndPoint && hasCorrectFingerCount && hasValidDistance && hasValidTime;
+
+      return valid;
+    }
+
+    /**
+     * Returns true if any Swipe events have been registered
+     * @return Boolean
+     * @inner
+     */
+    function hasSwipes() {
+      //Enure we dont return 0 or null for false values
+      return !!(options.swipe || options.swipeStatus || options.swipeLeft || options.swipeRight || options.swipeUp || options.swipeDown);
+    }
+
+
+    /**
+     * Returns true if we are detecting swipes and have one
+     * @return Boolean
+     * @inner
+     */
+    function didSwipe() {
+      //Enure we dont return 0 or null for false values
+      return !!(validateSwipe() && hasSwipes());
+    }
+
+    /**
+     * Returns true if we have matched the number of fingers we are looking for
+     * @return Boolean
+     * @inner
+     */
+    function validateFingers() {
+      //The number of fingers we want were matched, or on desktop we ignore
+      return ((fingerCount === options.fingers || options.fingers === ALL_FINGERS) || !SUPPORTS_TOUCH);
+    }
+
+    /**
+     * Returns true if we have an end point for the swipe
+     * @return Boolean
+     * @inner
+     */
+    function validateEndPoint() {
+      //We have an end value for the finger
+      return fingerData[0].end.x !== 0;
+    }
+
+    // TAP / CLICK
+    /**
+     * Returns true if a click / tap events have been registered
+     * @return Boolean
+     * @inner
+     */
+    function hasTap() {
+      //Enure we dont return 0 or null for false values
+      return !!(options.tap);
+    }
+
+    /**
+     * Returns true if a double tap events have been registered
+     * @return Boolean
+     * @inner
+     */
+    function hasDoubleTap() {
+      //Enure we dont return 0 or null for false values
+      return !!(options.doubleTap);
+    }
+
+    /**
+     * Returns true if any long tap events have been registered
+     * @return Boolean
+     * @inner
+     */
+    function hasLongTap() {
+      //Enure we dont return 0 or null for false values
+      return !!(options.longTap);
+    }
+
+    /**
+     * Returns true if we could be in the process of a double tap (one tap has occurred, we are listening for double taps, and the threshold hasn't past.
+     * @return Boolean
+     * @inner
+     */
+    function validateDoubleTap() {
+      if (doubleTapStartTime == null) {
+        return false;
+      }
+      var now = getTimeStamp();
+      return (hasDoubleTap() && ((now - doubleTapStartTime) <= options.doubleTapThreshold));
+    }
+
+    /**
+     * Returns true if we could be in the process of a double tap (one tap has occurred, we are listening for double taps, and the threshold hasn't past.
+     * @return Boolean
+     * @inner
+     */
+    function inDoubleTap() {
+      return validateDoubleTap();
+    }
+
+
+    /**
+     * Returns true if we have a valid tap
+     * @return Boolean
+     * @inner
+     */
+    function validateTap() {
+      return ((fingerCount === 1 || !SUPPORTS_TOUCH) && (isNaN(distance) || distance < options.threshold));
+    }
+
+    /**
+     * Returns true if we have a valid long tap
+     * @return Boolean
+     * @inner
+     */
+    function validateLongTap() {
+      //slight threshold on moving finger
+      return ((duration > options.longTapThreshold) && (distance < DOUBLE_TAP_THRESHOLD));
+    }
+
+    /**
+     * Returns true if we are detecting taps and have one
+     * @return Boolean
+     * @inner
+     */
+    function didTap() {
+      //Enure we dont return 0 or null for false values
+      return !!(validateTap() && hasTap());
+    }
+
+
+    /**
+     * Returns true if we are detecting double taps and have one
+     * @return Boolean
+     * @inner
+     */
+    function didDoubleTap() {
+      //Enure we dont return 0 or null for false values
+      return !!(validateDoubleTap() && hasDoubleTap());
+    }
+
+    /**
+     * Returns true if we are detecting long taps and have one
+     * @return Boolean
+     * @inner
+     */
+    function didLongTap() {
+      //Enure we dont return 0 or null for false values
+      return !!(validateLongTap() && hasLongTap());
+    }
+
+
+
+
+    // MULTI FINGER TOUCH
+    /**
+     * Starts tracking the time between 2 finger releases, and keeps track of how many fingers we initially had up
+     * @inner
+     */
+    function startMultiFingerRelease(event) {
+      previousTouchEndTime = getTimeStamp();
+      fingerCountAtRelease = event.touches.length + 1;
+    }
+
+    /**
+     * Cancels the tracking of time between 2 finger releases, and resets counters
+     * @inner
+     */
+    function cancelMultiFingerRelease() {
+      previousTouchEndTime = 0;
+      fingerCountAtRelease = 0;
+    }
+
+    /**
+     * Checks if we are in the threshold between 2 fingers being released
+     * @return Boolean
+     * @inner
+     */
+    function inMultiFingerRelease() {
+
+      var withinThreshold = false;
+
+      if (previousTouchEndTime) {
+        var diff = getTimeStamp() - previousTouchEndTime
+        if (diff <= options.fingerReleaseThreshold) {
+          withinThreshold = true;
+        }
+      }
+
+      return withinThreshold;
+    }
+
+
+    /**
+     * gets a data flag to indicate that a touch is in progress
+     * @return Boolean
+     * @inner
+     */
+    function getTouchInProgress() {
+      //strict equality to ensure only true and false are returned
+      return !!($element.data(PLUGIN_NS + '_intouch') === true);
+    }
+
+    /**
+     * Sets a data flag to indicate that a touch is in progress
+     * @param {boolean} val The value to set the property to
+     * @inner
+     */
+    function setTouchInProgress(val) {
+
+      //If destroy is called in an event handler, we have no el, and we have already cleaned up, so return.
+      if(!$element) { return; }
+
+      //Add or remove event listeners depending on touch status
+      if (val === true) {
+        $element.bind(MOVE_EV, touchMove);
+        $element.bind(END_EV, touchEnd);
+
+        //we only have leave events on desktop, we manually calcuate leave on touch as its not supported in webkit
+        if (LEAVE_EV) {
+          $element.bind(LEAVE_EV, touchLeave);
+        }
+      } else {
+
+        $element.unbind(MOVE_EV, touchMove, false);
+        $element.unbind(END_EV, touchEnd, false);
+
+        //we only have leave events on desktop, we manually calcuate leave on touch as its not supported in webkit
+        if (LEAVE_EV) {
+          $element.unbind(LEAVE_EV, touchLeave, false);
+        }
+      }
+
+
+      //strict equality to ensure only true and false can update the value
+      $element.data(PLUGIN_NS + '_intouch', val === true);
+    }
+
+
+    /**
+     * Creates the finger data for the touch/finger in the event object.
+     * @param {int} id The id to store the finger data under (usually the order the fingers were pressed)
+     * @param {object} evt The event object containing finger data
+     * @return finger data object
+     * @inner
+     */
+    function createFingerData(id, evt) {
+      var f = {
+        start: {
+          x: 0,
+          y: 0
+        },
+        last: {
+          x: 0,
+          y: 0
+        },
+        end: {
+          x: 0,
+          y: 0
+        }
+      };
+      f.start.x = f.last.x = f.end.x = evt.pageX || evt.clientX;
+      f.start.y = f.last.y = f.end.y = evt.pageY || evt.clientY;
+      fingerData[id] = f;
+      return f;
+    }
+
+    /**
+     * Updates the finger data for a particular event object
+     * @param {object} evt The event object containing the touch/finger data to upadte
+     * @return a finger data object.
+     * @inner
+     */
+    function updateFingerData(evt) {
+      var id = evt.identifier !== undefined ? evt.identifier : 0;
+      var f = getFingerData(id);
+
+      if (f === null) {
+        f = createFingerData(id, evt);
+      }
+
+      f.last.x = f.end.x;
+      f.last.y = f.end.y;
+
+      f.end.x = evt.pageX || evt.clientX;
+      f.end.y = evt.pageY || evt.clientY;
+
+      return f;
+    }
+
+    /**
+     * Returns a finger data object by its event ID.
+     * Each touch event has an identifier property, which is used
+     * to track repeat touches
+     * @param {int} id The unique id of the finger in the sequence of touch events.
+     * @return a finger data object.
+     * @inner
+     */
+    function getFingerData(id) {
+      return fingerData[id] || null;
+    }
+
+
+    /**
+     * Sets the maximum distance swiped in the given direction.
+     * If the new value is lower than the current value, the max value is not changed.
+     * @param {string}  direction The direction of the swipe
+     * @param {int}  distance The distance of the swipe
+     * @inner
+     */
+    function setMaxDistance(direction, distance) {
+      if(direction==NONE) return;
+      distance = Math.max(distance, getMaxDistance(direction));
+      maximumsMap[direction].distance = distance;
+    }
+
+    /**
+     * gets the maximum distance swiped in the given direction.
+     * @param {string}  direction The direction of the swipe
+     * @return int  The distance of the swipe
+     * @inner
+     */
+    function getMaxDistance(direction) {
+      if (maximumsMap[direction]) return maximumsMap[direction].distance;
+      return undefined;
+    }
+
+    /**
+     * Creats a map of directions to maximum swiped values.
+     * @return Object A dictionary of maximum values, indexed by direction.
+     * @inner
+     */
+    function createMaximumsData() {
+      var maxData = {};
+      maxData[LEFT] = createMaximumVO(LEFT);
+      maxData[RIGHT] = createMaximumVO(RIGHT);
+      maxData[UP] = createMaximumVO(UP);
+      maxData[DOWN] = createMaximumVO(DOWN);
+
+      return maxData;
+    }
+
+    /**
+     * Creates a map maximum swiped values for a given swipe direction
+     * @param {string} The direction that these values will be associated with
+     * @return Object Maximum values
+     * @inner
+     */
+    function createMaximumVO(dir) {
+      return {
+        direction: dir,
+        distance: 0
+      }
+    }
+
+
+    //
+    // MATHS / UTILS
+    //
+
+    /**
+     * Calculate the duration of the swipe
+     * @return int
+     * @inner
+     */
+    function calculateDuration() {
+      return endTime - startTime;
+    }
+
+    /**
+     * Calculate the distance between 2 touches (pinch)
+     * @param {point} startPoint A point object containing x and y co-ordinates
+     * @param {point} endPoint A point object containing x and y co-ordinates
+     * @return int;
+     * @inner
+     */
+    function calculateTouchesDistance(startPoint, endPoint) {
+      var diffX = Math.abs(startPoint.x - endPoint.x);
+      var diffY = Math.abs(startPoint.y - endPoint.y);
+
+      return Math.round(Math.sqrt(diffX * diffX + diffY * diffY));
+    }
+
+    /**
+     * Calculate the zoom factor between the start and end distances
+     * @param {int} startDistance Distance (between 2 fingers) the user started pinching at
+     * @param {int} endDistance Distance (between 2 fingers) the user ended pinching at
+     * @return float The zoom value from 0 to 1.
+     * @inner
+     */
+    function calculatePinchZoom(startDistance, endDistance) {
+      var percent = (endDistance / startDistance) * 1;
+      return percent.toFixed(2);
+    }
+
+
+    /**
+     * Returns the pinch direction, either IN or OUT for the given points
+     * @return string Either {@link $.fn.swipe.directions.IN} or {@link $.fn.swipe.directions.OUT}
+     * @see $.fn.swipe.directions
+     * @inner
+     */
+    function calculatePinchDirection() {
+      if (pinchZoom < 1) {
+        return OUT;
+      } else {
+        return IN;
+      }
+    }
+
+
+    /**
+     * Calculate the length / distance of the swipe
+     * @param {point} startPoint A point object containing x and y co-ordinates
+     * @param {point} endPoint A point object containing x and y co-ordinates
+     * @return int
+     * @inner
+     */
+    function calculateDistance(startPoint, endPoint) {
+      return Math.round(Math.sqrt(Math.pow(endPoint.x - startPoint.x, 2) + Math.pow(endPoint.y - startPoint.y, 2)));
+    }
+
+    /**
+     * Calculate the angle of the swipe
+     * @param {point} startPoint A point object containing x and y co-ordinates
+     * @param {point} endPoint A point object containing x and y co-ordinates
+     * @return int
+     * @inner
+     */
+    function calculateAngle(startPoint, endPoint) {
+      var x = startPoint.x - endPoint.x;
+      var y = endPoint.y - startPoint.y;
+      var r = Math.atan2(y, x); //radians
+      var angle = Math.round(r * 180 / Math.PI); //degrees
+
+      //ensure value is positive
+      if (angle < 0) {
+        angle = 360 - Math.abs(angle);
+      }
+
+      return angle;
+    }
+
+    /**
+     * Calculate the direction of the swipe
+     * This will also call calculateAngle to get the latest angle of swipe
+     * @param {point} startPoint A point object containing x and y co-ordinates
+     * @param {point} endPoint A point object containing x and y co-ordinates
+     * @return string Either {@link $.fn.swipe.directions.LEFT} / {@link $.fn.swipe.directions.RIGHT} / {@link $.fn.swipe.directions.DOWN} / {@link $.fn.swipe.directions.UP}
+     * @see $.fn.swipe.directions
+     * @inner
+     */
+    function calculateDirection(startPoint, endPoint) {
+
+      if( comparePoints(startPoint, endPoint) ) {
+        return NONE;
+      }
+
+      var angle = calculateAngle(startPoint, endPoint);
+
+      if ((angle <= 45) && (angle >= 0)) {
+        return LEFT;
+      } else if ((angle <= 360) && (angle >= 315)) {
+        return LEFT;
+      } else if ((angle >= 135) && (angle <= 225)) {
+        return RIGHT;
+      } else if ((angle > 45) && (angle < 135)) {
+        return DOWN;
+      } else {
+        return UP;
+      }
+    }
+
+
+    /**
+     * Returns a MS time stamp of the current time
+     * @return int
+     * @inner
+     */
+    function getTimeStamp() {
+      var now = new Date();
+      return now.getTime();
+    }
+
+
+
+    /**
+     * Returns a bounds object with left, right, top and bottom properties for the element specified.
+     * @param {DomNode} The DOM node to get the bounds for.
+     */
+    function getbounds(el) {
+      el = $(el);
+      var offset = el.offset();
+
+      var bounds = {
+        left: offset.left,
+        right: offset.left + el.outerWidth(),
+        top: offset.top,
+        bottom: offset.top + el.outerHeight()
+      }
+
+      return bounds;
+    }
+
+
+    /**
+     * Checks if the point object is in the bounds object.
+     * @param {object} point A point object.
+     * @param {int} point.x The x value of the point.
+     * @param {int} point.y The x value of the point.
+     * @param {object} bounds The bounds object to test
+     * @param {int} bounds.left The leftmost value
+     * @param {int} bounds.right The righttmost value
+     * @param {int} bounds.top The topmost value
+     * @param {int} bounds.bottom The bottommost value
+     */
+    function isInBounds(point, bounds) {
+      return (point.x > bounds.left && point.x < bounds.right && point.y > bounds.top && point.y < bounds.bottom);
+    };
+
+    /**
+     * Checks if the two points are equal
+     * @param {object} point A point object.
+     * @param {object} point B point object.
+     * @return true of the points match
+     */
+    function comparePoints(pointA, pointB) {
+      return (pointA.x == pointB.x && pointA.y == pointB.y);
+    }
+
+
+  }
+
+
+
+
+  /**
+   * A catch all handler that is triggered for all swipe directions.
+   * @name $.fn.swipe#swipe
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {int} direction The direction the user swiped in. See {@link $.fn.swipe.directions}
+   * @param {int} distance The distance the user swiped
+   * @param {int} duration The duration of the swipe in milliseconds
+   * @param {int} fingerCount The number of fingers used. See {@link $.fn.swipe.fingers}
+   * @param {object} fingerData The coordinates of fingers in event
+   * @param {string} currentDirection The current direction the user is swiping.
+   */
+
+
+
+
+  /**
+   * A handler that is triggered for "left" swipes.
+   * @name $.fn.swipe#swipeLeft
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {int} direction The direction the user swiped in. See {@link $.fn.swipe.directions}
+   * @param {int} distance The distance the user swiped
+   * @param {int} duration The duration of the swipe in milliseconds
+   * @param {int} fingerCount The number of fingers used. See {@link $.fn.swipe.fingers}
+   * @param {object} fingerData The coordinates of fingers in event
+   * @param {string} currentDirection The current direction the user is swiping.
+   */
+
+  /**
+   * A handler that is triggered for "right" swipes.
+   * @name $.fn.swipe#swipeRight
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {int} direction The direction the user swiped in. See {@link $.fn.swipe.directions}
+   * @param {int} distance The distance the user swiped
+   * @param {int} duration The duration of the swipe in milliseconds
+   * @param {int} fingerCount The number of fingers used. See {@link $.fn.swipe.fingers}
+   * @param {object} fingerData The coordinates of fingers in event
+   * @param {string} currentDirection The current direction the user is swiping.
+   */
+
+  /**
+   * A handler that is triggered for "up" swipes.
+   * @name $.fn.swipe#swipeUp
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {int} direction The direction the user swiped in. See {@link $.fn.swipe.directions}
+   * @param {int} distance The distance the user swiped
+   * @param {int} duration The duration of the swipe in milliseconds
+   * @param {int} fingerCount The number of fingers used. See {@link $.fn.swipe.fingers}
+   * @param {object} fingerData The coordinates of fingers in event
+   * @param {string} currentDirection The current direction the user is swiping.
+   */
+
+  /**
+   * A handler that is triggered for "down" swipes.
+   * @name $.fn.swipe#swipeDown
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {int} direction The direction the user swiped in. See {@link $.fn.swipe.directions}
+   * @param {int} distance The distance the user swiped
+   * @param {int} duration The duration of the swipe in milliseconds
+   * @param {int} fingerCount The number of fingers used. See {@link $.fn.swipe.fingers}
+   * @param {object} fingerData The coordinates of fingers in event
+   * @param {string} currentDirection The current direction the user is swiping.
+   */
+
+  /**
+   * A handler triggered for every phase of the swipe. This handler is constantly fired for the duration of the pinch.
+   * This is triggered regardless of swipe thresholds.
+   * @name $.fn.swipe#swipeStatus
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {string} phase The phase of the swipe event. See {@link $.fn.swipe.phases}
+   * @param {string} direction The direction the user swiped in. This is null if the user has yet to move. See {@link $.fn.swipe.directions}
+   * @param {int} distance The distance the user swiped. This is 0 if the user has yet to move.
+   * @param {int} duration The duration of the swipe in milliseconds
+   * @param {int} fingerCount The number of fingers used. See {@link $.fn.swipe.fingers}
+   * @param {object} fingerData The coordinates of fingers in event
+   * @param {string} currentDirection The current direction the user is swiping.
+   */
+
+  /**
+   * A handler triggered for pinch in events.
+   * @name $.fn.swipe#pinchIn
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {int} direction The direction the user pinched in. See {@link $.fn.swipe.directions}
+   * @param {int} distance The distance the user pinched
+   * @param {int} duration The duration of the swipe in milliseconds
+   * @param {int} fingerCount The number of fingers used. See {@link $.fn.swipe.fingers}
+   * @param {int} zoom The zoom/scale level the user pinched too, 0-1.
+   * @param {object} fingerData The coordinates of fingers in event
+   */
+
+  /**
+   * A handler triggered for pinch out events.
+   * @name $.fn.swipe#pinchOut
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {int} direction The direction the user pinched in. See {@link $.fn.swipe.directions}
+   * @param {int} distance The distance the user pinched
+   * @param {int} duration The duration of the swipe in milliseconds
+   * @param {int} fingerCount The number of fingers used. See {@link $.fn.swipe.fingers}
+   * @param {int} zoom The zoom/scale level the user pinched too, 0-1.
+   * @param {object} fingerData The coordinates of fingers in event
+   */
+
+  /**
+   * A handler triggered for all pinch events. This handler is constantly fired for the duration of the pinch. This is triggered regardless of thresholds.
+   * @name $.fn.swipe#pinchStatus
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {int} direction The direction the user pinched in. See {@link $.fn.swipe.directions}
+   * @param {int} distance The distance the user pinched
+   * @param {int} duration The duration of the swipe in milliseconds
+   * @param {int} fingerCount The number of fingers used. See {@link $.fn.swipe.fingers}
+   * @param {int} zoom The zoom/scale level the user pinched too, 0-1.
+   * @param {object} fingerData The coordinates of fingers in event
+   */
+
+  /**
+   * A click handler triggered when a user simply clicks, rather than swipes on an element.
+   * This is deprecated since version 1.6.2, any assignment to click will be assigned to the tap handler.
+   * You cannot use <code>on</code> to bind to this event as the default jQ <code>click</code> event will be triggered.
+   * Use the <code>tap</code> event instead.
+   * @name $.fn.swipe#click
+   * @event
+   * @deprecated since version 1.6.2, please use {@link $.fn.swipe#tap} instead
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {DomObject} target The element clicked on.
+   */
+
+  /**
+   * A click / tap handler triggered when a user simply clicks or taps, rather than swipes on an element.
+   * @name $.fn.swipe#tap
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {DomObject} target The element clicked on.
+   */
+
+  /**
+   * A double tap handler triggered when a user double clicks or taps on an element.
+   * You can set the time delay for a double tap with the {@link $.fn.swipe.defaults#doubleTapThreshold} property.
+   * Note: If you set both <code>doubleTap</code> and <code>tap</code> handlers, the <code>tap</code> event will be delayed by the <code>doubleTapThreshold</code>
+   * as the script needs to check if its a double tap.
+   * @name $.fn.swipe#doubleTap
+   * @see  $.fn.swipe.defaults#doubleTapThreshold
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {DomObject} target The element clicked on.
+   */
+
+  /**
+   * A long tap handler triggered once a tap has been release if the tap was longer than the longTapThreshold.
+   * You can set the time delay for a long tap with the {@link $.fn.swipe.defaults#longTapThreshold} property.
+   * @name $.fn.swipe#longTap
+   * @see  $.fn.swipe.defaults#longTapThreshold
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {DomObject} target The element clicked on.
+   */
+
+  /**
+   * A hold tap handler triggered as soon as the longTapThreshold is reached
+   * You can set the time delay for a long tap with the {@link $.fn.swipe.defaults#longTapThreshold} property.
+   * @name $.fn.swipe#hold
+   * @see  $.fn.swipe.defaults#longTapThreshold
+   * @event
+   * @default null
+   * @param {EventObject} event The original event object
+   * @param {DomObject} target The element clicked on.
+   */
+
+}));
+
+
+  jQuery(document).ready(function($){
   $('.catalog-list').hover(function(event) {
     event.preventDefault();
-    $(this).toggleClass('open');
+    if(event.type=="mouseenter") {
+      $(this).addClass('open');
+    }
+    if(event.type=="mouseleave") {
+      $(this).removeClass('open');
+    }
+    
     if ($('.catalog-list').hasClass('open')) {
       $('.catalog-bg').addClass('visible');
     }else {
@@ -13975,18 +20620,127 @@ jQuery(document).ready(function($){
     }
   });
 
+  $(window).scroll(function(){
+   if( $(window).scrollTop() > 300 ) {
+     $('.up-top').addClass('visible');
+   } else {
+     $('.up-top').removeClass('visible');
+   }
+ });
+
+   $('.news').slick({
+    infinte: true,
+    slidesToShow: 1,
+    slidesToScroll:1,
+    rows: 3,
+    dots: false,
+    responsive: [
+      {
+        breakpoint: 981,
+        settings: {
+          rows: 1,
+          slidesToShow: 3,
+          slidesToScroll: 1
+        }
+      },
+      {
+        breakpoint: 498,
+        settings: {
+          rows: 1,
+          slidesToShow: 1,
+          slidesToScroll: 1
+        }
+      }
+    ]
+  });
+    $('.slick-prev').click(function(){
+    $('.news').slick('slickPrev');
+  });
+    $('.slick-next').click(function(){
+    $('.news').slick('slickNext');
+  });
+
+
+   $('.recommendations-slider').slick({
+    infinte: true,
+    slidesToShow: 3,
+    slidesToScroll:1,
+    dots: false,
+    arrow: true,
+    responsive: [
+      {
+        breakpoint: 1090,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1
+        }
+      },
+      {
+        breakpoint: 498,
+        settings: {
+          rows: 1,
+          slidesToShow: 1,
+          slidesToScroll: 1
+        }
+      }
+    ]
+  });
+   $('.slick-prev').click(function(){
+    $('.recommendations-slider').slick('slickPrev');
+  });
+    $('.slick-next').click(function(){
+    $('.recommendations-slider').slick('slickNext');
+  });
+
+   $('.view-slider').slick({
+    infinte: true,
+    slidesToShow: 3,
+    slidesToScroll:1,
+    dots: false,
+    arrow: true,
+     responsive: [
+      {
+        breakpoint: 1090,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1
+        }
+      },
+      {
+        breakpoint: 498,
+        settings: {
+          rows: 1,
+          slidesToShow: 1,
+          slidesToScroll: 1
+        }
+      }
+    ]
+  });
+    $('.slick-prev2').click(function(){
+    $('.view-slider').slick('slickPrev');
+  });
+    $('.slick-next2').click(function(){
+    $('.view-slider').slick('slickNext');
+  });
+
+
+
   $('.main-slider').slick({
   	infinte: true,
   	slidesToShow: 1,
   	slidesToScroll:1,
-  	dots: true
+  	dots: true,
+    autoplay: true,
+    autoplaySpeed: 2000
   });
 
    $('.gallery-slider').slick({
     infinte: true,
     slidesToShow: 1,
     slidesToScroll:1,
-    dots: true
+    dots: true,
+    autoplay: true,
+    autoplaySpeed: 2000
   });
 
   $('.another-goods_slider').slick({
@@ -14035,11 +20789,17 @@ jQuery(document).ready(function($){
     $(this).toggleClass('open');
     $('.gallery-dropdown-nav').toggleClass('open');
     $('.catalog-bg').toggleClass('gallery-bg');
+      if ($(this).hasClass('open')) {
+        $('.gallery-dropdown-nav').fadeIn("slow");
+      } else {
+        $('.gallery-dropdown-nav').fadeOut("slow");
+      }
    });
 
    $('.catalog-bg').on("click", function (event) {
     event.preventDefault();
      $(this).removeClass('gallery-bg');
+     $('.gallery-dropdown-nav').fadeOut();
     $('.gallery-dropdown-nav').removeClass('open');
     $('.title-mobile').removeClass('open');
     });
@@ -14079,6 +20839,18 @@ jQuery(document).ready(function($){
         $('.mobile-menu').addClass('open');
         $('.menu-bg').addClass('visible');
         $('body').addClass('overflow');
+       });
+
+      $('.filter-btn').on("click", function (event) {
+        event.preventDefault();
+        $('.catalog-form').addClass('open');
+        $('body').addClass('overflow')
+       });
+
+      $('.filter-close').on("click", function (event) {
+        event.preventDefault();
+        $('.catalog-form').removeClass('open');
+        $('body').removeClass('overflow')
        });
 
       $('.title').on("click", function (event) {
@@ -14124,6 +20896,24 @@ jQuery(document).ready(function($){
       change: function( event, ui ) {}
     });
 
+     $("#form-entrance").validate();
+     $("#write-form").validate();
+     $("#service-form").validate();
+     $("#service-form_mini").validate();
+     $("#form-experts").validate();
+     $("#partner-form").validate();
+     $("#faq-form").validate();
+     $("#check-form").validate();
+     $("#no-reg").validate();
+     $("#register-form").validate();
+     $("#account-form").validate();
+     $("#password-form").validate();
+    
+
+      $("#check-phone").mask("+7 (999) 999-9999");
+      $("#phone-order").mask("+7 (999) 999-9999");
+      $("#your-phone").mask("+7 (999) 999-9999");
+
      $('.question').click(function (event) {
       $(this).toggleClass('clicked');
       $(this).parent('.questions-inner').toggleClass('clicked');
@@ -14131,6 +20921,13 @@ jQuery(document).ready(function($){
       $(this).parent('.questions-inner').siblings().find('.faq-answer').slideUp();
       $(this).parent('.questions-inner').siblings().removeClass('clicked').find('.question.clicked').removeClass('clicked');
      });
+
+      $('.span-click').on("click", function (event) {
+        event.preventDefault();
+         $(this).toggleClass('check');
+         $(this).parent('.catalog-title').siblings('.filter-inner').slideToggle();
+       });
+
      $('#tabs-goods li a').click(function(e) {
         e.preventDefault()
         $(this).tab('show')
@@ -14140,28 +20937,40 @@ jQuery(document).ready(function($){
       });
 
       $('select').select2();
+
+      $('.close-all').on('click', function (event) {
+      event.preventDefault();
+      $(this).parent('.top-filter_item').hide();
+     });
+
+      $(".wrapper .services-inner-block2:odd").addClass("float");
+       $(".wrapper .gallery-block:odd").addClass("float");
+       $(".wrapper .experts-block:odd").addClass("float");
+       $(".wrapper .reviews-block:odd").addClass("float");
+
    });
 
-// jQuery(document).ready(function($) {
-//    var $window = $(window),
-//   $news = $('.news'),
-//   toggleSlick;
+$(function() {
+  $(".mobile-menu").swipe( {
+    //Generic swipe handler for all directions
+    swipe:function(event, direction, distance, duration, fingerCount, fingerData) {
+      $(this).removeClass('open');
+      $('.inner-menu').removeClass('open');
+      $('.menu-bg').removeClass('visible');
+      $('body').removeClass('overflow');
 
-// toggleSlick = function () {
-//  if ($window.width() < 649) {
-//    $news.slick({
-//      infinite: false,
-//      slidesToShow: 1,
-//      slidesToScroll: 1,
-//      arrows: true,
-//      dots: false
-//    });
-//   }
-//  else {
-//   $news.slick('unslick'),
-//  }
-// }
+    }
+  });
 
-// $window.resize(toggleSlick);
-// toggleSlick();
-// });
+  //Set some options later
+  $(".mobile-menu ").swipe( {fingers:1} );
+});
+
+  jQuery(document).ready(function($){
+$('#account-form input').keyup(function(){
+  $('#account-form').find('.btn-check').removeAttr('disabled');
+});
+
+});
+
+
